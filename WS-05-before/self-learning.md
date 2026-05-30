@@ -1,25 +1,22 @@
-# Self-Learning: เตรียมก่อนเรียน CI/CD Pipeline
+# Self-Learning: เตรียมก่อนเรียน Docker
 
 ## สิ่งที่ต้องศึกษา
 
-### GitHub Actions
-- [video] GitHub Actions for Beginners
-  (https://www.youtube.com/watch?v=hoN9r86D72U)
-- [video] How to use GitHub Actions — GitHub for Beginners
-  (https://www.youtube.com/watch?v=BQrohJ3PT7I)
-- [reading] GitHub Actions Quickstart
-  (https://docs.github.com/en/actions/quickstart)
-- [reading] Using Secrets in GitHub Actions
-  (https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+### Docker
+- [video] Docker Crash Course for Absolute Beginners — TechWorld with Nana
+  (https://www.youtube.com/watch?v=pg19Z8LL06w)
+- [reading] Dockerfile Best Practices
+  (https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+- [reading] Docker Compose Getting Started
+  (https://docs.docker.com/compose/gettingstarted/)
 
 **จุดที่ต้องเข้าใจ:**
-- Workflow, Job, Step คืออะไร และสัมพันธ์กันอย่างไร
-- Trigger (on: push, pull_request) คืออะไร
-- Secrets ใน GitHub Actions ใช้อย่างไร และทำไมต้องใช้แทน hardcode
+- Image vs Container ต่างกันอย่างไร
+- Layer คืออะไร caching ทำงานอย่างไร
+- docker-compose ช่วยอะไรเมื่อมีหลาย services
+- COPY ก่อน RUN ทำไมถึงสำคัญ
 
 ---
 
 ## Entry Ticket
-ส่งก่อนเข้าห้องอย่างน้อย 1 ชั่วโมง:
-
-> "จากประสบการณ์ที่ผ่านมา ถ้าไม่มี CI/CD ใน project นี้จะเกิดปัญหาอะไรได้บ้าง"
+> "Dockerfile instruction ไหนที่ยังไม่เข้าใจ หรือสงสัยว่าทำไมต้องมี"

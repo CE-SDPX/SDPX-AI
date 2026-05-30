@@ -1,22 +1,19 @@
 # Lecture: Requirements & API Design
 
-## Learning Objectives
-- เขียน user stories ที่ testable ได้
-- ออกแบบ RESTful API ที่ถูกต้องได้
-- ใช้ AI ช่วย find requirements gaps และ draft API spec ได้อย่างมีวิจารณญาณ
+## เวลา: 30 นาที
 
 ---
 
-## 1. Entry Ticket Review
+## 1. Entry Ticket Review (5 นาที)
 
-อาจารย์เปิด component diagrams ที่กลุ่มต่างๆ ส่งมา (anonymized) และ discuss:
-- อะไรที่หลายกลุ่มลืม (เช่น Authentication, Database)
-- Pattern ที่น่าสนใจ
-- จุดที่มักสับสน
+เปิด component diagrams ที่กลุ่มต่างๆ ส่งมา (anonymized) และ discuss:
+- อะไรที่หลายกลุ่มลืม (เช่น Auth layer, Database)
+- อะไรที่น่าสนใจ
+- Monolith vs layered — เมื่อไหร่เลือกอะไร
 
 ---
 
-## 2. User Stories ที่ Testable ได้
+## 2. User Stories ที่ Testable ได้ (8 นาที)
 
 ### รูปแบบมาตรฐาน
 ```
@@ -32,44 +29,57 @@ When [action is taken],
 Then [expected outcome].
 ```
 
-### ตัวอย่าง: ระบบจองห้อง
+### ตัวอย่างที่ดี
 ```
 Story:
-As a student,
-I want to book a room for a study group,
-So that I have a guaranteed space to meet.
+As a student, I want to book a study room,
+So that I have a guaranteed space to meet my group.
 
 Acceptance Criteria:
 Given I am logged in as a student,
-When I select an available room and time slot and submit the booking,
-Then the booking is confirmed and I receive a confirmation with booking ID.
+When I select an available room and submit a booking for 13:00-15:00,
+Then the booking is confirmed and I receive a booking ID.
 
-Given a room is already booked for 13:00-15:00,
+Given a room is booked for 13:00-15:00,
 When another student tries to book the same room at 14:00-16:00,
-Then the system rejects the booking with an error "Room not available for selected time".
+Then the system rejects with "Room not available for selected time".
 ```
 
-### กับดัก: User Stories ที่ยาก Test
+### กับดัก: Stories ที่ยาก Test
+```
 ❌ "As a user, I want a good experience"
-→ "good" วัดไม่ได้
+   → "good" วัดไม่ได้
 
 ❌ "As an admin, I want to manage everything"
-→ "everything" กว้างเกินไป ไม่รู้จะ test อะไร
+   → "everything" ไม่รู้จะ test อะไร
 
-✅ แต่ละ story ควรมี acceptance criteria ที่ pass/fail ได้ชัดเจน
+✅ แต่ละ story ต้องมี acceptance criteria ที่ pass/fail ได้ชัดเจน
+```
 
 ---
 
-## 3. RESTful API Design
+## 3. RESTful API Design (10 นาที)
 
 ### HTTP Methods
 | Method | ใช้สำหรับ | ตัวอย่าง |
 |---|---|---|
 | GET | ดึงข้อมูล | `GET /rooms` |
 | POST | สร้างข้อมูลใหม่ | `POST /bookings` |
-| PUT | แทนที่ข้อมูลทั้งหมด | `PUT /bookings/123` |
+| PUT | แทนที่ทั้งหมด | `PUT /bookings/123` |
 | PATCH | อัปเดตบางส่วน | `PATCH /bookings/123` |
-| DELETE | ลบข้อมูล | `DELETE /bookings/123` |
+| DELETE | ลบ | `DELETE /bookings/123` |
+
+### Status Codes ที่สำคัญ
+```
+200 OK           — สำเร็จ
+201 Created      — สร้างสำเร็จ (ใช้กับ POST)
+400 Bad Request  — ข้อมูลที่ส่งมาผิด
+401 Unauthorized — ยังไม่ได้ login
+403 Forbidden    — login แล้วแต่ไม่มีสิทธิ์
+404 Not Found    — ไม่พบ resource
+422 Unprocessable — validation ไม่ผ่าน
+500 Server Error — ระบบมีปัญหา
+```
 
 ### Resource Naming
 ```
@@ -79,45 +89,94 @@ Then the system rejects the booking with an error "Room not available for select
 
 ❌ /getRoom
 ❌ /createNewBooking
-❌ /room_list
-```
-
-### HTTP Status Codes ที่สำคัญ
-```
-200 OK           — ทำสำเร็จ
-201 Created      — สร้างสำเร็จ
-400 Bad Request  — ข้อมูลที่ส่งมาผิด
-401 Unauthorized — ยังไม่ได้ login
-403 Forbidden    — login แล้วแต่ไม่มีสิทธิ์
-404 Not Found    — ไม่พบ resource
-422 Unprocessable — validation ไม่ผ่าน
-500 Server Error — ระบบมีปัญหา
+❌ /deleteAllRooms
 ```
 
 ---
 
-## 4. ใช้ AI Draft API Spec อย่างไรให้ได้ผล
+## 4. OpenAPI Spec เป็น Contract Harness (7 นาที)
 
-### Prompt ที่ดี
+### OpenAPI Spec คืออะไร
+เป็นไฟล์ YAML/JSON ที่ describe API อย่างครบถ้วน:
+- Endpoints ทั้งหมด
+- Request/response schemas
+- Authentication requirements
+- Status codes และ error responses
+
+### ทำไม OpenAPI = Contract Harness
 ```
-I am building a room booking system for a university.
-Users are: students (can book rooms), staff (can manage rooms).
-Entities: Room (id, name, capacity, location), Booking (id, roomId, userId, startTime, endTime, status)
-
-Generate an OpenAPI 3.0 spec for the core CRUD operations.
-Include proper status codes, request bodies, and response schemas.
+OpenAPI Spec
+    ↓
+Frontend รู้ว่า API ทำอะไร → develop แยกจาก backend ได้
+Backend รู้ว่าต้อง implement อะไร → generate boilerplate ได้
+Tests รู้ว่า contract คืออะไร → validate automatically ได้
 ```
 
-### สิ่งที่ต้อง Review ในผลลัพธ์ของ AI
+### ตัวอย่าง OpenAPI spec เบื้องต้น
+```yaml
+openapi: 3.0.0
+info:
+  title: Campus Room Booking API
+  version: 1.0.0
+
+paths:
+  /rooms:
+    get:
+      summary: List available rooms
+      parameters:
+        - name: date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of rooms
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Room'
+
+  /bookings:
+    post:
+      summary: Create a booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Booking created
+        '409':
+          description: Room not available
+
+components:
+  schemas:
+    Room:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        capacity:
+          type: integer
+```
+
+### สิ่งที่ต้อง Review ใน AI-generated OpenAPI Spec
 - Status codes ถูกต้องไหม (AI มักใช้ 200 สำหรับ POST แทน 201)
-- Schema ครบไหม — มี field อะไรขาดหายไปบ้าง
-- Error responses มีครบไหม — ไม่ใช่แค่ happy path
-- Security / Authentication ถูก define ไหม
+- Error responses มีครบไหม ไม่ใช่แค่ happy path
+- Authentication ถูก define ไหม
+- Schema ครบถ้วน ไม่มี field หายไปหรือ type ผิด
 
 ---
 
 ## Key Takeaways
 - User story ที่ดีต้องมี acceptance criteria ที่ pass/fail ได้
+- OpenAPI spec เป็น contract ระหว่าง frontend/backend — เป็น harness ชั้นที่ 2
 - API endpoint ชื่อ resource ไม่ใช่ action
 - AI draft spec ได้เร็ว แต่มักพลาด error cases และ authentication
-- ทุกคนในกลุ่มต้องอธิบาย endpoint ของตัวเองได้

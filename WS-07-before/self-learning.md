@@ -1,27 +1,18 @@
-# Self-Learning: เตรียมก่อนเรียน Refactoring & Code Quality
+# Self-Learning: เตรียมก่อนเรียน Performance
 
 ## สิ่งที่ต้องศึกษา
 
-### Code Smells & Refactoring
-- [video] Code Smells — Your Code Stinks
-  (https://www.youtube.com/watch?v=D4auWwMsEnY)
-- [video] SOLID Design Principles — Explained and Demonstrated
-  (https://www.youtube.com/watch?v=pTB30aXS77U)
-- [reading] Code Smells — Refactoring Guru
-  (https://refactoring.guru/refactoring/smells)
-- [reading] Refactoring Techniques — Refactoring Guru
-  (https://refactoring.guru/refactoring/techniques)
+- [video] k6 Load Testing Tutorial (https://www.youtube.com/watch?v=XR2MAivt-9E)
+- [reading] k6 Getting Started (https://k6.io/docs/get-started/running-k6/)
+- [reading] The Three Pillars of Observability — O'Reilly
+  (https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/ch04.html)
 
 **จุดที่ต้องเข้าใจ:**
-- Code smells ที่พบบ่อยคืออะไร: Long Method, God Class, Duplicate Code, Magic Numbers
-- Refactoring techniques พื้นฐาน: Extract Method, Rename, Move
-- ทำไมต้องมี tests ก่อน refactor
+- Virtual Users (VUs) คืออะไร
+- p95 latency ต่างจาก average อย่างไร
+- Logs, Metrics, Traces ต่างกันอย่างไร
 
 ---
 
 ## Entry Ticket
-ส่งก่อนเข้าห้องอย่างน้อย 1 ชั่วโมง:
-
-> "ส่ง 1 function จาก codebase ที่คิดว่าแย่ที่สุด พร้อมบอกว่าทำไม"
-
-อาจารย์จะเปิดให้ class ช่วย review โดยไม่บอกว่าเป็นของใคร
+> "คิดว่า feature ไหนใน project จะเป็น bottleneck และทำไม"

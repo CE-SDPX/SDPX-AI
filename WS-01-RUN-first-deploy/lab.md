@@ -1,88 +1,175 @@
-# Lab: Dev Environment & First Deployment
+# Lab: Setup, First Deployment & Repo Harness
 
+## เวลา: 1.5 ชั่วโมง
 ## เป้าหมาย
-ทุกคนในกลุ่มต้องมี dev environment ที่ทำงานได้ และ deploy app แรกขึ้น cloud ให้ได้ก่อนจบ lab
+- ทุกคนในกลุ่มมี dev environment ที่ทำงานได้
+- Deploy app แรกขึ้น cloud ได้ก่อนจบ lab
+- สร้าง repo harness: โครงสร้าง repo ที่เป็นระเบียบและทุกคน contribute ได้
 
 ---
 
-## ขั้นตอนที่ 1 — เลือก Domain (15 นาที)
+## ขั้นตอนที่ 1 — เลือก Domain และ Stack (10 นาที)
 
-กลุ่มหารือและเลือก service domain ของ Campus Service Hub
-แต่ละกลุ่มต้องเลือก domain ที่ไม่ซ้ำกัน อาจารย์จะ assign ถ้ามีซ้ำ
+### เลือก Domain
+แต่ละกลุ่มเลือก service domain ที่ไม่ซ้ำกัน แจ้งอาจารย์ทันที
 
 **เกณฑ์การเลือก:**
 - มี user ที่ชัดเจน (นักศึกษา, อาจารย์, staff)
 - มี CRUD operations อย่างน้อย 2 entities
-- สามารถเพิ่ม AI feature ได้ในอนาคต
+- ทุกคนในกลุ่มเข้าใจ domain นี้
+
+### เลือก Stack
+- **Option A: Next.js** — full-stack, JavaScript/TypeScript ทั้งหมด แนะนำถ้าไม่แน่ใจ
+- **Option B: FastAPI + React** — Python backend, JavaScript frontend
+
+ทุกคนในกลุ่มต้องเห็นด้วยกับ stack ที่เลือก
 
 ---
 
-## ขั้นตอนที่ 2 — ตั้ง Repository (20 นาที)
+## ขั้นตอนที่ 2 — สร้าง Repository (15 นาที)
 
-1. คนหนึ่งในกลุ่ม create repository บน GitHub
-   - ตั้งชื่อ: `campus-[domain]-service` เช่น `campus-room-booking`
-   - เลือก Public
-   - เพิ่ม README และ .gitignore
-
-2. Add collaborators ทุกคนในกลุ่มเป็น contributor
-
-3. สร้าง branch structure:
+### สมาชิกคนที่ 1: สร้าง Repo
 ```bash
+# บน GitHub: New repository
+# ชื่อ: campus-[domain] เช่น campus-room-booking
+# Visibility: Public
+# เพิ่ม README, .gitignore (Node หรือ Python)
+```
+
+### สมาชิกทุกคน: Clone และ Setup
+```bash
+git clone https://github.com/[org]/campus-[domain].git
+cd campus-[domain]
+```
+
+### สร้าง Branch Structure (Repo Harness ชั้นแรก)
+```bash
+# สร้าง develop branch
 git checkout -b develop
 git push origin develop
+
+# ตั้ง default branch เป็น develop ใน GitHub Settings
 ```
 
-4. ทุกคน clone repo และยืนยันว่าสามารถ push ได้
+### สร้าง .gitignore ที่ครอบคลุม
+ตรวจสอบว่า `.gitignore` มีสิ่งต่อไปนี้:
+```
+# Environment
+.env
+.env.local
+.env.production
+.env*.local
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+
+# Build
+.next/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+```
+
+> **Harness note:** .gitignore ที่ดีคือส่วนหนึ่งของ repo harness — ป้องกัน secrets และ local files หลุดเข้า repo
 
 ---
 
-## ขั้นตอนที่ 3 — Scaffold Project ด้วย AI (45 นาที)
+## ขั้นตอนที่ 3 — Scaffold Project ด้วย AI (25 นาที)
 
-### ตัวเลือก A: Next.js (แนะนำสำหรับ full-stack)
+### Option A: Next.js
 ```bash
-npx create-next-app@latest . --typescript --tailwind --app
+npx create-next-app@latest . --typescript --tailwind --app --src-dir
 ```
 
-### ตัวเลือก B: FastAPI + React
+### Option B: FastAPI
 ```bash
 # Backend
-pip install fastapi uvicorn
-# Frontend
-npm create vite@latest frontend -- --template react-ts
+mkdir backend && cd backend
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+pip install fastapi uvicorn python-dotenv
+pip freeze > requirements.txt
+
+# สร้าง main.py
 ```
 
-**ใช้ AI scaffold หน้าแรก:**
-ให้ Copilot หรือ Claude ช่วย generate:
-- Landing page ที่อธิบาย service
-- Navigation bar
-- โครงสร้าง folder เบื้องต้น
+### ใช้ AI Scaffold หน้าแรก
+Prompt ที่แนะนำ:
+```
+I am building a [domain] system for a university.
+Tech stack: [Next.js / FastAPI + React]
+Create a simple landing page that:
+- Shows the name of the service
+- Has a navigation bar
+- Has a placeholder for the main feature
 
-> **สำคัญ:** ก่อน commit ทุกคนต้องอ่าน code ที่ AI generate ให้และอธิบายได้ว่าแต่ละส่วนทำอะไร
+Keep it simple and clean. Use TypeScript.
+```
+
+**ก่อน commit:** อ่าน code ที่ AI generate ให้ครบ และอธิบายให้เพื่อนในกลุ่มฟังได้
 
 ---
 
-## ขั้นตอนที่ 4 — Deploy (30 นาที)
+## ขั้นตอนที่ 4 — Deploy (20 นาที)
 
 ### Deploy ด้วย Vercel (Next.js)
-1. ไปที่ [vercel.com](https://vercel.com) และ sign in ด้วย GitHub
-2. กด "New Project" และ import repository
-3. ตั้งค่า build settings (Vercel detect อัตโนมัติสำหรับ Next.js)
-4. กด Deploy และรอผล
+1. ไปที่ [vercel.com](https://vercel.com) → New Project
+2. Import repository จาก GitHub
+3. กด Deploy (Vercel detect settings อัตโนมัติ)
+4. รอ 2-3 นาที จนได้ URL
 
 ### Deploy ด้วย Render (FastAPI)
-1. ไปที่ [render.com](https://render.com) และ sign in ด้วย GitHub
-2. สร้าง "New Web Service" และ connect repository
-3. ตั้ง Build Command: `pip install -r requirements.txt`
-4. ตั้ง Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+1. ไปที่ [render.com](https://render.com) → New Web Service
+2. Connect repository
+3. Build Command: `pip install -r requirements.txt`
+4. Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+
+### ยืนยัน Deploy สำเร็จ
+```
+✅ เปิด URL ได้จาก browser
+✅ ไม่มี error ใน deployment logs
+✅ ทุกคนในกลุ่มเห็น URL เดียวกัน
+```
 
 ---
 
-## ขั้นตอนที่ 5 — ยืนยัน (15 นาที)
+## ขั้นตอนที่ 5 — เขียน README (10 นาที)
 
-ทุกคนในกลุ่มต้องทำได้เอง:
-- [ ] Clone repo ใหม่ในเครื่องตัวเองและ run local ได้
-- [ ] สร้าง branch ใหม่และ push ขึ้น GitHub ได้
-- [ ] เปิด live URL และเห็น app ที่ deploy แล้ว
+README คือส่วนหนึ่งของ repo harness — บอกคนใหม่ว่าต้องทำอะไรเพื่อ run project
+
+```markdown
+# Campus [Domain] Service
+
+## Description
+[2-3 ประโยคอธิบาย service นี้ทำอะไร]
+
+## Team
+- [ชื่อ] — [role]
+- [ชื่อ] — [role]
+
+## Tech Stack
+- Frontend: Next.js / React
+- Backend: Next.js API Routes / FastAPI
+- Database: (TBD)
+
+## Getting Started
+\`\`\`bash
+git clone [url]
+cd [repo]
+npm install
+npm run dev
+\`\`\`
+
+## Live URL
+[vercel/render URL]
+```
 
 ---
 
@@ -90,11 +177,12 @@ npm create vite@latest frontend -- --template react-ts
 
 | Artifact | รายละเอียด | ที่ส่ง |
 |---|---|---|
-| GitHub Repository URL | Public repo พร้อม code | ส่งลิงก์ใน LMS |
-| Live URL | App ที่ deploy แล้วเข้าได้จริง | ส่งลิงก์ใน LMS |
-| README.md | อธิบาย project, วิธี run local | อยู่ใน repo |
+| GitHub Repository URL | Public repo พร้อม code | ส่ง link ใน LMS |
+| Live URL | App ที่ deploy แล้วเข้าได้จริง | ส่ง link ใน LMS |
+| README.md | ครบตาม template ด้านบน | ใน repo |
 
 ### เกณฑ์ผ่าน
-- App เปิดได้จาก live URL
-- ทุกคนในกลุ่ม clone และ run local ได้
-- README มีครบ: project description, team members, how to run
+- [ ] Live URL เปิดได้จาก browser ของทุกคน
+- [ ] ทุกคนในกลุ่ม clone และ run local ได้เอง
+- [ ] README มีครบทุกส่วน
+- [ ] ไม่มี .env หรือ secrets ใน repo

@@ -1,50 +1,31 @@
-# Homework: เตรียมพร้อมก่อนเรียน CI/CD Pipeline
-
-## วัตถุประสงค์
-สร้าง GitHub Actions workflow เบื้องต้นให้ทำงานได้ก่อนเข้าห้อง เพื่อให้ lab ต่อยอดได้ทันที
-
----
+# Homework: เตรียมพร้อมก่อนเรียน Docker
 
 ## งานที่ต้องทำก่อนเข้าห้อง
 
-### 1. สร้าง GitHub Actions Workflow พื้นฐาน
-สร้างไฟล์ `.github/workflows/ci.yml`:
+### 1. ยืนยัน Docker ทำงานได้
+```bash
+docker run hello-world
+docker pull postgres:15-alpine
+docker images  # ต้องเห็น postgres image
+```
 
+### 2. สร้าง GitHub Actions Workflow เบื้องต้น
+สร้างไฟล์ `.github/workflows/ci.yml`:
 ```yaml
 name: CI
-
-on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
+on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Run tests
-        run: npm test
+      - run: echo "Pipeline works!"
 ```
+Push ขึ้น GitHub และยืนยันว่า workflow รัน ขึ้น green
 
-Push ขึ้น GitHub และยืนยันว่า workflow รันและขึ้น green
-
-### 2. เพิ่ม E2E Failure Test
-เพิ่ม test ที่ตรวจ failure scenario 1 ตัวพร้อม comment อธิบาย
-
-### 3. ตรวจสอบ Secrets ใน Repo
-- ไปที่ repo > Settings > Security > Secret scanning
-- ตรวจว่าไม่มี secrets หลุด
-- รัน: `git log --all --full-history -- "**/*.env"` ยืนยันว่าไม่มี .env ใน history
+### 3. เพิ่ม E2E Tests เพิ่มเติม
+เพิ่ม E2E test สำหรับ 1 failure scenario จาก backlog
+พร้อม comment อธิบายว่าทำไมเลือก scenario นั้น
 
 ### 4. ส่ง Entry Ticket
-> "คิดว่า feature ไหนใน project จะเป็น bottleneck และทำไม"
-
-ตอบจากสิ่งที่สังเกตเห็นจากการพัฒนาจริงๆ
+> "Dockerfile instruction ไหนที่ยังไม่เข้าใจ หรือสงสัยว่าทำไมต้องมี"

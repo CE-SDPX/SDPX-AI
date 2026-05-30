@@ -158,3 +158,67 @@ return {"id": user.public_id, "name": user.name, "email": user.email}
 - Refactor ทีละเล็กๆ ไม่ใช่ทีเดียวทั้งหมด
 - Security ไม่ใช่ feature ที่เพิ่มทีหลัง — ต้อง build ตั้งแต่ต้น
 - AI มักสร้าง functional code แต่พลาด security edge cases
+
+
+---
+
+## AI-DLC Connection: Construction Phase — ADR Stage
+
+### ADR ใน AI-DLC Construction Bolt
+
+ใน AI-DLC Construction Phase (DDD bolt) ADR เป็น stage ที่ 3:
+
+```
+DDD Construction Bolt:
+Domain Model → Technical Design → [ADR] → Implement → Test
+                                     ↑
+                                  วันนี้
+```
+
+### ทำไม ADR ถึงอยู่ก่อน Implement
+
+AI-DLC บังคับให้ document architectural decisions **ก่อน** implement เพราะ:
+- AI มักเลือก solution ที่ common แต่ไม่ตรงกับ context ของ project
+- Human ต้อง validate ว่า decision นี้เหมาะสมกับ constraints จริงๆ
+- ถ้าตัดสินใจผิด เปลี่ยนตอน ADR ถูกกว่าตอน code เขียนแล้ว
+
+### ADR ที่ดีใน AI-DLC Context
+
+```markdown
+# ADR-[number]: [Title]
+
+## Status: Accepted / Proposed / Superseded
+
+## Context
+[ทำไมถึงต้องตัดสินใจเรื่องนี้ — AI มักพลาดตรงนี้เพราะไม่รู้ business context]
+
+## Decision
+[ตัดสินใจอะไร]
+
+## Alternatives Considered
+[AI propose อะไรบ้าง ทำไมถึงไม่เลือก]
+
+## Rationale
+[เหตุผลที่เลือก — human validation ที่สำคัญที่สุด]
+
+## Consequences
+Positive: [ข้อดี]
+Negative: [trade-offs ที่ยอมรับ]
+
+## AI-DLC Note
+[AI propose decision อะไร / human เห็นด้วยหรือ push back อะไร]
+```
+
+### Harness เป็น Safety Net สำหรับ Refactoring
+
+Unit Test Harness ที่สร้างมาตั้งแต่ WS-03 คือสิ่งที่ทำให้ refactor ได้อย่างมั่นใจ:
+
+```
+Refactoring ที่ถูก:
+1. ยืนยัน tests pass กับ code เก่า (harness green)
+2. Refactor ทีละ step เล็กๆ
+3. Run tests หลังทุก step (harness ต้อง green ตลอด)
+4. ถ้า harness fail = refactoring break something → revert ทันที
+```
+
+> ถ้า harness ทั้งหมด green หลัง refactor — มั่นใจได้ว่าไม่ได้ break อะไร

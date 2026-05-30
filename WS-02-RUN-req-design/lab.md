@@ -124,3 +124,79 @@ Include:
 - [ ] User stories ทุกอันมี acceptance criteria ที่ pass/fail ได้
 - [ ] OpenAPI spec valid ผ่าน Swagger Editor
 - [ ] ทุกคนในกลุ่มอธิบาย endpoint ของตัวเองได้
+
+
+---
+
+## ขั้นตอนเพิ่มเติม: AI-DLC Inception Artifacts
+
+### สร้าง intent.md
+
+สร้าง `memory-bank/intent.md`:
+
+```markdown
+# Intent: Campus [Domain] Service
+
+## Intent Statement
+[1-2 ประโยคบอก high-level goal]
+เช่น: "Enable university students to book study rooms online,
+reducing manual processes and room conflicts."
+
+## Business Context
+- **Problem:** [ปัญหาที่แก้]
+- **Users:** [กลุ่ม users หลัก]
+- **Value:** [ประโยชน์ที่ได้]
+
+## Success Criteria
+- [ ] [วัดผลได้ข้อที่ 1]
+- [ ] [วัดผลได้ข้อที่ 2]
+- [ ] [วัดผลได้ข้อที่ 3]
+
+## Out of Scope
+- [สิ่งที่ไม่ทำใน course นี้]
+
+## Status
+In Progress — WS-02
+```
+
+> **AI-DLC Note:** Intent คือ starting point ของทุกอย่าง
+> ทุก unit, story, และ bolt ต้องสืบย้อนกลับมาที่ intent นี้ได้
+
+---
+
+### สร้าง Unit Briefs
+
+จาก component diagram ที่วาด ระบุ units ที่ loosely coupled:
+
+```bash
+mkdir -p memory-bank/units/[unit-name]
+```
+
+สร้าง `memory-bank/units/[unit-name]/unit-brief.md` สำหรับแต่ละ unit:
+
+```markdown
+# Unit: [Unit Name]
+
+## Purpose
+[1 ประโยคบอกว่า unit นี้ทำอะไร]
+
+## Responsibilities
+- [สิ่งที่ unit นี้รับผิดชอบ]
+- [สิ่งที่ unit นี้รับผิดชอบ]
+
+## NOT Responsible For
+- [สิ่งที่ unit อื่นรับผิดชอบ]
+
+## Dependencies
+- Depends on: [units ที่ต้องใช้]
+- Used by: [units ที่ใช้ unit นี้]
+
+## Key Stories
+- [link ไป GitHub Issues]
+
+## Bolt Type
+[ ] DDD Construction — ถ้า domain logic ซับซ้อน
+[x] Simple Construction — ถ้าเป็น UI, integration, utility
+```
+
+**Human Checkpoint:** ก่อน commit — ถามตัวเองว่า unit นี้ทำได้โดยไม่ต้องรู้ implementation ของ unit อื่นไหม ถ้าตอบว่าใช่ = loosely coupled ที่ดี

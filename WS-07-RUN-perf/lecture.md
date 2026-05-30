@@ -129,3 +129,26 @@ logger.info({
 - วัดก่อน optimize เสมอ — อย่าเดา
 - Thresholds ทำให้ performance test มี pass/fail criteria เหมือน unit test
 - Structured logging เป็น observability harness ที่ทำให้ debug production ได้
+
+
+---
+
+## AI-DLC Connection: Operations Phase — Monitor Stage
+
+ใน AI-DLC Operations Phase Monitor คือ stage สุดท้าย:
+
+```
+Operations Phase:
+Build → Deploy → Verify → [Monitor]
+                              ↑
+                           วันนี้
+```
+
+**Performance Harness = AI-DLC Monitor Infrastructure:**
+- k6 script = reproducible load scenarios สำหรับ every bolt deploy
+- Thresholds = automated quality gate — fail fast ถ้า performance regression
+- Structured logging = observability ที่ AI ใช้ analyze ได้
+- Baseline comparison = รู้ทันทีว่า bolt ใหม่ทำให้ช้าลงหรือไม่
+
+Human checkpoint ใน Monitor Stage: review performance report หลังทุก significant bolt
+AI analyze logs → propose optimizations → human validate และ approve

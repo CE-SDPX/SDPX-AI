@@ -1,174 +1,132 @@
-# Lab: Setup, First Deployment & Repo Harness
+# Lab: Setup, First Deployment & Tech Stack
 
-## เวลา: 1.5 ชั่วโมง
+## เวลา: 1 ชั่วโมง
+## รูปแบบ: ไม่มีการตรวจ — กลุ่มช่วยกันเอง
 ## เป้าหมาย
-- ทุกคนในกลุ่มมี dev environment ที่ทำงานได้
+- ทุกคนมี dev environment ที่ทำงานได้
 - Deploy app แรกขึ้น cloud ได้ก่อนจบ lab
-- สร้าง repo harness: โครงสร้าง repo ที่เป็นระเบียบและทุกคน contribute ได้
+- สร้าง `memory-bank/standards/tech-stack.md` — artifact แรกของ AI-DLC
 
 ---
 
 ## ขั้นตอนที่ 1 — เลือก Domain และ Stack (10 นาที)
 
 ### เลือก Domain
-แต่ละกลุ่มเลือก service domain ที่ไม่ซ้ำกัน แจ้งอาจารย์ทันที
-
-**เกณฑ์การเลือก:**
-- มี user ที่ชัดเจน (นักศึกษา, อาจารย์, staff)
-- มี CRUD operations อย่างน้อย 2 entities
-- ทุกคนในกลุ่มเข้าใจ domain นี้
+6 กลุ่ม เลือก domain ที่ไม่ซ้ำกัน แจ้งอาจารย์ทันที:
+- ระบบจองห้อง
+- ระบบยืมอุปกรณ์
+- ระบบนัดอาจารย์ที่ปรึกษา
+- ระบบแจ้งซ่อม
+- ระบบติดตามการบ้าน
+- ระบบสมัครกิจกรรม
 
 ### เลือก Stack
-- **Option A: Next.js** — full-stack, JavaScript/TypeScript ทั้งหมด แนะนำถ้าไม่แน่ใจ
-- **Option B: FastAPI + React** — Python backend, JavaScript frontend
-
-ทุกคนในกลุ่มต้องเห็นด้วยกับ stack ที่เลือก
+- **Next.js** — full-stack TypeScript แนะนำถ้าไม่แน่ใจ
+- **FastAPI + React** — Python backend, JavaScript frontend
 
 ---
 
 ## ขั้นตอนที่ 2 — สร้าง Repository (15 นาที)
 
-### สมาชิกคนที่ 1: สร้าง Repo
 ```bash
-# บน GitHub: New repository
+# สมาชิกคนที่ 1: สร้าง repo บน GitHub
 # ชื่อ: campus-[domain] เช่น campus-room-booking
-# Visibility: Public
-# เพิ่ม README, .gitignore (Node หรือ Python)
-```
+# Visibility: Public, เพิ่ม README + .gitignore
 
-### สมาชิกทุกคน: Clone และ Setup
-```bash
+# ทุกคน: clone และ setup
 git clone https://github.com/[org]/campus-[domain].git
 cd campus-[domain]
-```
 
-### สร้าง Branch Structure (Repo Harness ชั้นแรก)
-```bash
 # สร้าง develop branch
 git checkout -b develop
 git push origin develop
-
-# ตั้ง default branch เป็น develop ใน GitHub Settings
 ```
 
-### สร้าง .gitignore ที่ครอบคลุม
-ตรวจสอบว่า `.gitignore` มีสิ่งต่อไปนี้:
+### สร้าง memory-bank/ structure
+```bash
+mkdir -p memory-bank/standards
+mkdir -p memory-bank/units
 ```
-# Environment
+
+---
+
+## ขั้นตอนที่ 3 — เขียน tech-stack.md (10 นาที)
+
+สร้าง `memory-bank/standards/tech-stack.md`:
+
+```markdown
+# Tech Stack
+
+## Decision Summary
+ทีม: [ชื่อสมาชิก]
+Domain: [ชื่อ domain]
+Date: [วันที่]
+
+## Frontend
+- Framework: [Next.js / React]
+- Language: TypeScript
+- Styling: Tailwind CSS
+- Rationale: [ทำไมถึงเลือก]
+
+## Backend
+- Framework: [Next.js API Routes / FastAPI]
+- Language: [TypeScript / Python]
+- Rationale: [ทำไมถึงเลือก]
+
+## Database
+- [PostgreSQL / SQLite / TBD]
+- Rationale: [ทำไมถึงเลือก]
+
+## Deployment
+- Platform: [Vercel / Render]
+- Staging URL: [จะเพิ่มหลัง deploy]
+
+## AI Tools
+- Code generation: GitHub Copilot / Claude
+- Review policy: ทุก AI-generated code ต้องอ่านและอธิบายได้ก่อน commit
+```
+
+> **AI-DLC Note:** ไฟล์นี้คือ `standards/tech-stack.md` ใน Memory Bank
+> AI จะใช้ไฟล์นี้เป็น context เมื่อ generate code — ยิ่งละเอียดยิ่งได้ output ที่ตรงกับ project
+
+---
+
+## ขั้นตอนที่ 4 — Scaffold และ Deploy (25 นาที)
+
+### Scaffold ด้วย AI
+```
+I am building a [domain] system for a university.
+Tech stack: [stack จาก tech-stack.md]
+Create a simple landing page that shows the service name,
+a navigation bar, and a placeholder for the main feature.
+Keep it clean and simple.
+```
+
+**ก่อน commit:** ทุกคนอ่าน code ที่ AI generate และอธิบายให้เพื่อนฟังได้
+
+### Deploy
+**Vercel (Next.js):** vercel.com → New Project → Import repo → Deploy
+
+**Render (FastAPI):** render.com → New Web Service → Connect repo
+- Build: `pip install -r requirements.txt`
+- Start: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+
+### อัปเดต tech-stack.md
+เพิ่ม Staging URL ที่ได้จาก deploy ลงใน `memory-bank/standards/tech-stack.md`
+
+---
+
+## สร้าง .gitignore ที่ครอบคลุม
+
+```
 .env
 .env.local
 .env.production
-.env*.local
-
-# Dependencies
 node_modules/
 __pycache__/
-*.pyc
 .venv/
-
-# Build
 .next/
 dist/
-build/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-```
-
-> **Harness note:** .gitignore ที่ดีคือส่วนหนึ่งของ repo harness — ป้องกัน secrets และ local files หลุดเข้า repo
-
----
-
-## ขั้นตอนที่ 3 — Scaffold Project ด้วย AI (25 นาที)
-
-### Option A: Next.js
-```bash
-npx create-next-app@latest . --typescript --tailwind --app --src-dir
-```
-
-### Option B: FastAPI
-```bash
-# Backend
-mkdir backend && cd backend
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install fastapi uvicorn python-dotenv
-pip freeze > requirements.txt
-
-# สร้าง main.py
-```
-
-### ใช้ AI Scaffold หน้าแรก
-Prompt ที่แนะนำ:
-```
-I am building a [domain] system for a university.
-Tech stack: [Next.js / FastAPI + React]
-Create a simple landing page that:
-- Shows the name of the service
-- Has a navigation bar
-- Has a placeholder for the main feature
-
-Keep it simple and clean. Use TypeScript.
-```
-
-**ก่อน commit:** อ่าน code ที่ AI generate ให้ครบ และอธิบายให้เพื่อนในกลุ่มฟังได้
-
----
-
-## ขั้นตอนที่ 4 — Deploy (20 นาที)
-
-### Deploy ด้วย Vercel (Next.js)
-1. ไปที่ [vercel.com](https://vercel.com) → New Project
-2. Import repository จาก GitHub
-3. กด Deploy (Vercel detect settings อัตโนมัติ)
-4. รอ 2-3 นาที จนได้ URL
-
-### Deploy ด้วย Render (FastAPI)
-1. ไปที่ [render.com](https://render.com) → New Web Service
-2. Connect repository
-3. Build Command: `pip install -r requirements.txt`
-4. Start Command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-
-### ยืนยัน Deploy สำเร็จ
-```
-✅ เปิด URL ได้จาก browser
-✅ ไม่มี error ใน deployment logs
-✅ ทุกคนในกลุ่มเห็น URL เดียวกัน
-```
-
----
-
-## ขั้นตอนที่ 5 — เขียน README (10 นาที)
-
-README คือส่วนหนึ่งของ repo harness — บอกคนใหม่ว่าต้องทำอะไรเพื่อ run project
-
-```markdown
-# Campus [Domain] Service
-
-## Description
-[2-3 ประโยคอธิบาย service นี้ทำอะไร]
-
-## Team
-- [ชื่อ] — [role]
-- [ชื่อ] — [role]
-
-## Tech Stack
-- Frontend: Next.js / React
-- Backend: Next.js API Routes / FastAPI
-- Database: (TBD)
-
-## Getting Started
-\`\`\`bash
-git clone [url]
-cd [repo]
-npm install
-npm run dev
-\`\`\`
-
-## Live URL
-[vercel/render URL]
 ```
 
 ---
@@ -177,12 +135,12 @@ npm run dev
 
 | Artifact | รายละเอียด | ที่ส่ง |
 |---|---|---|
-| GitHub Repository URL | Public repo พร้อม code | ส่ง link ใน LMS |
-| Live URL | App ที่ deploy แล้วเข้าได้จริง | ส่ง link ใน LMS |
-| README.md | ครบตาม template ด้านบน | ใน repo |
+| GitHub Repository URL | Public repo | ส่ง link ใน LMS |
+| Live URL | App ที่ deploy แล้ว | ส่ง link ใน LMS |
+| `memory-bank/standards/tech-stack.md` | ครบทุก section | ใน repo |
 
-### เกณฑ์ผ่าน
+### เกณฑ์ผ่าน (ตรวจกันเองในกลุ่ม)
 - [ ] Live URL เปิดได้จาก browser ของทุกคน
-- [ ] ทุกคนในกลุ่ม clone และ run local ได้เอง
-- [ ] README มีครบทุกส่วน
+- [ ] ทุกคน clone และ run local ได้เอง
+- [ ] tech-stack.md มีครบทุก section รวม Staging URL
 - [ ] ไม่มี .env หรือ secrets ใน repo

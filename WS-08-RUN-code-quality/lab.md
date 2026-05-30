@@ -148,3 +148,41 @@ Accepted
 - [ ] Refactoring plan ระบุชัดว่าเห็นด้วย/ไม่เห็นด้วยกับ AI ตรงไหน
 - [ ] ADR ครบทุก section โดยเฉพาะ alternatives considered
 - [ ] ทุกคนในกลุ่มอธิบาย refactoring decisions ได้
+
+
+---
+
+## ขั้นตอนเพิ่มเติม: ADR ใน AI-DLC Framework
+
+### เขียน ADR ด้วย AI-DLC Context
+
+เมื่อเขียน ADR ให้ถามตัวเองว่า:
+
+**1. AI propose อะไรสำหรับ decision นี้**
+```
+Prompt: "What are the options for [decision]? 
+List pros and cons of each for a university [domain] system 
+with [constraints from tech-stack.md]."
+```
+
+**2. Human validate อะไร**
+- Option ไหนที่ AI propose แต่ไม่เหมาะกับ context จริงๆ
+- Constraint อะไรที่ AI ไม่รู้ (เช่น team skills, existing infrastructure)
+- Trade-off อะไรที่ AI ประเมินต่างจาก human
+
+**3. Document ทั้ง AI proposal และ human decision**
+```markdown
+## AI-DLC Note
+AI proposed: [Option A] เพราะ [reason]
+Human decided: [Option B] เพราะ [human context ที่ AI ไม่รู้]
+```
+
+### ตัวอย่าง ADR Topics สำหรับ Campus Service
+
+- **ADR-001:** Database selection (PostgreSQL vs SQLite vs MongoDB)
+- **ADR-002:** Authentication strategy (JWT vs session-based)
+- **ADR-003:** API design (REST vs GraphQL)
+- **ADR-004:** State management (server-side vs client-side)
+- **ADR-005:** Deployment strategy (monolith vs microservices)
+
+เลือก 1 topic ที่กลุ่มได้ตัดสินใจจริงๆ ใน course นี้ และ document ว่า AI propose อะไร human ตัดสินใจอย่างไร

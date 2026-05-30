@@ -165,3 +165,25 @@ docker-compose -f docker-compose.test.yml up --abort-on-container-exit
 - docker-compose profiles แยก dev/test environment ได้
 - Test database ต้องเป็น ephemeral ไม่มี volume — destroy และ recreate ทุกครั้ง
 - E2E harness ที่รันใน container ทำให้ CI และ local ได้ผลเหมือนกัน
+
+
+---
+
+## AI-DLC Connection: Operations Phase — Build Stage
+
+ใน AI-DLC Operations Phase เริ่มด้วย **Build Stage**:
+
+```
+Operations Phase:
+[Build] → Deploy → Verify → Monitor
+  ↑
+วันนี้
+```
+
+**Docker = Build Stage Infrastructure:**
+- Dockerfile = reproducible build process
+- docker-compose = environment harness ที่ consistent ทุก bolt
+- Test container (ephemeral) = isolated environment สำหรับ verify ก่อน deploy
+
+Human checkpoint ใน Build Stage: ทุก Dockerfile ต้องอ่านออกและอธิบายได้
+AI generate Dockerfile → human verify ว่า secure, efficient, และ reproducible

@@ -195,3 +195,23 @@ def create_booking(self, room_id, ...):
 - เลือก test double ให้ถูกประเภท: Stub/Fake สำหรับ data, Mock สำหรับ verify behavior
 - AI generate tests ได้เร็วแต่มักสร้าง trivial tests — ต้อง review ทุกอัน
 - Fixtures และ factories ลด repetition และทำให้ test suite maintainable
+
+
+---
+
+## AI-DLC Connection: Construction Phase — Test Stage
+
+ใน AI-DLC Construction Phase แต่ละ bolt จบด้วย **Test Stage**:
+
+```
+Construction Bolt (DDD):
+Model → Design → ADR → Implement → [Test] ← วันนี้
+```
+
+สิ่งที่ทำใน lab วันนี้ = Test stage ของ bolt:
+- **Unit Test Harness** = infrastructure ที่ทำให้ test stage รันได้อย่าง isolated
+- **Test Doubles** = allow testing ใน isolation โดยไม่ต้องพึ่ง external services
+- **Fixtures/Factories** = ensure consistent test data ทุก bolt run
+
+Human checkpoint ใน Test Stage: ทุก test ต้องผ่าน review ก่อน bolt ถือว่า "Done"
+AI propose tests → human verify ว่า tests วัด business logic จริงๆ ไม่ใช่แค่ pass coverage

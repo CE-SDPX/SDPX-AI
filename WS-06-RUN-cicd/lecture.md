@@ -193,3 +193,25 @@ jobs:
 - Fail fast: หยุดทันทีเมื่อ stage แรก fail ประหยัดเวลา
 - Secrets ต้องอยู่ใน GitHub Secrets เท่านั้น ไม่ใช่ใน code หรือ logs
 - Branch protection บังคับให้ทุกคนผ่าน pipeline ก่อน merge ไป main
+
+
+---
+
+## AI-DLC Connection: Operations Phase — Deploy & Verify Stages
+
+ใน AI-DLC Operations Phase CI/CD คือ **Deploy + Verify Stage**:
+
+```
+Operations Phase:
+Build → [Deploy] → [Verify] → Monitor
+          ↑            ↑
+        วันนี้       วันนี้
+```
+
+**Pipeline Harness = AI-DLC Operations Automation:**
+- CI pipeline รัน harness ทั้งหมด (unit, E2E, build) ก่อนทุก deploy
+- Branch protection = human checkpoint อัตโนมัติ — ผ่าน harness ก่อน merge
+- Staging deploy = verify ก่อนถึง production
+
+ใน AI-DLC ทุก bolt ที่ complete ต้องผ่าน Operations phase:
+ไม่มี "เดี๋ยวค่อย deploy" — deploy เป็นส่วนหนึ่งของ definition of done

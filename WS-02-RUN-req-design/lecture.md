@@ -180,3 +180,37 @@ components:
 - OpenAPI spec เป็น contract ระหว่าง frontend/backend — เป็น harness ชั้นที่ 2
 - API endpoint ชื่อ resource ไม่ใช่ action
 - AI draft spec ได้เร็ว แต่มักพลาด error cases และ authentication
+
+
+---
+
+## AI-DLC Connection: Inception Phase
+
+### สิ่งที่ทำใน lab วันนี้ = Inception Phase ของ AI-DLC
+
+```
+Inception Phase
+├── Intent Capture      ← เขียน intent.md (ทำใน lab)
+├── Requirement Elaboration ← user stories + acceptance criteria
+├── Unit Decomposition  ← unit-brief.md (ทำใน lab)
+└── Bolt Planning       ← GitHub Projects board
+```
+
+### Intent vs Epic vs Feature
+
+| ระดับ | AI-DLC | Agile | ตัวอย่าง |
+|---|---|---|---|
+| สูงสุด | **Intent** | Epic | "ระบบจองห้องสำหรับนักศึกษา" |
+| กลาง | **Unit** | Feature | "Booking Management", "Room Catalog" |
+| ล่างสุด | **Story** | User Story | "As a student, I want to book a room" |
+| Execute | **Bolt** | Task/Sprint | implement booking form (4 ชั่วโมง) |
+
+### Human Checkpoint ใน Inception
+
+AI-DLC เน้นว่า human ต้อง validate ทุก step ใน inception:
+- AI propose requirements → human review ว่าครบและถูกต้องไหม
+- AI suggest unit decomposition → human ตัดสินว่า loosely coupled จริงไหม
+- AI plan bolts → human approve ว่า scope สมเหตุสมผลไหม
+
+> **ไม่ใช่:** ปล่อย AI วิ่งแล้วเอาผลมาส่ง
+> **แต่คือ:** AI draft → human validate → refine → repeat

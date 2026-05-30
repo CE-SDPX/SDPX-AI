@@ -159,3 +159,25 @@ test('booking flow', async ({ page, seededDb }) => {
 - Page Object Model ทำให้ test maintainable เมื่อ UI เปลี่ยน
 - Seed data และ clean state เป็นหัวใจของ E2E Harness
 - E2E harness ที่ดีทำให้ tests รันได้ทั้ง local และ CI
+
+
+---
+
+## AI-DLC Connection: Construction Phase — Acceptance Test Stage
+
+ใน AI-DLC Construction Phase E2E tests คือ **Acceptance Test** ที่ verify story:
+
+```
+Story มี Acceptance Criteria (Given/When/Then)
+    ↓
+E2E Test implement acceptance criteria นั้น
+    ↓
+ถ้า E2E pass = story "Done" ตาม AI-DLC definition
+```
+
+**E2E Harness = AI-DLC Acceptance Test Infrastructure:**
+- Page Object Model — consistent interface สำหรับ test ทุก bolt
+- Seed Data Fixtures — ensure known state ก่อนทุก test run
+- Test Isolation — ทุก bolt run เริ่มจาก clean state
+
+Human checkpoint: AI generate E2E scenarios จาก acceptance criteria → human verify ว่าครอบคลุม และ realistic

@@ -9,7 +9,7 @@ SDPX with AI-Assisted
 | 01 | Introduction |||
 | 02 | IT Project Management 101 |||
 | 03 | First Deploy | WS-01-before | WS-01-RUN |
-| 04 | Analysis and Design | WS-02-before  | WS-03-RUN |
+| 04 | Analysis and Design | WS-02-before  | WS-02-RUN |
 | 05 | Software Testing |||
 | 06 | *Midterm Exam* |||
 | 07 | Unit Testing | WS-03-before | WS-03-RUN |

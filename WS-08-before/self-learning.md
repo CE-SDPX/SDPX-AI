@@ -9,7 +9,6 @@
 - [reading] Refactoring Techniques (https://refactoring.guru/refactoring/techniques)
 
 ### Security
-- [video] OWASP Top 10 Explained (https://www.youtube.com/watch?v=ravALEZFUNs)
 - [reading] OWASP Top 10 (https://owasp.org/www-project-top-ten/)
 
 **จุดที่ต้องเข้าใจ:**

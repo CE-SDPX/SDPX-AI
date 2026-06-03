@@ -429,7 +429,20 @@ Classroom Detail
 
 ---
 
-## 10. PRD Status
+## 10. Decisions Log
+
+| # | เรื่อง | Decision | Version |
+|---|---|---|---|
+| 1 | **Instructor weight** | กำหนดได้ต่อ Assignment, default = 1.0, ค่าเดียวสำหรับ Group + Individual | v1.1 |
+| 2 | **Individual visibility** | Rolling daily พร้อม label "Interim" จนกว่าจะ final หลัง deadline | v1.1 |
+| 3 | **Export format** | รองรับทั้ง CSV และ Excel (.xlsx), 3 ระดับ report | v1.1 |
+| 4 | **Peer anonymity** | ไม่เปิดเผย evaluator แก่นักศึกษา (anonymous ทุกกรณี) | v1.2 |
+| 5 | **Late/partial submission** | Partial credit ตาม completion_ratio (submitted/total pairs) | v1.2 |
+| 6 | **Group re-assignment** | Re-generate pairs ทั้งหมด, invalidate submissions เดิม, notify นักศึกษา | v1.2 |
+| 7 | **Re-submission** | Submit ใหม่ได้ทุกวันก่อน deadline — ใช้ submission ล่าสุดในการคำนวณ | v1.2 |
+| 8 | **Instructor weight scope** | ใช้ค่าเดียวกันสำหรับทั้ง Group และ Individual | v1.2 |
+
+## 11. PRD Status
 
 ✅ **Open Questions ทั้งหมดได้รับการตัดสินใจแล้ว** — PRD พร้อมส่ง Development Team
 

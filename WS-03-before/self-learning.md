@@ -6,7 +6,7 @@
 - [video] Test-Driven Development — the TDD Manifesto
   (https://www.youtube.com/watch?v=llaUBH5oayw)
 - [video] Unit Testing Best Practices — Continuous Delivery
-  (https://www.youtube.com/watch?v=rhSyX7JyhEo)
+  (https://www.youtube.com/watch?v=tIrcxwLqzjQ)
 - [reading] Getting Started with pytest (https://docs.pytest.org/en/stable/getting-started.html)
 - [reading] Write Tests, Not Too Many — Kent C. Dodds (https://kentcdodds.com/blog/write-tests)
 

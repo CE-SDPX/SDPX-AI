@@ -4,8 +4,8 @@
 
 - [video] k6 Load Testing Tutorial (https://www.youtube.com/watch?v=XR2MAivt-9E)
 - [reading] k6 Getting Started (https://k6.io/docs/get-started/running-k6/)
-- [reading] The Three Pillars of Observability — O'Reilly
-  (https://www.oreilly.com/library/view/distributed-systems-observability/9781492033431/ch04.html)
+- [reading] The Three Pillars of Observability
+  (https://www.ibm.com/think/insights/observability-pillars)
 
 **จุดที่ต้องเข้าใจ:**
 - Virtual Users (VUs) คืออะไร

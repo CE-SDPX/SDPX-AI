@@ -27,7 +27,3 @@ git add README.md
 git commit -m "first commit"
 # push ขึ้น GitHub
 ```
-
-### 4. ส่ง Entry Ticket
-ตอบคำถามใน form ที่อาจารย์กำหนด:
-> "ติดตั้ง tools ครบแล้วหรือยัง และมีตัวไหนที่ติดปัญหาบ้าง"

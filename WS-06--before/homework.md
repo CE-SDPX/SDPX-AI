@@ -18,6 +18,3 @@ winget install k6
 # ยืนยัน
 k6 version
 ```
-
-### 3. ส่ง Entry Ticket
-> "จากประสบการณ์ที่ผ่านมา ถ้าไม่มี CI/CD ใน project นี้จะเกิดปัญหาอะไรได้บ้าง"

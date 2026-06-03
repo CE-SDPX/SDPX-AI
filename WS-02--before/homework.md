@@ -26,7 +26,4 @@ rm sample.test.ts
 
 ### 2. วาด Component Diagram
 วาด component diagram คร่าวๆ ของ project กลุ่มตัวเอง
-ใช้ https://mermaid.js.org/ วาดในไฟล์ .md ใน github แล้วส่ง URL มา
-
-### 3. ส่ง Entry Ticket
-> "วาด component diagram คร่าวๆ ของ project — คิดว่าจะมี component อะไรบ้าง"
+ใช้ https://mermaid.js.org/ วาดในไฟล์ .md ใน github

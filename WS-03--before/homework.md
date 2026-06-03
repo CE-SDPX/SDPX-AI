@@ -24,6 +24,3 @@ npx playwright install
 # ยืนยัน
 npx playwright test --version
 ```
-
-### 4. ส่ง Entry Ticket
-> "เขียน 1 test case สำหรับ feature ที่วางแผนจะทำ — pseudocode ก็ได้"

@@ -26,8 +26,3 @@ git log -p | grep -iE "password|api_key|secret" | head -10
 ```
 
 บันทึกสิ่งที่พบใน `docs/security-pre-check.md`
-
-### 3. ส่ง Entry Ticket
-> "ส่ง 1 function จาก codebase ที่คิดว่าแย่ที่สุด พร้อมบอกว่าทำไม"
-
-อาจารย์จะเปิดให้ class review (anonymized)

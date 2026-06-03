@@ -26,6 +26,3 @@ Push ขึ้น GitHub และยืนยันว่า workflow รัน
 ### 3. เพิ่ม E2E Tests เพิ่มเติม
 เพิ่ม E2E test สำหรับ 1 failure scenario จาก backlog
 พร้อม comment อธิบายว่าทำไมเลือก scenario นั้น
-
-### 4. ส่ง Entry Ticket
-> "Dockerfile instruction ไหนที่ยังไม่เข้าใจ หรือสงสัยว่าทำไมต้องมี"

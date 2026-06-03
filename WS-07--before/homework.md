@@ -33,6 +33,3 @@ k6 run performance/smoke.js
 # "Review this code and list all problems you find"
 # บันทึก response ไว้ใน docs/ai-review.md
 ```
-
-### 3. ส่ง Entry Ticket
-> "คิดว่า feature ไหนใน project จะเป็น bottleneck และทำไม"

@@ -21,6 +21,3 @@ docker rm -f test-db
 - Form inputs
 - Error/success messages
 - List items
-
-### 3. ส่ง Entry Ticket
-> "user story ไหนใน backlog ที่อยากเขียน E2E test มากที่สุด และทำไม"

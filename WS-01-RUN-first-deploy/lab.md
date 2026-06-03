@@ -12,13 +12,7 @@
 ## ขั้นตอนที่ 1 — เลือก Domain และ Stack (10 นาที)
 
 ### เลือก Domain
-6 กลุ่ม เลือก domain ที่ไม่ซ้ำกัน แจ้งอาจารย์ทันที:
-- ระบบจองห้อง
-- ระบบยืมอุปกรณ์
-- ระบบนัดอาจารย์ที่ปรึกษา
-- ระบบแจ้งซ่อม
-- ระบบติดตามการบ้าน
-- ระบบสมัครกิจกรรม
+ทุกกลุ่มเลือกงานจาก project-ideas
 
 ### เลือก Stack
 - **Next.js** — full-stack TypeScript แนะนำถ้าไม่แน่ใจ
@@ -30,12 +24,12 @@
 
 ```bash
 # สมาชิกคนที่ 1: สร้าง repo บน GitHub
-# ชื่อ: campus-[domain] เช่น campus-room-booking
+# ชื่อ: sdpx-[groupname]
 # Visibility: Public, เพิ่ม README + .gitignore
 
 # ทุกคน: clone และ setup
-git clone https://github.com/[org]/campus-[domain].git
-cd campus-[domain]
+git clone https://github.com/[org]/sdpx-[groupname].git
+cd sdpx-[groupname]
 
 # สร้าง develop branch
 git checkout -b develop

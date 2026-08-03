@@ -1,6 +1,1 @@
 .DS_Store
-
-# MkDocs
-.mkdocs-build/
-site/
-.venv-docs/

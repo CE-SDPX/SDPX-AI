@@ -1,22 +1,51 @@
 # Self-Learning: เตรียมก่อนเรียน Docker
 
+## 🎯 อ่าน/ดูจบแล้วจะได้อะไร
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| แยก image กับ container และเข้าใจระบบ layer | Docker เป็นเครื่องมือพื้นฐานที่แทบทุกตำแหน่งงานพัฒนาซอฟต์แวร์ต้องใช้ |
+| บอกได้ว่าทำไมลำดับคำสั่งใน Dockerfile ถึงมีผลต่อความเร็ว build | build ที่ช้าคือเวลาที่ทั้งทีมเสียไปพร้อมกันทุกครั้งที่ push |
+| รู้ว่าต้องใช้ `docker compose` ไม่ใช่ `docker-compose` | ตัวอย่างบนอินเทอร์เน็ตส่วนใหญ่ยังเป็นของเก่า — ต้องแยกออกว่าอะไรล้าสมัย |
+| เข้าใจว่าทำไม config ต้องมาจาก environment | เป็นหลักการ Twelve-Factor ที่ระบบสมัยใหม่ใช้เป็นมาตรฐาน |
+
+---
+
 ## สิ่งที่ต้องศึกษา
 
 ### Docker
 - [video] Docker Crash Course for Absolute Beginners — TechWorld with Nana
   (https://www.youtube.com/watch?v=pg19Z8LL06w)
-- [reading] Dockerfile Best Practices
-  (https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
-- [reading] Docker Compose Getting Started
+- [reading] Dockerfile / Build Best Practices
+  (https://docs.docker.com/build/building/best-practices/)
+- [reading] Docker Compose — Getting Started
   (https://docs.docker.com/compose/gettingstarted/)
+- [reading] The Twelve-Factor App — อ่านเฉพาะข้อ III (Config) และ X (Dev/prod parity)
+  (https://12factor.net/)
 
 **จุดที่ต้องเข้าใจ:**
 - Image vs Container ต่างกันอย่างไร
 - Layer คืออะไร caching ทำงานอย่างไร
-- docker-compose ช่วยอะไรเมื่อมีหลาย services
-- COPY ก่อน RUN ทำไมถึงสำคัญ
+- ทำไม COPY manifest ก่อนแล้วค่อย COPY source ถึงสำคัญ
+- Compose ช่วยอะไรเมื่อมีหลาย services
+- ทำไม config ต้องมาจาก environment variable ไม่ใช่ hardcode ในไฟล์
+
+**หมายเหตุเรื่องคำสั่ง:** ใช้ `docker compose` (เว้นวรรค — Compose v2)
+คำสั่ง `docker-compose` แบบมีขีดคือ v1 ที่หมดอายุการสนับสนุนแล้ว
+และไฟล์ยุคใหม่ชื่อ `compose.yaml` โดยไม่ต้องมีบรรทัด `version:` อีกต่อไป
 
 ---
 
-## Entry Ticket
-> "Dockerfile instruction ไหนที่ยังไม่เข้าใจ หรือสงสัยว่าทำไมต้องมี"
+## เช็คตัวเองก่อนเข้าห้อง
+
+- [ ] อธิบายความต่างของ image กับ container ได้
+- [ ] บอกได้ว่าทำไม `COPY package.json` ต้องมาก่อน `COPY . .`
+- [ ] บอกได้ว่า `npm ci` ต่างจาก `npm install` อย่างไร
+- [ ] รู้ว่าต้องใช้คำสั่ง `docker compose` (เว้นวรรค) ไม่ใช่ `docker-compose`
+- [ ] จดไว้แล้วว่า Dockerfile instruction ไหนที่ยังไม่เข้าใจ — เอาไปถามในห้องได้
+
+### วอร์มอัพ: นับขั้นตอน Setup ของกลุ่มตัวเอง
+ลองนับดูว่า ตอนนี้ถ้าเพื่อนใหม่มา clone repo ของกลุ่ม
+**ต้องทำกี่ขั้นตอนกว่าจะรัน app ได้** และใช้เวลารวมประมาณเท่าไร
+
+จดตัวเลขไว้ — lab สัปดาห์นี้จะลดมันให้เหลือ **1 คำสั่ง** และเราจะเทียบกันตอนท้าย

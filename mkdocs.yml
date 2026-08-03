@@ -1,6 +1,10 @@
 site_name: SDPX-AI
 site_description: Software Development Process in Practice — AI-Assisted
 site_author: Rathachai CHAWUTHAI
+site_url: https://ce-sdpx.github.io/SDPX-AI/
+repo_url: https://github.com/CE-SDPX/SDPX-AI
+repo_name: CE-SDPX/SDPX-AI
+edit_uri: ""
 docs_dir: .mkdocs-build
 
 theme:

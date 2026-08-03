@@ -2,7 +2,7 @@
 
 ## เวลา: 1.5 ชั่วโมง
 ## เป้าหมาย
-สร้าง product backlog, architecture diagram, และ OpenAPI spec ของ project ตัวเอง
+ปิด Spec Loop ให้ครบ: intent → stories + AC → architecture → OpenAPI contract ที่ validate ผ่าน
 
 ---
 
@@ -26,46 +26,90 @@ As a [role], I want to [action], so that [benefit].
 
 ## Definition of Done
 - [ ] Feature ทำงานได้ตาม acceptance criteria
-- [ ] มี unit test ครอบคลุม
+- [ ] มี unit test ครอบคลุม business rule ของ story นี้
+- [ ] มี E2E test สำหรับ AC อย่างน้อย 1 ข้อ (จะทำจริงใน WS-04)
 - [ ] Code ผ่าน review จากสมาชิกในกลุ่ม
+- [ ] Deploy ขึ้น staging แล้วเปิดใช้ได้จริง
 ```
 
-### ใช้ AI Find Edge Cases
-หลังเขียน stories แล้ว:
+### ใช้ AI หา Edge Cases (ไม่ใช่ให้ AI เขียน story แทน)
+เขียน stories เองก่อน แล้วค่อยถาม:
 ```
 Here are my user stories for [domain]:
 [วาง stories]
 
 What edge cases, error scenarios, or missing requirements
 should I consider? List at least 5 specific cases.
+For each, tell me what could go wrong in production if I ignore it.
 ```
 
-Review ทุก suggestion — ไม่ใช่ทุกอันจะ relevant กับ project ของคุณ
+Review ทุก suggestion แล้วแบ่งเป็น 3 กอง:
+- **รับ** → สร้าง issue เพิ่ม
+- **ไม่รับ** → เขียนเหตุผลสั้น ๆ ไว้ใน issue เดิม
+- **ยังไม่ตัดสิน** → ใส่ label `tech-debt` ไว้ก่อน
+
+> ข้อสำคัญ: กอง "ไม่รับ" คือส่วนที่แสดงว่าคุณคิดเอง ไม่ใช่รับทุกอย่างที่ AI พูด
+> ตอน present จะถูกถามเรื่องนี้
 
 ---
 
 ## ขั้นตอนที่ 2 — Architecture Diagrams (20 นาที)
 
 ### Component Diagram
-วาดด้วย [Excalidraw](https://excalidraw.com) หรือ draw.io
+เขียนด้วย Mermaid ในไฟล์ `docs/architecture.md` — GitHub render ให้เอง
+ข้อดีคือ diagram อยู่ใน git diff ได้ และ AI อ่านเป็น text ได้
+
+````markdown
+```mermaid
+flowchart LR
+    U[Student Browser] -->|HTTPS| FE[Next.js App]
+    FE -->|REST /api| API[API Routes]
+    API --> SVC[Booking Service]
+    SVC --> REPO[(PostgreSQL)]
+    API --> AUTH[Auth Provider]
+```
+````
 
 ต้องมีอย่างน้อย:
 - Browser (Frontend)
 - API Server (Backend)
 - Database
-- ลูกศรแสดงทิศทาง request/response
+- Auth
+- ลูกศรพร้อม label ว่า protocol อะไร / เรียกอะไร
 
-Save เป็น PNG เพิ่มที่ `docs/architecture.png`
+> ถ้าถนัดวาดด้วยมือ ใช้ [Excalidraw](https://excalidraw.com) แล้ว export PNG ไปที่
+> `docs/architecture.png` ก็ได้ แต่ Mermaid จะมีประโยชน์กว่าเพราะ AI อ่านได้
 
 ### ER Diagram
-วาดด้วย [dbdiagram.io](https://dbdiagram.io)
+เขียนด้วย Mermaid `erDiagram` ในไฟล์ `docs/erd.md`
+หรือใช้ [dbdiagram.io](https://dbdiagram.io) แล้ว export PNG ไปที่ `docs/erd.png`
 
-แต่ละ entity ต้องมี:
-- ชื่อ attributes สำคัญ
-- Primary key
-- Relationships พร้อม cardinality (1:1, 1:N, N:M)
+````markdown
+```mermaid
+erDiagram
+    USER ||--o{ BOOKING : makes
+    ROOM ||--o{ BOOKING : "is booked in"
+    USER {
+        int id PK
+        string email
+        string role
+    }
+    ROOM {
+        int id PK
+        string name
+        int capacity
+    }
+    BOOKING {
+        int id PK
+        int user_id FK
+        int room_id FK
+        datetime start_at
+        datetime end_at
+    }
+```
+````
 
-Save เป็น PNG เพิ่มที่ `docs/erd.png`
+แต่ละ entity ต้องมี: attributes สำคัญ, primary key, relationships พร้อม cardinality (1:1, 1:N, N:M)
 
 ---
 
@@ -73,30 +117,39 @@ Save เป็น PNG เพิ่มที่ `docs/erd.png`
 
 ### สร้างไฟล์ `docs/openapi.yaml`
 
-**Step 1:** ใช้ AI generate draft:
+**Step 1:** ให้ AI ร่าง โดย**ป้อน spec ที่เขียนเองเป็น context** ไม่ใช่บรรยายลอย ๆ
 ```
-I am building a [domain] system for a university.
-Entities: [list your entities]
-Users: [list your user roles]
+Read docs/architecture.md, docs/erd.md, and the user stories below.
 
-Generate an OpenAPI 3.0 spec for the core CRUD operations.
+[วาง user stories + acceptance criteria]
+
+Generate an OpenAPI 3.1 spec covering exactly these stories — do not invent
+endpoints that no story asks for.
 Include:
-- Proper HTTP methods and status codes
-- Request body and response schemas
-- Error responses (400, 401, 403, 404)
-- Authentication header requirement
+- Proper HTTP methods and status codes (201 for create, 409 for conflicts)
+- Request body and response schemas with `required` fields
+- Error responses (400, 401, 403, 404, 409, 422) with a consistent error shape
+- A bearer-token security scheme applied to all protected endpoints
 ```
 
-**Step 2:** ตรวจสอบด้วย [Swagger Editor](https://editor.swagger.io)
-วาง YAML ลงไป ต้องไม่มี validation errors
+**Step 2:** Validate — นี่คือขั้น Verify ของ Spec Loop
+```bash
+# วิธีที่เร็วที่สุด: รันบรรทัดเดียว ไม่ต้องติดตั้งอะไร
+npx @redocly/cli lint docs/openapi.yaml
+```
+หรือวางลง [Swagger Editor](https://editor.swagger.io) — ต้องไม่มี error
 
 **Step 3:** Review ทุก endpoint ด้วย checklist:
-- [ ] HTTP method ถูกต้อง (POST ใช้ 201 ไม่ใช่ 200)
+- [ ] ทุก endpoint สืบกลับไปหา user story ได้ (ไม่มี endpoint ที่ AI คิดขึ้นเอง)
+- [ ] ทุก user story มี endpoint รองรับครบ
+- [ ] HTTP method ถูกต้อง — POST ตอบ 201 พร้อม body ของ resource ที่สร้าง
 - [ ] Error responses มีครบ ไม่ใช่แค่ success case
-- [ ] Request body schema ครบทุก required field
+- [ ] Request body schema มี `required` ครบทุก field ที่ขาดไม่ได้
 - [ ] Authentication requirement ระบุแล้ว
+- [ ] Error response ใช้รูปแบบเดียวกันทั้งไฟล์
 
 **Step 4:** แต่ละคนในกลุ่มเลือก 1 endpoint และอธิบายให้เพื่อนฟังก่อนจบ lab
+รวมถึงตอบให้ได้ว่า "ถ้า client ส่ง request ที่ผิดแบบไหน จะได้ status อะไร"
 
 ---
 
@@ -105,9 +158,10 @@ Include:
 ตั้ง GitHub Project board:
 - **To Do** — stories ที่ยังไม่ได้ทำ
 - **In Progress** — กำลังทำ
-- **Done** — เสร็จแล้ว
+- **Done** — เสร็จแล้วตาม Definition of Done
 
-เลือก stories สำหรับ Sprint 1 (2 สัปดาห์แรก) และ assign ให้สมาชิก
+เลือก stories สำหรับ Sprint 1 และ assign ให้สมาชิก
+เลือกให้ **story แรกเล็กที่สุดเท่าที่จะทำได้** — เป้าหมายคือปิด loop ทั้งวง ไม่ใช่ทำ feature ใหญ่
 
 ---
 
@@ -116,23 +170,23 @@ Include:
 | Artifact | รายละเอียด | ที่ส่ง |
 |---|---|---|
 | GitHub Issues | User stories ≥ 8 items พร้อม acceptance criteria | GitHub repo |
-| `docs/architecture.png` | Component diagram | GitHub repo |
-| `docs/erd.png` | ER diagram | GitHub repo |
-| `docs/openapi.yaml` | OpenAPI spec ≥ 5 endpoints (valid) | GitHub repo |
+| `docs/architecture.md` | Component diagram (Mermaid) | GitHub repo |
+| `docs/erd.md` | ER diagram | GitHub repo |
+| `docs/openapi.yaml` | OpenAPI spec ≥ 5 endpoints (validate ผ่าน) | GitHub repo |
+| `memory-bank/intent.md` | ดูขั้นตอนเพิ่มเติมด้านล่าง | GitHub repo |
+| `memory-bank/units/*/unit-brief.md` | อย่างน้อย 2 units | GitHub repo |
 
 ### เกณฑ์ผ่าน
 - [ ] User stories ทุกอันมี acceptance criteria ที่ pass/fail ได้
-- [ ] OpenAPI spec valid ผ่าน Swagger Editor
-- [ ] ทุกคนในกลุ่มอธิบาย endpoint ของตัวเองได้
-
+- [ ] OpenAPI spec validate ผ่านโดยไม่มี error
+- [ ] ทุก endpoint สืบกลับไปหา story ได้ และทุก story มี endpoint
+- [ ] ทุกคนในกลุ่มอธิบาย endpoint ของตัวเองได้ รวมถึง error case
 
 ---
 
 ## ขั้นตอนเพิ่มเติม: AI-DLC Inception Artifacts
 
-### สร้าง intent.md
-
-สร้าง `memory-bank/intent.md`:
+### สร้าง `memory-bank/intent.md`
 
 ```markdown
 # Intent: Campus [Domain] Service
@@ -152,6 +206,9 @@ reducing manual processes and room conflicts."
 - [ ] [วัดผลได้ข้อที่ 2]
 - [ ] [วัดผลได้ข้อที่ 3]
 
+## Decisions Already Made
+- [สิ่งที่ตัดสินใจแล้ว เพื่อไม่ให้ AI เสนอทางเลือกซ้ำทุกครั้ง]
+
 ## Out of Scope
 - [สิ่งที่ไม่ทำใน course นี้]
 
@@ -159,10 +216,8 @@ reducing manual processes and room conflicts."
 In Progress — WS-02
 ```
 
-> **AI-DLC Note:** Intent คือ starting point ของทุกอย่าง
-> ทุก unit, story, และ bolt ต้องสืบย้อนกลับมาที่ intent นี้ได้
-
----
+> **Context Engineering Note:** section *Decisions Already Made* และ *Out of Scope*
+> มีค่ามากกว่าที่คิด เพราะมันคือสิ่งที่หยุด AI จากการเสนอ scope ที่เราตัดทิ้งไปแล้วซ้ำ ๆ
 
 ### สร้าง Unit Briefs
 
@@ -182,7 +237,6 @@ mkdir -p memory-bank/units/[unit-name]
 
 ## Responsibilities
 - [สิ่งที่ unit นี้รับผิดชอบ]
-- [สิ่งที่ unit นี้รับผิดชอบ]
 
 ## NOT Responsible For
 - [สิ่งที่ unit อื่นรับผิดชอบ]
@@ -190,6 +244,9 @@ mkdir -p memory-bank/units/[unit-name]
 ## Dependencies
 - Depends on: [units ที่ต้องใช้]
 - Used by: [units ที่ใช้ unit นี้]
+
+## Key Business Rules
+- [กฎที่ต้องเป็นจริงเสมอ — จะกลายเป็น unit test ใน WS-03]
 
 ## Key Stories
 - [link ไป GitHub Issues]
@@ -199,4 +256,8 @@ mkdir -p memory-bank/units/[unit-name]
 [x] Simple Construction — ถ้าเป็น UI, integration, utility
 ```
 
-**Human Checkpoint:** ก่อน commit — ถามตัวเองว่า unit นี้ทำได้โดยไม่ต้องรู้ implementation ของ unit อื่นไหม ถ้าตอบว่าใช่ = loosely coupled ที่ดี
+**Human Checkpoint:** ก่อน commit — ถามตัวเองว่า unit นี้ทำได้โดยไม่ต้องรู้ implementation
+ของ unit อื่นไหม ถ้าตอบว่าใช่ = loosely coupled ที่ดี
+
+> section *Key Business Rules* คือสะพานไปหา WS-03 —
+> ทุกกฎที่เขียนไว้ตรงนี้ ควรมี unit test คู่กันหนึ่งตัวในอีก 2 สัปดาห์

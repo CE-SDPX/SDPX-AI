@@ -1,4 +1,4 @@
-# Present: Unit Testing
+# Present: Unit Testing & Test Harness
 
 ## เวลา: 1 ชั่วโมง (6 กลุ่ม × 10 นาที)
 ## รูปแบบ
@@ -9,20 +9,23 @@
 ## สิ่งที่ต้อง Present (10 นาที/กลุ่ม)
 
 ### Demo (5 นาที)
-1. รัน test suite ให้เห็น pass ใน terminal
+1. รัน test suite ให้เห็น pass ใน terminal พร้อมบอกว่าใช้เวลากี่วินาที
 2. แสดง fake repository และอธิบายว่าทำงานอย่างไร
-3. แสดง fixture หรือ factory 1 ตัวและอธิบาย
-4. รัน E2E smoke test
+3. แสดง factory 1 ตัวและอธิบายว่ามันลด repetition อย่างไร
+4. **Break it live**: comment out business rule 1 บรรทัด → รัน test → ให้เห็น test แดง → undo
+5. รัน E2E smoke test
 
 ### อธิบาย (3 นาที)
-- เลือก test 1 ตัวที่น่าสนใจที่สุด อธิบายว่ามันวัดอะไร
-- บอกว่า AI generate test อะไรให้บ้าง และทิ้งอะไรไปทำไม
+- เลือก test 1 ตัวที่น่าสนใจที่สุด อธิบายว่ามันปกป้องกฎอะไร
+- บอกว่า AI generate test อะไรให้บ้าง และ **ทิ้งไปกี่ตัว เพราะอะไร**
 
 ### คำถาม (2 นาที)
 อาจารย์อาจถาม:
 - "Test นี้จะ fail ได้อย่างไร — ลอง break มันให้ดู"
 - "ทำไมใช้ FakeRepo แทน real database"
 - "Fixture นี้ต่างจาก Factory อย่างไร"
+- "ถ้าให้ AI agent แก้ code ใน service นี้ตอนนี้ คุณเชื่อผลของมันแค่ไหน เพราะอะไร"
+- "มี business rule ข้อไหนใน `unit-brief.md` ที่ยังไม่มี test คุ้มครองไหม"
 
 ---
 
@@ -30,10 +33,16 @@
 
 | เกณฑ์ | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|
-| **Tests ผ่าน** | มี failure | ผ่านบางส่วน | ทุก test ผ่าน | ผ่าน + coverage ≥ 70% | ผ่าน + coverage ≥ 80% + no trivial tests |
-| **Test Doubles** | ไม่มี | มีแต่ใช้ผิดประเภท | มี fake/stub อย่างน้อย 1 | มีหลายประเภท | มีครบ + อธิบายว่าใช้เมื่อไหร่ได้ |
-| **Fixtures/Factories** | ไม่มี | มีแต่ไม่ reuse | มี + reuse ใน tests | มี + ลด repetition ชัดเจน | มี + เห็น before/after ที่ cleaner |
-| **E2E Smoke Test** | ไม่มี | มีแต่ fail | ผ่าน + basic check | ผ่าน + data-testid | ผ่าน + หลาย assertions |
-| **AI Review** | ไม่ได้ review | เก็บทุกอย่าง | ทิ้งบางส่วน | ทิ้ง + เหตุผล | วิเคราะห์ครบ + ชี้ได้ว่า AI พลาดอะไร |
+| **Tests ผ่าน** | มี failure | ผ่านบางส่วน | ทุก test ผ่าน | ผ่าน + suite < 10 วินาที | ผ่าน + เร็ว + coverage ≥ 80% โดยไม่มี trivial test |
+| **Test Harness** | ไม่มี | มีแต่ใช้ผิดประเภท | มี fake/stub อย่างน้อย 1 | + factories/fixtures reuse ได้จริง | + อธิบายได้ว่าเลือก double แต่ละแบบเมื่อไร และไม่ over-mock |
+| **Fidelity** | ไม่ได้ตรวจ | ตรวจแต่ test ไม่แดง | break แล้วแดงได้ 1 กรณี | + บันทึกผลใน TEST_PLAN | + mutation score หรือหลายกรณี + รู้ว่าช่องโหว่อยู่ตรงไหน |
+| **E2E Smoke Test** | ไม่มี | มีแต่ fail | ผ่าน + basic check | ผ่าน + ใช้ role/testid ถูกหลัก | ผ่าน + หลาย assertions + อธิบายว่าต่างจาก unit test อย่างไร |
+| **AI Review** | ไม่ได้ review | เก็บทุกอย่าง | ทิ้งบางส่วน | ทิ้ง + เหตุผลเฉพาะเจาะจง | + ชี้ pattern ได้ว่า AI พลาดแบบไหนซ้ำ ๆ |
 
-**คะแนนเต็ม: 5 คะแนน**
+**คะแนนเต็ม: 5 คะแนน** (เฉลี่ยจาก 5 เกณฑ์)
+
+---
+
+## หมายเหตุสำหรับอาจารย์
+- ข้อ "Break it live" เป็นหัวใจของสัปดาห์นี้ ถ้ากลุ่มไหน break แล้ว test ไม่แดงเลย
+  ให้ใช้เป็นตัวอย่างสอนทั้งห้อง — นั่นคือ loop ที่ latency ต่ำแต่ fidelity เป็นศูนย์

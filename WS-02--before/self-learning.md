@@ -3,31 +3,62 @@
 ## สิ่งที่ต้องศึกษา
 
 ### REST API Design
-- [video] REST API Design — Full Course, ดู 20 นาทีแรก — freeCodeCamp
+- [video] What is a REST API? — IBM Technology (~9 นาที)
   (https://www.youtube.com/watch?v=lsMQRaeKNDk)
 - [reading] RESTful API Design Guidelines (https://restfulapi.net/)
-- [reading] OpenAPI Specification Introduction (https://swagger.io/docs/specification/about/)
+- [reading] OpenAPI 3 Specification — Basic Structure
+  (https://swagger.io/docs/specification/v3_0/about/)
 
 **จุดที่ต้องเข้าใจ:**
 - HTTP methods: GET POST PUT PATCH DELETE ใช้เมื่อไหร่
-- HTTP status codes: 200, 201, 400, 401, 404, 500
+- HTTP status codes: 200, 201, 400, 401, 403, 404, 409, 422, 500
 - Resource naming: `/users` vs `/getUsers`
 - Request body vs Query parameters
+- Idempotency: ทำไม PUT/DELETE ซ้ำได้แต่ POST ซ้ำไม่ได้
 
 ### Scrum & User Stories
-- [video] Scrum Essentials in Under 10 Minutes (https://www.youtube.com/watch?v=RtQ3tpq-RuE)
+- [video] Scrum Essentials in Under 10 Minutes — Scrum Alliance
+  (https://www.youtube.com/watch?v=RtQ3tpq-RuE)
 - [reading] The Scrum Guide 2020 (https://scrumguides.org/scrum-guide.html) — อ่านเฉพาะ Scrum Team และ Events
-- [reading] Writing Good User Stories — Atlassian (https://www.atlassian.com/agile/project-management/user-stories)
+- [reading] Writing Good User Stories — Atlassian
+  (https://www.atlassian.com/agile/project-management/user-stories)
 
 **จุดที่ต้องเข้าใจ:**
 - User story format: As a... I want... So that...
 - Acceptance criteria: Given/When/Then
 - Definition of Done คืออะไร
 
+### Spec เป็น Context ให้ AI
+- [reading] Effective Context Engineering for AI Agents — Anthropic
+  (https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+  อ่านหัวข้อ *What is context engineering* และ *Right altitude* ก็พอ
+
+**จุดที่ต้องเข้าใจ:**
+- ทำไม spec ที่เขียนชัดถึงทำให้ AI generate code ได้ตรงกว่า prompt ยาว ๆ
+- ทำไม context ที่ล้าสมัยอันตรายกว่าไม่มี context
+
 ---
 
-## Entry Ticket
-ส่งก่อนเข้าห้องอย่างน้อย 1 ชั่วโมง:
+## เช็คตัวเองก่อนเข้าห้อง
 
-> "วาด component diagram คร่าวๆ ของ project — คิดว่าจะมี component อะไรบ้าง"
-> (วาดด้วยมือถ่ายรูป หรือใช้ Excalidraw ก็ได้)
+- [ ] บอกได้ว่า `POST` ควรตอบ status อะไร และต่างจาก `PUT` อย่างไร
+- [ ] แยกออกว่าเมื่อไรใช้ `400` เมื่อไรใช้ `422` เมื่อไรใช้ `409`
+- [ ] เขียน user story 1 อันในรูปแบบ As a / I want / So that ได้
+- [ ] เขียน acceptance criteria แบบ Given / When / Then ได้
+- [ ] **ลองวาด component diagram คร่าว ๆ ของ project ตัวเองไว้** — จะได้ใช้ต่อทันทีใน lab
+
+### วอร์มอัพ: ลองวาด Component Diagram
+วาดด้วย Mermaid ในไฟล์ `.md` บน GitHub (https://mermaid.js.org/)
+GitHub จะ render ให้เอง — diagram จึงอยู่ใน git และ AI อ่านเป็น text ได้
+(ถ้าถนัดวาดมือ ใช้ Excalidraw https://excalidraw.com ก็ได้)
+
+ตัวอย่างที่ใช้เป็นจุดตั้งต้นได้เลย:
+````markdown
+```mermaid
+flowchart LR
+    U[Student Browser] --> FE[Web App]
+    FE --> API[API Server]
+    API --> DB[(PostgreSQL)]
+    API --> AUTH[Auth Service]
+```
+````

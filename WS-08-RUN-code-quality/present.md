@@ -9,16 +9,23 @@
 
 ### Demo (5 นาที)
 1. แสดง code before/after refactoring
-2. รัน tests และแสดงว่า harness ยัง green หลัง refactor
-3. เปิด ADR และอธิบาย decision ที่บันทึกไว้
-4. แสดง security issues ที่พบจาก pre-check
+2. รัน test และแสดงว่ายังเขียวหลัง refactor — พร้อมยืนยันว่า **ไม่ได้แก้ไฟล์ test**
+   (`git diff --stat main...HEAD -- tests/`)
+3. แสดง security issue 1 ข้อที่แก้ พร้อม test ที่คุ้มครองไม่ให้กลับมา
+4. เปิด ADR และอธิบาย decision ที่บันทึกไว้ โดยเฉพาะทางเลือกที่ไม่ได้เลือก
 
 ### คำถาม (5 นาที)
 อาจารย์อาจถาม:
 - "AI suggest ให้เพิ่ม [pattern X] แต่กลุ่มไม่ทำ ทำไม"
-- "ถ้า tests ไม่ pass หลัง refactor จะทำอะไร"
+- "ถ้า test ไม่ผ่านหลัง refactor จะทำอะไร"
 - "ADR นี้จะ supersede ได้เมื่อไหร่"
-- "Security issue ที่พบ fix ยังไง"
+- "Security issue ที่พบ fix ยังไง และจะรู้ได้ยังไงว่ามันจะไม่กลับมา"
+- "ถ้า `/api/test/seed` หลุดขึ้น production จะเกิดอะไร"
+- "ตอนใช้ agent ช่วย refactor คุณกันไม่ให้มันแก้ test อย่างไร"
+
+### สรุปทั้งวิชา (ถ้าเวลาเหลือ)
+- "loop ไหนที่กลุ่มได้ประโยชน์มากที่สุด และทำไม"
+- "ถ้าเริ่มใหม่ตั้งแต่ WS-01 จะทำอะไรต่างไป"
 
 ---
 
@@ -26,10 +33,18 @@
 
 | เกณฑ์ | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|
-| **Refactoring Quality** | เปลี่ยน cosmetic | แก้ naming | แก้ code smell จริงๆ | + แยก responsibilities | + ทั้งหมด + explain rationale |
-| **Tests Green** | tests fail | บาง test fail | ทุก test ผ่าน | + เพิ่ม tests ใหม่ | + coverage เพิ่มขึ้น |
-| **AI Review Analysis** | ไม่ได้ review | เก็บทุกอย่าง | ทิ้งบางส่วน | ทิ้ง + เหตุผล | วิเคราะห์ครบ + รู้ AI พลาดอะไร |
-| **ADR** | ไม่มี | template เปล่า | มีเนื้อหา | ครบทุก section | + alternatives + trade-offs |
-| **Presentation** | ไม่ครบ | ครบ | ชัดเจน | ชัดเจน + ตอบได้ | ตอบทุกคำถาม |
+| **Refactoring Quality** | เปลี่ยน cosmetic | แก้ naming | แก้ code smell จริง | + แยก responsibilities | + ทั้งหมด + อธิบาย rationale และสิ่งที่เลือกไม่ทำ |
+| **Test เป็นตาข่าย** | test fail | บาง test fail | ทุก test เขียว | + ไม่ได้แก้ไฟล์ test เลย | + เพิ่ม characterization test + เล่าได้ว่า revert กี่ครั้งเพราะอะไร |
+| **Security** | ไม่ได้ตรวจ | ตรวจแต่ไม่แก้ | แก้ ≥ 1 ข้อ | แก้ ≥ 2 ข้อ + เปิด scanning ครบ | + ทุก fix มี test คุ้มครอง + อธิบาย OWASP ที่เกี่ยวได้ |
+| **AI Judgement** | ไม่ได้ review | รับทุกอย่าง | ทิ้งบางส่วน | ทิ้ง + เหตุผลเฉพาะเจาะจง | + ชี้ได้ว่า AI มองไม่เห็นอะไรเพราะ context ไหนขาด |
+| **ADR** | ไม่มี | template เปล่า | มีเนื้อหา | ครบทุก section | + alternatives + trade-offs + revisit condition |
 
-**คะแนนเต็ม: 5 คะแนน**
+**คะแนนเต็ม: 5 คะแนน** (เฉลี่ยจาก 5 เกณฑ์)
+
+---
+
+## หมายเหตุสำหรับอาจารย์
+- ข้อ "ไม่ได้แก้ไฟล์ test" เป็นตัวชี้วัดที่ดีที่สุดว่ากลุ่มเข้าใจ Quality Loop จริงหรือไม่
+  กลุ่มที่แก้ test เพื่อให้เขียวคือกลุ่มที่ยังไม่เข้าใจว่า test มีไว้ทำอะไร
+- ปิดท้ายทั้งวิชาด้วยคำถามเดียวกับที่เปิดใน WS-01:
+  "กว่าจะรู้ว่าเขียนผิด ตอนนี้ใช้เวลานานแค่ไหน" แล้วเทียบกับคำตอบเมื่อ 8 สัปดาห์ก่อน

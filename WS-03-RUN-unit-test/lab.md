@@ -1,8 +1,8 @@
-# Lab: Unit Testing & Introduce E2E
+# Lab: Unit Test Harness & First E2E
 
 ## เวลา: 1.5 ชั่วโมง
 ## เป้าหมาย
-สร้าง unit test harness สำหรับ project และเริ่มต้น E2E test แรก
+สร้าง **Unit Test Harness** ของ project ให้ใช้งานได้จริง แล้วเริ่ม E2E test ตัวแรก
 
 ---
 
@@ -18,8 +18,8 @@ project/
 │   └── repositories/
 │       └── room_repository.py
 ├── tests/
-│   ├── conftest.py          ← fixtures และ factories (Python)
-│   ├── factories.py         ← factory functions
+│   ├── conftest.py           ← fixtures (Python)
+│   ├── factories.py          ← factory functions
 │   ├── fakes/
 │   │   └── fake_room_repo.py ← fake implementations
 │   └── unit/
@@ -29,7 +29,9 @@ project/
 
 ### ขั้นตอนที่ 2 — เขียน TEST_PLAN.md (10 นาที)
 
-ระบุ business logic ที่ต้อง test:
+ให้ลอกมาจาก section *Key Business Rules* ใน `memory-bank/units/*/unit-brief.md` โดยตรง
+— ทุกกฎที่เขียนไว้ตอน WS-02 ต้องมีบรรทัดของตัวเองที่นี่
+
 ```markdown
 # Test Plan
 
@@ -39,11 +41,15 @@ project/
    - ห้องไม่ว่าง → RoomNotAvailableError
    - เวลาซ้อนทับ → ConflictError
    - user ไม่ exists → UserNotFoundError
+   - จองย้อนหลัง → InvalidTimeRangeError
 
 2. BookingService.cancel_booking()
    - booking exists และเป็นของ user → cancelled
    - booking ของคนอื่น → ForbiddenError
    - booking ไม่ exists → NotFoundError
+
+## กฎที่ยังไม่มี test (ยอมรับไว้ชั่วคราว)
+- [กฎ] — เหตุผลที่ยังไม่ทำ + จะทำเมื่อไหร่
 ```
 
 ### ขั้นตอนที่ 3 — สร้าง Fake Repository (10 นาที)
@@ -65,7 +71,10 @@ class FakeRoomRepo:
         return room
 ```
 
-### ขั้นตอนที่ 4 — สร้าง Fixtures และ Factories (10 นาที)
+> Fake ต้อง implement interface เดียวกับของจริง ไม่งั้น test เขียวแต่ production พัง
+> ถ้าใช้ TypeScript ให้ `implements RoomRepository` เพื่อให้ compiler ช่วยตรวจให้
+
+### ขั้นตอนที่ 4 — สร้าง Factories และ Fixtures (10 นาที)
 
 ```python
 # tests/factories.py
@@ -74,10 +83,12 @@ def make_room(**overrides):
     return Room(**{**defaults, **overrides})
 
 def make_user(**overrides):
-    defaults = {"id": 1, "name": "John", "email": "john@uni.ac.th"}
+    defaults = {"id": 1, "name": "John", "email": "john@uni.ac.th", "role": "student"}
     return User(**{**defaults, **overrides})
+```
 
-# tests/conftest.py (pytest)
+```python
+# tests/conftest.py
 import pytest
 from tests.factories import make_room, make_user
 from tests.fakes.fake_room_repo import FakeRoomRepo
@@ -95,9 +106,17 @@ def student():
     return make_user(role="student")
 ```
 
+**TypeScript เทียบเท่า:**
+```typescript
+// tests/factories.ts
+export const makeRoom = (o: Partial<Room> = {}): Room => ({
+  id: 1, name: 'A101', capacity: 10, isAvailable: true, ...o,
+});
+```
+
 ### ขั้นตอนที่ 5 — เขียน Unit Tests (20 นาที)
 
-เขียนด้วยตัวเองก่อน จากนั้นใช้ AI generate เพิ่ม:
+เขียนด้วยตัวเองก่อนอย่างน้อย 2 ตัว จากนั้นค่อยใช้ AI generate เพิ่ม:
 
 ```python
 # tests/unit/test_booking_service.py
@@ -126,51 +145,104 @@ def test_booking_rejected_when_room_unavailable(unavailable_room, student):
         )
 ```
 
-**หลังใช้ AI generate tests:** Review ทุก test ด้วยคำถาม:
-- Test นี้วัด business rule อะไร
-- ถ้า comment out logic ออก test จะ fail ไหม
+**Prompt สำหรับให้ AI เขียนเพิ่ม:**
+```
+Read TEST_PLAN.md, tests/factories.py and tests/conftest.py first.
+
+Write the remaining unit tests listed in TEST_PLAN.md for BookingService.
+
+Rules:
+- Reuse the existing factories and fixtures — do not create new ones.
+- Each test must fail if I delete the specific business rule it covers.
+  Put the rule in the test name.
+- Do not assert on private methods or internal call order.
+- No test that only checks the constructor.
+Then run the tests and fix the code (not the tests) until green.
+```
+
+**หลัง AI generate — review ทุกตัวด้วย 2 คำถาม:**
+1. test นี้วัด business rule ข้อไหนใน `TEST_PLAN.md`
+2. ถ้า comment out logic ข้อนั้นออก test จะแดงไหม
+
+ตัวไหนตอบไม่ได้ → **ลบทิ้งทันที** test ที่ไม่ปกป้องอะไรมีต้นทุน (ต้อง maintain) แต่ไม่มีประโยชน์
+
+### ขั้นตอนที่ 6 — วัด Fidelity ของ Harness (บังคับ, ~5 นาที)
+
+เลือก business rule 1 ข้อ แล้วทำ zombie test detection สด ๆ:
+```bash
+# 1. comment out เงื่อนไข 1 บรรทัดใน service
+# 2. รัน test
+pytest -q
+# 3. ต้องมีอย่างน้อย 1 test แดง — ถ้าเขียวหมด แปลว่า harness ยังไม่ปกป้องกฎข้อนั้น
+# 4. undo การแก้
+git checkout -- src/
+```
+
+บันทึกผลลง `TEST_PLAN.md`:
+```markdown
+## Fidelity Check (WS-03)
+- ลบกฎ: [ชื่อกฎ]
+- Test ที่แดง: [ชื่อ test]  ✅ harness ปกป้องกฎนี้
+```
+
+**ถ้าเหลือเวลา:** ลองรัน mutation testing แล้วจดคะแนน
+```bash
+mutmut run          # Python
+npx stryker run     # JS/TS
+```
 
 ---
 
-## Part B: Introduce E2E (30 นาที)
+## Part B: E2E ตัวแรก (30 นาที)
 
-### ขั้นตอนที่ 6 — First E2E Test ด้วย Playwright
+### ขั้นตอนที่ 7 — First E2E Test ด้วย Playwright
 
 ```typescript
 // tests/e2e/smoke.spec.ts
 import { test, expect } from '@playwright/test';
 
 test('homepage loads correctly', async ({ page }) => {
-  await page.goto(process.env.BASE_URL || 'http://localhost:3000');
+  await page.goto('/');
 
-  // ตรวจ title
   await expect(page).toHaveTitle(/Campus/);
-
-  // ตรวจ navigation
   await expect(page.getByRole('navigation')).toBeVisible();
 });
 
 test('main service page is accessible', async ({ page }) => {
   await page.goto('/');
 
-  // ตรวจว่า main CTA ปรากฏ
   await expect(page.getByTestId('main-cta')).toBeVisible();
+});
+```
+
+ตั้ง `baseURL` ใน `playwright.config.ts` เพื่อให้ `page.goto('/')` ใช้ได้:
+```typescript
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests/e2e',
+  use: {
+    baseURL: process.env.BASE_URL ?? 'http://localhost:3000',
+    trace: 'on-first-retry',
+  },
 });
 ```
 
 ### เพิ่ม data-testid ใน Components
 ```tsx
-// แทนที่จะใช้ class หรือ text selector
 <button data-testid="submit-booking">Book Now</button>
 <nav data-testid="main-nav">...</nav>
 <div data-testid="room-list">...</div>
 ```
 
+> ลำดับที่แนะนำในการเลือก element: `getByRole` → `getByLabel` → `getByTestId`
+> role/label สะท้อนสิ่งที่ user เห็นจริงและได้ accessibility ไปด้วย
+> ใช้ `getByTestId` เมื่อไม่มี role/label ที่เสถียรพอ
+
 ### รัน E2E Test
 ```bash
 npx playwright test
-# ดูผลใน terminal
-npx playwright show-report  # เปิด HTML report
+npx playwright show-report   # เปิด HTML report
 ```
 
 ---
@@ -180,13 +252,14 @@ npx playwright show-report  # เปิด HTML report
 | Artifact | รายละเอียด | ที่ส่ง |
 |---|---|---|
 | `tests/` directory | Unit tests พร้อม fakes, fixtures, factories | GitHub repo |
-| `TEST_PLAN.md` | รายการ functions ที่ต้อง test | GitHub repo |
+| `TEST_PLAN.md` | รายการ business rule ที่ต้อง test + ผล fidelity check | GitHub repo |
 | `tests/e2e/smoke.spec.ts` | E2E smoke test ผ่าน | GitHub repo |
-| Coverage report | `pytest --cov` หรือ `vitest --coverage` | GitHub repo `docs/coverage/` |
+| Coverage report | `pytest --cov` หรือ `vitest run --coverage` | GitHub repo `docs/coverage/` |
 
 ### เกณฑ์ผ่าน
-- [ ] Unit tests รันผ่านทั้งหมด
+- [ ] Unit tests รันผ่านทั้งหมด และ **ทั้ง suite ใช้เวลา < 10 วินาที**
 - [ ] มี fake repository อย่างน้อย 1 ตัว
-- [ ] มี fixtures หรือ factories อย่างน้อย 2 ตัว
+- [ ] มี factories หรือ fixtures อย่างน้อย 2 ตัว
+- [ ] ทำ fidelity check แล้ว และบันทึกผลใน `TEST_PLAN.md`
 - [ ] E2E smoke test รันผ่าน
-- [ ] ทุกคนในกลุ่มอธิบาย test ที่ตัวเองเขียนได้
+- [ ] ทุกคนในกลุ่มอธิบาย test ที่ตัวเองเขียนได้ และตอบได้ว่า "ลบอะไรออกแล้วมันจะแดง"

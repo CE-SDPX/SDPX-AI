@@ -5,18 +5,28 @@
 ### Docker
 - [video] Docker Crash Course for Absolute Beginners — TechWorld with Nana
   (https://www.youtube.com/watch?v=pg19Z8LL06w)
-- [reading] Dockerfile Best Practices
-  (https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
-- [reading] Docker Compose Getting Started
+- [reading] Dockerfile / Build Best Practices
+  (https://docs.docker.com/build/building/best-practices/)
+- [reading] Docker Compose — Getting Started
   (https://docs.docker.com/compose/gettingstarted/)
+- [reading] The Twelve-Factor App — อ่านเฉพาะข้อ III (Config) และ X (Dev/prod parity)
+  (https://12factor.net/)
 
 **จุดที่ต้องเข้าใจ:**
 - Image vs Container ต่างกันอย่างไร
 - Layer คืออะไร caching ทำงานอย่างไร
-- docker-compose ช่วยอะไรเมื่อมีหลาย services
-- COPY ก่อน RUN ทำไมถึงสำคัญ
+- ทำไม COPY manifest ก่อนแล้วค่อย COPY source ถึงสำคัญ
+- Compose ช่วยอะไรเมื่อมีหลาย services
+- ทำไม config ต้องมาจาก environment variable ไม่ใช่ hardcode ในไฟล์
+
+**หมายเหตุเรื่องคำสั่ง:** ใช้ `docker compose` (เว้นวรรค — Compose v2)
+คำสั่ง `docker-compose` แบบมีขีดคือ v1 ที่หมดอายุการสนับสนุนแล้ว
+และไฟล์ยุคใหม่ชื่อ `compose.yaml` โดยไม่ต้องมีบรรทัด `version:` อีกต่อไป
 
 ---
 
 ## Entry Ticket
 > "Dockerfile instruction ไหนที่ยังไม่เข้าใจ หรือสงสัยว่าทำไมต้องมี"
+>
+> พร้อมตอบอีก 1 บรรทัด: "ตอนนี้ถ้าเพื่อนใหม่มา clone repo ของกลุ่ม
+> ต้องทำกี่ขั้นตอนกว่าจะรัน app ได้"

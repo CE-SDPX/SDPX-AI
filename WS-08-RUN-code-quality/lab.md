@@ -1,23 +1,26 @@
-# Lab: Refactoring & Code Quality
+# Lab: Refactoring, Security & the Quality Loop
 
 ## เวลา: 1.5 ชั่วโมง
 ## เป้าหมาย
-Refactor code จริงจาก project โดยใช้ harness เป็น safety net และเขียน ADR
+Refactor code จริงโดยใช้ test harness เป็นตาข่ายนิรภัย, ปิดช่องโหว่ security ที่พบ, และเขียน ADR
 
 ---
 
 ## ขั้นตอนที่ 1 — Full Codebase Review (20 นาที)
 
-### ใช้ AI Review ทั้ง Codebase
+### ให้ AI review ทั้ง codebase
 ```
+Read AGENTS.md and memory-bank/ first so you understand the project's constraints.
+
 Review this codebase and provide a prioritized refactoring plan.
 For each issue found:
 - File and approximate line number
 - Type of code smell
 - Impact if left unfixed: High/Medium/Low
-- Suggested fix (concise)
+- Suggested fix (the smallest change that removes the problem)
 
-Sort by impact (High first).
+Do not suggest new design patterns unless the current code has a concrete
+problem they solve. Sort by impact (High first).
 ```
 
 สร้าง `docs/refactoring-plan.md`:
@@ -25,75 +28,118 @@ Sort by impact (High first).
 # Refactoring Plan
 
 ## High Priority
-1. [file]: [issue] — [why it's a problem]
-2. ...
+1. [file:line]: [issue] — [why it's a problem]
 
 ## Medium Priority
 ...
 
 ## What AI Suggested vs What We'll Do
-- Agree: [list]
-- Disagree/Skip: [list + reasons]
+| AI เสนอ | ตัดสินใจ | เหตุผล |
+|---|---|---|
+| | รับ / ไม่รับ / เลื่อน | |
+
+## สิ่งที่ AI มองไม่เห็น (เราเห็นเอง)
+- [ปัญหาที่ต้องรู้ business context ถึงจะเห็น]
 ```
+
+section สุดท้ายคือส่วนที่แสดงว่าคุณอ่าน code เอง ไม่ใช่แค่ส่งต่อคำตอบของ AI
 
 ---
 
-## ขั้นตอนที่ 2 — Refactor Module (45 นาที)
+## ขั้นตอนที่ 2 — Refactor ด้วย Quality Loop (40 นาที)
 
 ### เลือก Module จาก Entry Ticket
 
-**ขั้นตอนบังคับ (ห้ามข้าม):**
+**ขั้นตอนบังคับ ห้ามข้าม:**
 
-**Step 1: ยืนยัน Tests มีอยู่ก่อน**
+**Step 1 — ยืนยันว่ามีตาข่ายก่อน**
 ```bash
-# ต้องผ่านก่อน refactor
-pytest tests/unit/test_[module].py -v
-# ถ้าไม่มี tests → เขียนก่อน แล้วค่อย refactor
+pytest tests/unit/test_[module].py -v      # หรือ npm test
+```
+- test เขียว → ไปต่อได้
+- **ไม่มี test → เขียน test ก่อน** ให้ครอบคลุม behavior ปัจจุบัน (ไม่ใช่ behavior ที่อยากได้)
+
+> เทคนิค: ให้ AI ช่วยเขียน "characterization test" —
+> test ที่บันทึกพฤติกรรมปัจจุบันไว้ตามที่มันเป็น แม้พฤติกรรมนั้นจะดูแปลก
+> จุดประสงค์คือจับการเปลี่ยนแปลง ไม่ใช่ตัดสินถูกผิด
+
+**Step 2 — Refactor ทีละก้าว**
+```bash
+# refactor เล็ก ๆ แล้ว run test ทันที
+# อย่า refactor ทีเดียว 100 บรรทัดแล้วค่อย test
+
+git add -p     # stage ทีละ change
+pytest -q      # ต้องเขียวก่อนไปก้าวถัดไป
 ```
 
-**Step 2: Refactor ทีละ Step**
-```bash
-# refactor เล็กๆ แล้ว run tests ทันที
-# อย่า refactor ทีเดียว 100 lines แล้วค่อย test
-
-git add -p  # stage ทีละ change
-pytest      # ต้อง green ก่อน stage ต่อไป
+**ถ้าใช้ AI ช่วย refactor ให้กำหนดขอบเขต:**
 ```
+Refactor only the function `process_booking` in src/services/booking.py.
 
-**Step 3: Document Before/After**
+Constraints:
+- Do not change its public signature or observable behavior.
+- Run `pytest tests/unit/test_booking.py` after each change and keep it green.
+- Make at most 3 changes, then stop and show me the diff.
+- Do not modify any test file.
+```
+บรรทัด "Do not modify any test file" สำคัญที่สุด — ไม่งั้น agent อาจ "แก้ให้เขียว"
+ด้วยการแก้ test ซึ่งทำลายตาข่ายนิรภัยทั้งหมด
+
+**Step 3 — Document Before/After**
 
 สร้าง `docs/refactoring-[module].md`:
 ```markdown
 ## Function: [function_name]
 
 ### Before
-\`\`\`python
-# code เดิม
-\`\`\`
+[code เดิม]
 
 ### Issues Found
 - Long method: ทำ 4 หน้าที่ในที่เดียว
 - Magic number: 8 และ 150 ไม่มี context
 
 ### After
-\`\`\`python
-# code ใหม่
-\`\`\`
+[code ใหม่]
 
 ### What AI Suggested
-- Extract 6 methods → เราทำ 3 (3 อันเล็กเกินไป ไม่คุ้ม)
+- Extract 6 methods → เราทำ 3 (อีก 3 อันเล็กเกินไป ไม่คุ้ม)
 - Add Repository pattern → skip เพราะ overkill สำหรับขนาดนี้
 
 ### Tests Result
 - Before: 5 tests pass
 - After: 5 tests pass (+ 2 tests เพิ่มระหว่าง refactor)
+- จำนวนครั้งที่ต้อง revert เพราะ test แดง: [ตัวเลข]
 ```
 
 ---
 
-## ขั้นตอนที่ 3 — เขียน ADR (15 นาที)
+## ขั้นตอนที่ 3 — ปิดช่องโหว่ Security (15 นาที)
 
-Architecture Decision Record บันทึกการตัดสินใจสำคัญ:
+เปิด `docs/security-pre-check.md` ที่ทำมาจาก homework แล้วลงมือแก้อย่างน้อย 2 ข้อ
+
+### Checklist ที่ต้องไล่ให้ครบ
+- [ ] Query ทุกที่ใช้ parameterized ไม่มี string concatenation
+- [ ] ทุก endpoint ที่แก้/ลบข้อมูล ตรวจ **ownership** ไม่ใช่แค่ login
+- [ ] Response ไม่ส่ง field ที่ไม่ควรออก (`password_hash`, internal id)
+- [ ] Error response ไม่มี stack trace หรือ connection string
+- [ ] `/api/test/seed` และ `/api/test/cleanup` ปิดใน production แล้ว
+- [ ] Log ไม่มี email / token / password (ตรวจของจริงจาก WS-07)
+- [ ] Dependabot alerts ที่ severity High/Critical จัดการแล้วหรือมีเหตุผลว่าทำไมยัง
+- [ ] ไม่มี secret ใน git history — ถ้ามี revoke แล้ว
+
+บันทึกสิ่งที่แก้ลงท้าย `docs/security-pre-check.md`:
+```markdown
+## Fixed in WS-08
+| ปัญหา | ไฟล์ | วิธีแก้ | test ที่คุ้มครองไม่ให้กลับมา |
+|---|---|---|---|
+```
+
+คอลัมน์สุดท้ายสำคัญ — ทุก security fix ควรมี test คู่กัน
+ไม่งั้นอีกสองเดือนมันจะกลับมาใหม่โดยไม่มีใครรู้
+
+---
+
+## ขั้นตอนที่ 4 — เขียน ADR (15 นาที)
 
 สร้าง `docs/adr/ADR-001-[topic].md`:
 ```markdown
@@ -106,7 +152,7 @@ Accepted
 [วันที่]
 
 ## Context
-[อธิบาย background — ทำไมถึงต้องตัดสินใจเรื่องนี้]
+[background — constraint อะไรบ้าง ทั้งเรื่อง technical, เวลา, และทักษะของทีม]
 
 ## Decision
 [การตัดสินใจที่เลือก]
@@ -115,22 +161,40 @@ Accepted
 1. [Alternative A] — ไม่เลือกเพราะ [reason]
 2. [Alternative B] — ไม่เลือกเพราะ [reason]
 
-## Rationale
-[เหตุผลที่เลือก decision นี้]
-
 ## Consequences
 ### Positive
 - [ข้อดี]
 
 ### Negative / Trade-offs
 - [ข้อเสียหรือ trade-off ที่ยอมรับ]
+
+## Revisit When
+[เงื่อนไขที่จะทำให้ต้องกลับมาทบทวน ADR นี้]
+
+## AI-DLC Note
+AI proposed: [Option A] เพราะ [reason]
+Human decided: [Option B] เพราะ [context ที่ AI ไม่รู้]
 ```
 
-**ตัวอย่าง topics สำหรับ ADR:**
-- Database choice (PostgreSQL vs MongoDB)
+### ใช้ AI สำรวจทางเลือก (ไม่ใช่ให้มันตัดสินใจ)
+```
+What are the realistic options for [decision] in a university [domain] system with:
+- team of [N] students, [skill level]
+- [constraints from memory-bank/standards/tech-stack.md]
+- must run on [platform]
+
+For each option give: pros, cons, and what would make it the wrong choice here.
+Do not recommend one — I will decide.
+```
+
+**ตัวอย่าง topics:**
+- Database choice (PostgreSQL vs SQLite vs MongoDB)
 - Authentication strategy (JWT vs session)
-- State management approach
-- API design decision (REST vs GraphQL)
+- API design (REST vs GraphQL)
+- State management (server-side vs client-side)
+- Deployment strategy (monolith vs microservices)
+
+เลือก 1 topic ที่กลุ่ม **ตัดสินใจไปแล้วจริง ๆ** ในวิชานี้ แล้วบันทึกย้อนหลังให้ครบ
 
 ---
 
@@ -138,51 +202,16 @@ Accepted
 
 | Artifact | รายละเอียด | ที่ส่ง |
 |---|---|---|
-| `docs/refactoring-plan.md` | Full review + AI analysis | GitHub repo |
-| Refactored code | Module ที่ refactor + tests ยังผ่าน | GitHub repo |
+| `docs/refactoring-plan.md` | Full review + สิ่งที่รับ/ไม่รับจาก AI | GitHub repo |
+| Refactored code | Module ที่ refactor + test ยังเขียว | GitHub repo |
 | `docs/refactoring-[module].md` | Before/after + AI vs team decisions | GitHub repo |
-| `docs/adr/ADR-001-*.md` | ADR 1 ฉบับ | GitHub repo |
+| `docs/security-pre-check.md` | ผล scan + สิ่งที่แก้ + test ที่คุ้มครอง | GitHub repo |
+| `docs/adr/ADR-001-*.md` | ADR 1 ฉบับ ครบทุก section | GitHub repo |
 
 ### เกณฑ์ผ่าน
-- [ ] Tests ผ่านทั้งหมดหลัง refactor (harness เป็น safety net)
-- [ ] Refactoring plan ระบุชัดว่าเห็นด้วย/ไม่เห็นด้วยกับ AI ตรงไหน
-- [ ] ADR ครบทุก section โดยเฉพาะ alternatives considered
+- [ ] Test เขียวทั้งหมดหลัง refactor (และ CI ก็เขียว)
+- [ ] ไม่มีไฟล์ test ถูกแก้ระหว่าง refactor (ตรวจด้วย `git diff --stat` บน branch)
+- [ ] Refactoring plan ระบุชัดว่าเห็นด้วย/ไม่เห็นด้วยกับ AI ตรงไหน พร้อมเหตุผล
+- [ ] แก้ security issue อย่างน้อย 2 ข้อ และมี test คุ้มครอง
+- [ ] ADR ครบทุก section โดยเฉพาะ Alternatives Considered
 - [ ] ทุกคนในกลุ่มอธิบาย refactoring decisions ได้
-
-
----
-
-## ขั้นตอนเพิ่มเติม: ADR ใน AI-DLC Framework
-
-### เขียน ADR ด้วย AI-DLC Context
-
-เมื่อเขียน ADR ให้ถามตัวเองว่า:
-
-**1. AI propose อะไรสำหรับ decision นี้**
-```
-Prompt: "What are the options for [decision]? 
-List pros and cons of each for a university [domain] system 
-with [constraints from tech-stack.md]."
-```
-
-**2. Human validate อะไร**
-- Option ไหนที่ AI propose แต่ไม่เหมาะกับ context จริงๆ
-- Constraint อะไรที่ AI ไม่รู้ (เช่น team skills, existing infrastructure)
-- Trade-off อะไรที่ AI ประเมินต่างจาก human
-
-**3. Document ทั้ง AI proposal และ human decision**
-```markdown
-## AI-DLC Note
-AI proposed: [Option A] เพราะ [reason]
-Human decided: [Option B] เพราะ [human context ที่ AI ไม่รู้]
-```
-
-### ตัวอย่าง ADR Topics สำหรับ Campus Service
-
-- **ADR-001:** Database selection (PostgreSQL vs SQLite vs MongoDB)
-- **ADR-002:** Authentication strategy (JWT vs session-based)
-- **ADR-003:** API design (REST vs GraphQL)
-- **ADR-004:** State management (server-side vs client-side)
-- **ADR-005:** Deployment strategy (monolith vs microservices)
-
-เลือก 1 topic ที่กลุ่มได้ตัดสินใจจริงๆ ใน course นี้ และ document ว่า AI propose อะไร human ตัดสินใจอย่างไร

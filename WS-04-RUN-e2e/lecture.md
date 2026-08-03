@@ -1,10 +1,21 @@
 # Lecture: E2E Testing & the E2E Test Harness
 
-## เวลา: 30 นาที
+**เวลารวม:** 30 นาที
+
+*แนะนำการแบ่งเวลาสำหรับผู้สอน (หน่วย: นาที):* เปิดคาบ → 2 · หัวข้อ 1 → 4 · หัวข้อ 2 → 7 · หัวข้อ 3 → 9 · หัวข้อ 4 → 4
+
+## 🎯 จบคาบนี้แล้วจะทำอะไรได้
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| ตัดสินใจได้ว่าอะไรควรเป็น E2E และอะไรควรเป็น unit test | E2E ที่เยอะเกินทำให้ CI ใช้เวลาเป็นชั่วโมงจนไม่มีใครรอ — เป็นปัญหาที่พบบ่อยในทีมจริง |
+| ระบุและแก้สาเหตุของ flaky test ได้ 4 แบบ | flaky test ทำลายความเชื่อของ test ทั้งชุด ไม่ใช่แค่ตัวมันเอง |
+| ออกแบบ E2E harness ครบ 4 ชั้น (config, state, locator, scenario) | เป็นโครงสร้างที่ทำให้ test ชุดใหญ่ยัง maintain ได้เมื่อระบบโตขึ้น |
+| สั่ง AI เขียน E2E โดยไม่ให้มันเดา selector | AI ไม่เห็นหน้าจอจริง — การรู้ข้อจำกัดนี้ทำให้ใช้มันได้ผลกว่าเดิมมาก |
 
 ---
 
-## 0. เชื่อมจากสัปดาห์ที่แล้ว (2 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว
 
 WS-03 เราคุ้มครอง *business rule* ด้วย unit test แล้ว
 แต่ unit test ที่เขียวทั้งชุด **ไม่ได้แปลว่า user ใช้งานได้**
@@ -25,7 +36,7 @@ flowchart LR
 
 ---
 
-## 1. Acceptance Loop: จาก AC สู่ test ที่รันได้ (4 นาที)
+## 1. Acceptance Loop: จาก AC สู่ test ที่รันได้
 
 ```mermaid
 flowchart LR
@@ -58,7 +69,7 @@ E2E คือ loop ที่ **ครอบคลุมกว้างที่�
 
 ---
 
-## 2. กับดักใหญ่: Flaky Tests (7 นาที)
+## 2. กับดักใหญ่: Flaky Tests
 
 Flaky test คือ test ที่บางครั้ง pass บางครั้ง fail โดยไม่มีการเปลี่ยน code
 
@@ -76,6 +87,7 @@ flowchart TB
 > — และมันทำลายความเชื่อของ *ทุก* test ในชุด ไม่ใช่แค่ตัวมันเอง
 
 ### สาเหตุที่ 1 — รอตามเวลาแทนรอตาม state
+
 ```typescript
 // แย่: hardcoded wait — ช้าเกินไปก็เสียเวลา เร็วเกินไปก็แดง
 await page.waitForTimeout(3000);
@@ -85,6 +97,7 @@ await expect(page.getByTestId('booking-confirmed')).toBeVisible();
 ```
 
 ### สาเหตุที่ 2 — State ค้างจาก test ก่อนหน้า
+
 ```typescript
 // แย่: tests share state
 // Test A สร้าง booking แล้ว Test B อาจเจอ booking นั้น
@@ -96,6 +109,7 @@ test.beforeEach(async () => {
 ```
 
 ### สาเหตุที่ 3 — Locator ที่เปลี่ยนตาม style
+
 ```typescript
 // แย่: class เปลี่ยนเมื่อ redesign
 await page.click('.btn.btn-primary.submit-form');
@@ -120,6 +134,7 @@ flowchart LR
 แปลว่า **หน้าเว็บนั้นมีปัญหา accessibility จริง ๆ** — screen reader ก็หาไม่เจอเหมือนกัน
 
 ### สาเหตุที่ 4 — ข้อมูลที่ขึ้นกับเวลาจริง
+
 ```typescript
 // แย่: test จะพังทุกวันจันทร์ หรือพังตอนสิ้นเดือน
 await page.fill('#date', '2024-12-01');   // วันในอดีต → ระบบปฏิเสธ
@@ -130,6 +145,7 @@ await page.getByLabel('Date').fill(tomorrow);
 ```
 
 ### เครื่องมือ debug: Trace Viewer
+
 ```typescript
 use: { trace: 'on-first-retry' }
 ```
@@ -147,7 +163,7 @@ npx playwright show-trace trace.zip
 
 ---
 
-## 3. E2E Test Harness (9 นาที)
+## 3. E2E Test Harness
 
 > **E2E Test Harness** = โครงสร้างที่ทำให้ E2E test รันซ้ำได้ผลเดิม
 > ประกอบด้วย **Page Objects + Fixtures + Seed Data + Config**
@@ -308,7 +324,7 @@ import { test, expect } from '../fixtures';
 
 ---
 
-## 4. ให้ AI ช่วยเขียน E2E อย่างไรให้ไม่พัง (4 นาที)
+## 4. ให้ AI ช่วยเขียน E2E อย่างไรให้ไม่พัง
 
 E2E เป็นจุดที่ AI พลาดบ่อยที่สุด เพราะมัน **ไม่เห็นหน้าจอจริง**
 
@@ -345,6 +361,7 @@ Then run `npx playwright test` and fix until green.
 ---
 
 ## Key Takeaways
+
 - unit test เขียวหมด ≠ user ใช้ได้ — E2E จับ bug ที่อยู่ *ระหว่าง* ชิ้นส่วน
 - E2E คือ loop ที่กว้างที่สุดแต่ช้าที่สุด — เขียนเฉพาะเส้นทางที่ถ้าพังแล้วธุรกิจหยุด
 - Flaky test ทำลายความเชื่อของ test ทั้งชุด ไม่ใช่แค่ตัวมันเอง — อย่ากลบด้วย retry

@@ -1,10 +1,21 @@
 # Lecture: Unit Testing & the Unit Test Harness
 
-## เวลา: 30 นาที
+**เวลารวม:** 30 นาที
+
+*แนะนำการแบ่งเวลาสำหรับผู้สอน (หน่วย: นาที):* เปิดคาบ → 2 · หัวข้อ 1 → 4 · หัวข้อ 2 → 3 · หัวข้อ 3 → 4 · หัวข้อ 4 → 9 · หัวข้อ 5 → 8
+
+## 🎯 จบคาบนี้แล้วจะทำอะไรได้
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| เขียน test ที่แดงจริงเมื่อ business rule หายไป | test ที่เขียวตลอดคือหนี้ที่ทำให้ทีมมั่นใจผิด ๆ และปล่อย bug ขึ้น production |
+| เลือกใช้ test double ให้ถูกประเภทและไม่ mock เกินจำเป็น | over-mocking ทำให้ refactor ไม่ได้ ซึ่งเป็นสาเหตุที่ code เก่าหลายระบบแตะไม่ได้ |
+| จัดการเวลา random และ network ให้ test ไม่แกว่ง | test ที่พังเฉพาะสิ้นเดือนหรือตอนเปลี่ยน timezone เป็นเรื่องที่ทุกทีมเคยเจอ |
+| ตรวจ AI-generated test ด้วยคำถาม "ลบอะไรออกแล้วมันจะแดง" | AI ผลิต test ที่ดันตัวเลข coverage ได้เร็วมาก — คนต้องเป็นคนคัดว่าอันไหนมีค่า |
 
 ---
 
-## 0. เชื่อมจากสัปดาห์ที่แล้ว (2 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว
 
 WS-02 เราเขียน business rules ไว้ใน `unit-brief.md` — วันนี้เราทำให้มันมี "ผู้คุ้มกัน"
 
@@ -25,7 +36,7 @@ flowchart LR
 
 ---
 
-## 1. Unit Test Loop: loop ที่สั้นที่สุดในวิชานี้ (4 นาที)
+## 1. Unit Test Loop: loop ที่สั้นที่สุดในวิชานี้
 
 ```mermaid
 flowchart LR
@@ -69,7 +80,7 @@ flowchart LR
 
 ---
 
-## 2. Test Pyramid: จะเขียน test แบบไหน อย่างละเท่าไร (3 นาที)
+## 2. Test Pyramid: จะเขียน test แบบไหน อย่างละเท่าไร
 
 ```mermaid
 flowchart TB
@@ -97,9 +108,10 @@ flowchart TB
 
 ---
 
-## 3. Anatomy of a Good Test (4 นาที)
+## 3. Anatomy of a Good Test
 
 ### Arrange / Act / Assert (AAA)
+
 ```python
 def test_booking_confirmed_when_room_available():
     # Arrange — เตรียม state และ dependencies
@@ -118,6 +130,7 @@ def test_booking_confirmed_when_room_available():
 ```
 
 ### FIRST Principles
+
 - **F**ast — รันเร็ว (milliseconds ไม่ใช่ seconds)
 - **I**ndependent — ไม่พึ่ง test อื่น ลำดับ run ไม่ควรสำคัญ
 - **R**epeatable — ผลเหมือนเดิมทุกครั้ง ไม่ขึ้นกับ environment
@@ -125,6 +138,7 @@ def test_booking_confirmed_when_room_available():
 - **T**imely — เขียนพร้อมหรือก่อน production code
 
 ### ชื่อ test คือเอกสาร
+
 ```python
 ❌ def test_booking()
 ❌ def test_1()
@@ -142,7 +156,7 @@ def test_booking_confirmed_when_room_available():
 
 ---
 
-## 4. Unit Test Harness: Test Doubles, Fixtures, Factories (9 นาที)
+## 4. Unit Test Harness: Test Doubles, Fixtures, Factories
 
 > **Test Harness** = โครงสร้างรอบ ๆ test ที่ทำให้ test รันได้แบบ isolated และได้ผลเหมือนเดิมทุกครั้ง
 > ประกอบด้วย **test doubles + fixtures + factories + runner config**
@@ -214,6 +228,7 @@ def test_notification_sent_after_booking():
 | Real behavior + verify | Spy |
 
 ### กับดัก: Over-Mocking
+
 ```python
 # แย่: mock ทุกอย่างจน test ไม่ได้ test อะไรเลยนอกจาก mock ของตัวเอง
 def test_create_booking():
@@ -292,6 +307,7 @@ def test_booking_rejected_when_full():
 > `make_room(capacity=0)` บอกชัดว่า test นี้สนใจแค่ capacity — ที่เหลือไม่เกี่ยว
 
 ### 4.3 กำจัดความไม่แน่นอน (สาเหตุอันดับ 1 ของ test แกว่ง)
+
 ```python
 # แย่: ผูกกับเวลาจริง — test จะพังตอนเที่ยงคืน
 def is_expired(booking):
@@ -314,9 +330,10 @@ def test_expired_booking():
 
 ---
 
-## 5. กับดักใหญ่: AI-Generated Tests ที่ไม่มีค่า (8 นาที)
+## 5. กับดักใหญ่: AI-Generated Tests ที่ไม่มีค่า
 
 ### Test ที่ผ่าน Coverage แต่ไม่วัดอะไร
+
 ```python
 # AI มักสร้าง:
 def test_create_booking():
@@ -366,6 +383,7 @@ def create_booking(self, room_id, ...):
 ```
 
 ### วิธีตรวจแบบอัตโนมัติ: Mutation Testing
+
 Mutation testing ทำสิ่งเดียวกันให้อัตโนมัติ — มันแก้ code ของเราทีละจุด
 (เปลี่ยน `>` เป็น `>=`, ลบบรรทัด, สลับ `and`/`or`) แล้วดูว่ามี test แดงไหม
 
@@ -390,6 +408,7 @@ npx stryker run
 > **"ถ้าลบ logic อะไรออก test ตัวนี้จะแดง"** — ตอบไม่ได้ = ลบ test ทิ้ง
 
 ### วิธีสั่ง AI ให้เขียน test ที่มีค่า
+
 ```
 Write unit tests for BookingService.create_booking.
 
@@ -408,6 +427,7 @@ Rules:
 ---
 
 ## Key Takeaways
+
 - Unit Test Harness = test doubles + fixtures + factories ที่ทำให้ test รันได้อย่าง isolated
 - Test pyramid: unit เยอะ, E2E น้อย — ความสำคัญไม่ใช่เกณฑ์เลือกระดับของ test
 - mock เฉพาะสิ่งที่ข้ามขอบเขต unit — test ควรรู้ว่าระบบ *ทำอะไรได้* ไม่ใช่ *ทำอย่างไร*

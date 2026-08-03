@@ -1,10 +1,21 @@
 # Lecture: Docker & the Environment Loop
 
-## เวลา: 30 นาที
+**เวลารวม:** 30 นาที
+
+*แนะนำการแบ่งเวลาสำหรับผู้สอน (หน่วย: นาที):* เปิดคาบ → 3 · หัวข้อ 1 → 4 · หัวข้อ 2 → 4 · หัวข้อ 3 → 4 · หัวข้อ 4 → 9 · หัวข้อ 5 → 3
+
+## 🎯 จบคาบนี้แล้วจะทำอะไรได้
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| เขียน Dockerfile แบบ multi-stage ที่ปลอดภัยและ reproducible | image ที่มี dev tool ติดไปด้วยคือเครื่องมือที่ผู้บุกรุกได้ใช้ฟรีเมื่อเจาะเข้ามาได้ |
+| อธิบายได้ทุกบรรทัดว่าทำไมต้องมี | ตอน review PR ที่แก้ Dockerfile คุณจะรู้ว่าอะไรผิดปกติ |
+| ตั้ง compose ให้ dev, test และ CI ใช้คำจำกัดความเดียวกัน | ตัดปัญหา "works on my machine" ซึ่งเป็นต้นทุนแฝงที่ใหญ่มากในทีม |
+| ตรวจว่า automation ที่ตั้งไว้ "แดงได้จริง" | pipeline ที่เขียวหลอกเป็นความล้มเหลวที่แพงที่สุด เพราะไม่มีใครรู้ตัว |
 
 ---
 
-## 0. เชื่อมจากสัปดาห์ที่แล้ว (3 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว
 
 เรามี test แล้วทั้ง unit และ E2E — แต่ test มีค่าก็ต่อเมื่อ **ทุกคนรันได้ผลเหมือนกัน**
 
@@ -28,7 +39,7 @@ flowchart TB
 
 ---
 
-## 1. Environment Loop (4 นาที)
+## 1. Environment Loop
 
 ```mermaid
 flowchart LR
@@ -57,9 +68,10 @@ environment ที่ reproducible คือสิ่งที่ทำให้
 
 ---
 
-## 2. Docker Fundamentals (4 นาที)
+## 2. Docker Fundamentals
 
 ### Image vs Container
+
 ```mermaid
 flowchart LR
     DF["Dockerfile<br/><i>สูตร</i>"] -- "docker build" --> IMG["Image<br/><i>read-only</i>"]
@@ -76,6 +88,7 @@ Container = running instance ของ image (มี read-write layer เพิ�
 ```
 
 ### Layer System
+
 ```dockerfile
 FROM node:24-alpine       # Layer 1: base OS + Node
 WORKDIR /app              # Layer 2: set working directory
@@ -104,7 +117,7 @@ Layer 1–4 ยังใช้ cache ได้ → `npm ci` ไม่ต้อ�
 
 ---
 
-## 3. กับดัก: Layer Caching ที่พลาด (4 นาที)
+## 3. กับดัก: Layer Caching ที่พลาด
 
 ```dockerfile
 # แย่: COPY ทั้งหมดก่อน
@@ -182,7 +195,7 @@ CMD ["node", "server.js"]
 
 ---
 
-## 4. Compose = คำจำกัดความของ Environment (9 นาที)
+## 4. Compose = คำจำกัดความของ Environment
 
 Compose ทำให้ environment กลายเป็นไฟล์ที่อยู่ใน git — แก้ได้ review ได้ ย้อนได้
 
@@ -241,6 +254,7 @@ volumes:
 > เพราะ database restart ได้ตลอดอายุการใช้งาน ไม่ใช่แค่ตอนเริ่ม
 
 ### Profiles: แยก dev ออกจาก test ในไฟล์เดียว
+
 ```yaml
   test-db:
     image: postgres:17-alpine
@@ -276,6 +290,7 @@ flowchart LR
 ```
 
 ### รัน Test Suite ใน Container
+
 ```yaml
 # compose.test.yaml
 services:
@@ -322,6 +337,7 @@ echo "Exit code: $?"    # 0 = pass — ตัวเลขนี้คือส�
 > ไม่ใช่ทดสอบแค่ว่ามันเขียวได้
 
 ### Config ต้องมาจาก Environment
+
 ```yaml
 # แย่: ค่าจริงฝังในไฟล์ที่อยู่ใน git
 environment:
@@ -344,7 +360,7 @@ environment:
 
 ---
 
-## 5. Review Dockerfile ที่ AI สร้าง (3 นาที)
+## 5. Review Dockerfile ที่ AI สร้าง
 
 | AI มักทำ | ทำไมเป็นปัญหา |
 |---|---|
@@ -376,6 +392,7 @@ and pin the base image tag. Explain each instruction in one line as a comment.
 ---
 
 ## Key Takeaways
+
 - Environment Loop: จาก "6 ขั้นตอน 25 นาที" เหลือ `docker compose up` คำสั่งเดียว
 - Layer order สำคัญมาก — เรียงจากสิ่งที่เปลี่ยนน้อยไปหาสิ่งที่เปลี่ยนบ่อย
 - Multi-stage build เป็นเรื่อง security ไม่ใช่แค่ optimization

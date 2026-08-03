@@ -1,10 +1,21 @@
 # Lecture: Code Quality, Security & the Quality Loop
 
-## เวลา: 30 นาที
+**เวลารวม:** 30 นาที
+
+*แนะนำการแบ่งเวลาสำหรับผู้สอน (หน่วย: นาที):* เปิดคาบ → 3 · หัวข้อ 1 → 4 · หัวข้อ 2 → 6 · หัวข้อ 3 → 4 · หัวข้อ 4 → 7 · หัวข้อ 5 → 2 · หัวข้อ 6 → 2
+
+## 🎯 จบคาบนี้แล้วจะทำอะไรได้
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| refactor อย่างปลอดภัยโดยใช้ test เป็นตาข่าย | เป็นวิธีเดียวที่ทำให้แตะ code เก่าได้โดยไม่ทำ production ล่ม |
+| แยกได้ว่าข้อเสนอของ AI อันไหนเชื่อได้ อันไหนต้องปฏิเสธ | AI ตัดสินเรื่องที่ต้องรู้ context ทางธุรกิจไม่ได้ และมักเสนอเกินความจำเป็น |
+| มองเห็นช่องโหว่ authorization ที่เครื่องมือสแกนจับไม่ได้ | Broken Access Control เป็นช่องโหว่อันดับต้น ๆ ของระบบเว็บจริง |
+| เขียน ADR ที่บันทึกทางเลือกที่ไม่ได้เลือกไว้ด้วย | ทำให้ทีมในอนาคตเถียงกันบนข้อเท็จจริงแทนความทรงจำ |
 
 ---
 
-## 0. เชื่อมจากสัปดาห์ที่แล้ว (3 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว
 
 7 สัปดาห์ที่ผ่านมาเราสร้างของเพิ่มตลอด — วันนี้เป็นสัปดาห์เดียวที่ **ไม่เพิ่ม feature อะไรเลย**
 แต่เป็นสัปดาห์ที่ทำให้ทุกอย่างที่สร้างมาอยู่ต่อได้
@@ -24,7 +35,7 @@ flowchart LR
 
 ---
 
-## 1. Quality Loop (4 นาที)
+## 1. Quality Loop
 
 ```mermaid
 flowchart LR
@@ -62,9 +73,10 @@ Code ที่ต้อง refactor + ไม่มี test = วิธีที�
 
 ---
 
-## 2. Code Smells ที่พบบ่อย (6 นาที)
+## 2. Code Smells ที่พบบ่อย
 
 ### Long Method
+
 ```python
 # แย่: function ทำหลายอย่าง
 def process_booking(room_id, user_id, start, end):
@@ -88,6 +100,7 @@ def process_booking(room_id, user_id, start, end):
 ```
 
 ### Magic Numbers
+
 ```python
 # แย่
 if duration > 8:              # 8 คืออะไร
@@ -104,6 +117,7 @@ price = hours * HOURLY_RATE_THB
 ```
 
 ### Primitive Obsession
+
 ```python
 # แย่: string/int ลอย ๆ ที่ไม่รู้ว่าหน่วยอะไร รูปแบบไหน
 def create_booking(room: int, start: str, end: str, price: float): ...
@@ -142,7 +156,7 @@ flowchart LR
 
 ---
 
-## 3. AI Code Review: เชื่อตรงไหน ปฏิเสธตรงไหน (4 นาที)
+## 3. AI Code Review: เชื่อตรงไหน ปฏิเสธตรงไหน
 
 ```mermaid
 flowchart TB
@@ -160,6 +174,7 @@ flowchart TB
 และอ่อนเรื่องที่ต้องรู้ **สิ่งที่ไม่อยู่ใน context**
 
 ### Prompt ที่ได้ผล
+
 ```
 Review this function. For each issue:
 1. Specific code smell or problem name
@@ -180,9 +195,10 @@ problem they solve. Prefer the smallest change that removes the problem.
 
 ---
 
-## 4. Security: สิ่งที่ AI มักพลาด (7 นาที)
+## 4. Security: สิ่งที่ AI มักพลาด
 
 ### SQL Injection
+
 ```python
 # แย่: AI บางครั้งสร้าง code แบบนี้เมื่อขอ "dynamic filter"
 query = f"SELECT * FROM rooms WHERE name = '{user_input}'"
@@ -228,6 +244,7 @@ def delete_booking(booking_id):
 > แล้วเขียน test หนึ่งตัวต่อหนึ่งช่อง** — งานน่าเบื่อแต่คุ้มมาก
 
 ### Exposed Sensitive Data
+
 ```python
 # แย่: return ทั้ง object
 return user.__dict__          # รวม password_hash, internal_id
@@ -241,6 +258,7 @@ return {"error": str(e)}      # ❌ อาจมี connection string อยู�
 ```
 
 ### Endpoint ที่ลืมปิด
+
 `/api/test/seed` และ `/api/test/cleanup` จาก WS-04 — เปิดดูตอนนี้เลยว่ามี guard หรือยัง
 
 ### ความเสี่ยงใหม่: Excessive Agency ของ AI Agent
@@ -271,14 +289,16 @@ flowchart LR
 
 ---
 
-## 5. Responsible AI: License & Privacy (2 นาที)
+## 5. Responsible AI: License & Privacy
 
 ### License ของ AI-Generated Code
+
 - ผู้ให้บริการรายใหญ่อนุญาตให้ใช้ output ใน commercial products — แต่ **อ่าน ToS ของตัวที่ใช้จริงเสมอ**
 - ถ้า AI generate code ที่คล้ายของ GPL project มาก — อาจมีปัญหาเรื่อง license
 - ในงานจริง หลายบริษัทมีนโยบายของตัวเองที่เข้มกว่า ToS
 
 ### อย่าส่งเข้า AI Tools
+
 - Passwords, API keys, tokens (แม้ใน comment)
 - Personal data ของ users (email, ชื่อจริง, รหัสนักศึกษา)
 - Proprietary business logic ที่เป็น confidential
@@ -293,7 +313,7 @@ flowchart LR
 
 ---
 
-## 6. ADR: บันทึกการตัดสินใจ (2 นาที)
+## 6. ADR: บันทึกการตัดสินใจ
 
 ADR แก้ปัญหา "ทำไมตอนนั้นถึงเลือกแบบนี้" ที่ไม่มีใครตอบได้ในอีก 6 เดือน
 
@@ -301,22 +321,28 @@ ADR แก้ปัญหา "ทำไมตอนนั้นถึงเล�
 # ADR-[number]: [Title]
 
 ## Status
+
 Proposed / Accepted / Superseded by ADR-XXX
 
 ## Context
+
 [ทำไมถึงต้องตัดสินใจเรื่องนี้ — constraint อะไรบ้าง]
 
 ## Decision
+
 [ตัดสินใจอะไร]
 
 ## Alternatives Considered
+
 [ทางเลือกอื่น + ทำไมถึงไม่เลือก]
 
 ## Consequences
+
 Positive: [ข้อดี]
 Negative: [trade-offs ที่ยอมรับ]
 
 ## AI-DLC Note
+
 [AI เสนออะไร / human เห็นด้วยหรือ push back อะไร เพราะรู้อะไรที่ AI ไม่รู้]
 ```
 
@@ -335,6 +361,7 @@ section **Alternatives Considered** สำคัญที่สุด เพร�
 ---
 
 ## Key Takeaways
+
 - Quality Loop ทำงานได้เพราะมี test harness จาก WS-03/WS-04 เป็นตาข่ายนิรภัย
 - Refactor ทีละก้าวเล็ก ๆ commit ทุกครั้งที่เขียว แดงเมื่อไหร่ revert ทันที
 - AI เก่งเรื่องที่ตัดสินจาก code ตรงหน้า อ่อนเรื่องที่ต้องรู้ context ที่ไม่ได้ให้ไป

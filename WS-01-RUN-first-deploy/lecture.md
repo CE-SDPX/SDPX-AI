@@ -1,10 +1,21 @@
 # Lecture: AI-DLC, Loop Engineering & First Deployment
 
-## เวลา: 45 นาที
+**เวลารวม:** 45 นาที
+
+*แนะนำการแบ่งเวลาสำหรับผู้สอน (หน่วย: นาที):* เปิดคาบ → 3 · หัวข้อ 1 → 12 · หัวข้อ 2 → 18 · หัวข้อ 3 → 12
+
+## 🎯 จบคาบนี้แล้วจะทำอะไรได้
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| อธิบายได้ว่า AI-DLC ต่างจาก Agile แบบเดิมตรงไหน และคอขวดย้ายไปอยู่ที่ไหน | เข้าใจว่าทำไมองค์กรถึงเริ่มบังคับให้ PR เล็กลง และทำไมงาน review ถึงสำคัญขึ้น |
+| วัด loop ด้วย latency, fidelity, coverage และบอกได้ว่าอันไหนสำคัญกว่า | ใช้ประเมินได้ทันทีว่าทีมที่เข้าไปทำงานด้วยมีระบบตรวจสอบที่เชื่อถือได้หรือไม่ |
+| อธิบายได้ว่าทำไมคุณภาพของ AI agent ถูกจำกัดด้วยขั้น Verify | ตัดสินใจได้ว่าควรลงทุนเวลาไปกับอะไรก่อน เมื่อได้รับมอบหมายให้เอา AI มาใช้ในทีม |
+| เขียน `AGENTS.md` ที่ทำให้ AI ทำงานตรงกับกติกาของ repo | เป็นทักษะที่หลายองค์กรเริ่มคาดหวังจากวิศวกรทุกระดับ ไม่ใช่เฉพาะ senior |
 
 ---
 
-## 0. เปิดคาบ: คำถามเดียวที่ทั้งวิชานี้พยายามตอบ (3 นาที)
+## 0. เปิดคาบ: คำถามเดียวที่ทั้งวิชานี้พยายามตอบ
 
 ถามทั้งห้อง แล้วให้ยกมือ:
 
@@ -33,7 +44,7 @@ flowchart LR
 
 ---
 
-## 1. AI-Driven Development Lifecycle (12 นาที)
+## 1. AI-Driven Development Lifecycle
 
 ### ทำไม Traditional Agile ไม่พอในยุค AI
 
@@ -111,7 +122,7 @@ flowchart TB
 
 ---
 
-## 2. Loop Engineering (18 นาที)
+## 2. Loop Engineering
 
 ### นิยาม
 
@@ -240,7 +251,7 @@ flowchart LR
 
 ---
 
-## 3. Context Engineering, Ethics & Skills (12 นาที)
+## 3. Context Engineering, Ethics & Skills
 
 ### จาก Prompt Engineering สู่ Context Engineering
 
@@ -279,20 +290,24 @@ agent ส่วนใหญ่จะอ่านให้อัตโนมั�
 # AGENTS.md
 
 ## Project
+
 ระบบจองห้องเรียนสำหรับนักศึกษา — ดู memory-bank/intent.md
 
 ## Commands
+
 - install: `npm ci`
 - dev: `npm run dev`
 - test: `npm test`          ← ต้องเขียวก่อนเสนอ diff เสมอ
 - lint: `npm run lint`
 
 ## Conventions
+
 - TypeScript strict mode ห้ามใช้ `any`
 - ใช้ `data-testid` สำหรับ element ที่ E2E ต้องอ้างถึง
 - Commit ตาม Conventional Commits
 
 ## Rules
+
 - ห้ามแก้ไฟล์ใน `docs/adr/` โดยไม่ถามก่อน
 - ห้ามใส่ค่า secret ลงในไฟล์ใด ๆ ให้ใช้ env var เท่านั้น
 - ถ้า test แดง ให้แก้ code ห้ามแก้ test เพื่อให้ผ่าน
@@ -363,6 +378,7 @@ flowchart LR
 ---
 
 ## Key Takeaways
+
 - คำถามหลักของวิชานี้: *"กว่าจะรู้ว่าผิด ใช้เวลานานแค่ไหน และเชื่อสัญญาณนั้นได้แค่ไหน"*
 - AI-DLC: AI proposes → human validates ทุก checkpoint — คอขวดย้ายจาก "เขียน" ไป "ตรวจ"
 - Loop Engineering วัดที่ latency, fidelity, coverage — และ **fidelity สำคัญกว่า latency**

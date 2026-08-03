@@ -1,10 +1,21 @@
 # Lecture: CI/CD & the Integration Loop
 
-## เวลา: 30 นาที
+**เวลารวม:** 30 นาที
+
+*แนะนำการแบ่งเวลาสำหรับผู้สอน (หน่วย: นาที):* เปิดคาบ → 3 · หัวข้อ 1 → 5 · หัวข้อ 2 → 9 · หัวข้อ 3 → 6 · หัวข้อ 4 → 5
+
+## 🎯 จบคาบนี้แล้วจะทำอะไรได้
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| ออกแบบ pipeline ที่เรียงจากเร็ว/ถูก ไปช้า/แพง | ประหยัดเวลาทีมและค่า compute ซึ่งเป็นต้นทุนจริงขององค์กร |
+| ตั้ง `permissions`, `concurrency`, cache และ pin version ของ action | 4 อย่างนี้คือสิ่งที่ security review มองหาเป็นอันดับแรกใน workflow |
+| จัดการเหตุการณ์ secret หลุดตามลำดับที่ถูกต้อง | ทำผิดลำดับ (ลบ commit ก่อน revoke) แปลว่า key ถูกใช้ไปแล้ว |
+| อธิบายได้ว่าทำไม deploy บ่อยถึงปลอดภัยกว่า deploy ทีเดียวก้อนใหญ่ | เป็นข้อสรุปจากงานวิจัยด้าน software delivery ที่ขัดกับสัญชาตญาณของหลายคน |
 
 ---
 
-## 0. เชื่อมจากสัปดาห์ที่แล้ว (3 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว
 
 5 สัปดาห์ที่ผ่านมาเราสร้าง loop ไว้ 4 วง — แต่ทั้งหมดมีจุดอ่อนเดียวกัน:
 **มันทำงานก็ต่อเมื่อมีคนจำได้ว่าต้องรัน**
@@ -32,7 +43,7 @@ flowchart LR
 
 ---
 
-## 1. Integration Loop: รวมทุก loop ให้เป็นด่านเดียว (5 นาที)
+## 1. Integration Loop: รวมทุก loop ให้เป็นด่านเดียว
 
 ```mermaid
 flowchart TB
@@ -83,9 +94,10 @@ flowchart LR
 
 ---
 
-## 2. GitHub Actions Workshop (9 นาที)
+## 2. GitHub Actions Workshop
 
 ### โครงสร้าง Workflow ที่ครบ
+
 ```yaml
 name: CI/CD Pipeline
 
@@ -182,6 +194,7 @@ jobs:
 ```
 
 ### 4 บรรทัดที่คนมักลืม แต่สำคัญมาก
+
 | บรรทัด | ป้องกันอะไร |
 |---|---|
 | `permissions: contents: read` | workflow เขียนอะไรก็ได้ใน repo เมื่อถูกแก้โดยไม่ตั้งใจหรือโดย dependency |
@@ -199,7 +212,7 @@ jobs:
 
 ---
 
-## 3. กับดัก: Secrets และ Supply Chain (6 นาที)
+## 3. กับดัก: Secrets และ Supply Chain
 
 ### Secrets หลุดเข้า Repo
 
@@ -236,6 +249,7 @@ env:
 > จึงต้องเปิด push protection และ pre-commit hook ไว้ เพื่อให้ระบบจับก่อนที่คนจะพลาด
 
 ### Supply Chain: action ที่เราเรียกใช้ก็คือ code ที่เรารัน
+
 ```yaml
 # พอใช้ได้: pin major version — ได้ security fix อัตโนมัติ
 - uses: actions/checkout@v7
@@ -263,6 +277,7 @@ flowchart LR
 > ออกจาก credential ทั่วไป
 
 ### Log ก็รั่วได้
+
 ```yaml
 - run: echo "Deploying with $DATABASE_URL"   # ❌ โผล่ใน log
 ```
@@ -271,9 +286,10 @@ GitHub มาสก์ค่า secret ให้บางกรณี แต่�
 
 ---
 
-## 4. Branch Protection & Fail Fast (5 นาที)
+## 4. Branch Protection & Fail Fast
 
 ### Branch Protection = ทำให้ loop หลบไม่ได้
+
 Settings > Branches (หรือ Rules > Rulesets) สำหรับ `main`:
 - ✅ Require status checks to pass — เลือก `lint-and-test`, `e2e`
 - ✅ Require branches to be up to date before merging
@@ -284,6 +300,7 @@ Settings > Branches (หรือ Rules > Rulesets) สำหรับ `main`:
 > **Loop จะมีความหมายก็ต่อเมื่อผลของมันมีผลจริง**
 
 ### Fail Fast
+
 ```mermaid
 flowchart LR
     A["Lint<br/>~20 วิ"] --> B["Unit<br/>~1 นาที"]
@@ -327,6 +344,7 @@ docker compose -f compose.test.yaml up unit \
 ---
 
 ## Key Takeaways
+
 - Integration Loop ทำให้ทุก loop ที่สร้างมา 5 สัปดาห์กลายเป็นสิ่งที่หลบไม่ได้
 - ความเร็วกับความมั่นคงไม่ใช่สิ่งที่ต้องแลกกัน — deploy ทีละนิดคือกลยุทธ์ลดความเสี่ยง
 - ตั้ง `permissions`, `concurrency`, cache และ pin version — 4 บรรทัดที่คนลืมบ่อยที่สุด

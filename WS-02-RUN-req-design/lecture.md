@@ -1,10 +1,21 @@
 # Lecture: Requirements, API Design & the Spec Loop
 
-## เวลา: 30 นาที
+**เวลารวม:** 30 นาที
+
+*แนะนำการแบ่งเวลาสำหรับผู้สอน (หน่วย: นาที):* เปิดคาบ → 2 · หัวข้อ 1 → 4 · หัวข้อ 2 → 6 · หัวข้อ 3 → 8 · หัวข้อ 4 → 8
+
+## 🎯 จบคาบนี้แล้วจะทำอะไรได้
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| แยกออกว่า story ไหน testable และ story ไหนวัดไม่ได้ | ในทีมจริง story ที่วัดไม่ได้จะกลายเป็นงานที่ "เสร็จแล้วแต่ยังไม่เสร็จ" และเถียงกันไม่จบ |
+| ออกแบบ REST API พร้อมเลือก status code ให้ตรงความหมาย | API เป็นสัญญาที่ทีมอื่นใช้ — ออกแบบผิดแล้วแก้ทีหลังกระทบทุกคนที่เรียกใช้ |
+| อธิบายได้ว่า idempotency สำคัญตอนไหน | เป็นหัวใจของระบบที่มีการชำระเงินหรือการจอง ซึ่งเป็นระบบที่พบมากที่สุดในงานจริง |
+| ใช้ OpenAPI spec เป็นแหล่งความจริงเดียวของทีม | ทำให้ frontend กับ backend ทำงานคู่ขนานได้โดยไม่ต้องรอกัน — เป็นวิธีทำงานมาตรฐานของทีมขนาดกลางขึ้นไป |
 
 ---
 
-## 0. เชื่อมจากสัปดาห์ที่แล้ว (2 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว
 
 สัปดาห์ที่แล้วเราปิด **Deploy Loop** — push แล้วเห็นของจริงบน URL
 แต่ loop นั้นตอบได้แค่ *"มันขึ้นไปแล้วหรือยัง"* ยังไม่ได้ตอบว่า *"มันควรเป็นอะไร"*
@@ -27,7 +38,7 @@ flowchart LR
 
 ---
 
-## 1. Spec Loop คืออะไร (4 นาที)
+## 1. Spec Loop คืออะไร
 
 ```mermaid
 flowchart LR
@@ -58,9 +69,10 @@ flowchart LR
 
 ---
 
-## 2. User Stories ที่ Testable ได้ (6 นาที)
+## 2. User Stories ที่ Testable ได้
 
 ### รูปแบบมาตรฐาน
+
 ```
 As a [user role],
 I want to [action],
@@ -71,6 +83,7 @@ So that [benefit].
 ถ้าทำ feature นี้แล้วไม่ได้ผลตามที่หวัง เราควรเลิกทำ
 
 ### Acceptance Criteria (Given/When/Then)
+
 ```
 Given [context/precondition],
 When [action is taken],
@@ -78,6 +91,7 @@ Then [expected outcome].
 ```
 
 ### ตัวอย่างที่ดี
+
 ```
 Story:
 As a student, I want to book a study room,
@@ -94,6 +108,7 @@ Then the system rejects with "Room not available for selected time".
 ```
 
 ### กับดัก: Stories ที่ยาก Test
+
 ```
 ❌ "As a user, I want a good experience"
    → "good" วัดไม่ได้
@@ -125,9 +140,10 @@ flowchart LR
 
 ---
 
-## 3. RESTful API Design (8 นาที)
+## 3. RESTful API Design
 
 ### HTTP Methods
+
 | Method | ใช้สำหรับ | ตัวอย่าง | Idempotent |
 |---|---|---|---|
 | GET | ดึงข้อมูล | `GET /rooms` | ✅ |
@@ -191,6 +207,7 @@ flowchart TB
 ```
 
 ### Resource Naming
+
 ```
 ✅ /rooms              (collection)
 ✅ /rooms/123          (single resource)
@@ -202,6 +219,7 @@ flowchart TB
 ```
 
 ### Error Response ที่มีรูปแบบเดียวกันทั้งระบบ
+
 ```json
 {
   "error": {
@@ -223,7 +241,7 @@ frontend และ E2E test จะเช็ค `code` ไม่ใช่ข้�
 
 ---
 
-## 4. OpenAPI Spec = API Contract (8 นาที)
+## 4. OpenAPI Spec = API Contract
 
 ### ทำไม Contract ถึงปิด loop ได้หลายวง
 
@@ -251,6 +269,7 @@ flowchart TB
 > ซึ่งมักจบด้วยการแก้ทั้งสองฝั่ง
 
 ### ตัวอย่าง OpenAPI spec เบื้องต้น
+
 ```yaml
 openapi: 3.1.0
 info:
@@ -347,6 +366,7 @@ For each item, quote the line that satisfies it, or say MISSING.
 ---
 
 ## Key Takeaways
+
 - Spec Loop ปิดข้อผิดพลาดตอนที่มันยังเป็นข้อความ ซึ่งถูกกว่าตอนเป็น code เป็นสิบเท่า
 - ทุกคำถามที่เราไม่ตอบ AI จะเดาแทน — และคำเดาจะฝังลงใน code เงียบ ๆ
 - AC วันนี้คือ E2E test ใน WS-04 และ business rule คือ unit test ใน WS-03

@@ -1,5 +1,16 @@
 # Self-Learning: เตรียมก่อนเรียน Requirements & API Design
 
+## 🎯 อ่าน/ดูจบแล้วจะได้อะไร
+
+| สิ่งที่จะทำได้ | ใช้ในงานจริงอย่างไร |
+|---|---|
+| เลือก HTTP method และ status code ให้ตรงความหมาย | API ที่ใช้ status code มั่วทำให้ทีม frontend ต้องเขียน workaround และ bug จะซ่อนอยู่นาน |
+| เขียน user story พร้อม acceptance criteria แบบ Given/When/Then | เป็นรูปแบบที่ทีม Agile ทั่วโลกใช้เขียน backlog และใช้เป็นฐานของ test |
+| อ่าน OpenAPI spec รู้เรื่อง | API ขององค์กรส่วนใหญ่มี spec เป็นเอกสารกลาง — อ่านไม่ออกแปลว่าทำงานร่วมกับทีมอื่นไม่ได้ |
+| เข้าใจว่าทำไม spec ที่ชัดทำให้ AI ทำงานได้ตรงกว่า prompt ยาว ๆ | ทักษะ context engineering ที่ใช้ได้กับ AI ทุกยี่ห้อ ไม่ผูกกับเครื่องมือใดเครื่องมือหนึ่ง |
+
+---
+
 ## สิ่งที่ต้องศึกษา
 
 ### REST API Design

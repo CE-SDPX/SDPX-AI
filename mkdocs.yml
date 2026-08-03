@@ -1,0 +1,146 @@
+site_name: SDPX-AI
+site_description: Software Development Process in Practice — AI-Assisted
+site_author: Rathachai CHAWUTHAI
+docs_dir: .mkdocs-build
+
+theme:
+  name: material
+  language: th
+  font:
+    text: Noto Sans Thai
+    code: JetBrains Mono
+  icon:
+    logo: material/sync
+    repo: fontawesome/brands/github
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - toc.follow
+    - content.code.copy
+    - search.suggest
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: ตามการตั้งค่าของเครื่อง
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: สลับเป็นโหมดมืด
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: สลับเป็นโหมดสว่าง
+
+extra_css:
+  - assets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: "#"
+      slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+plugins:
+  - search:
+      lang:
+        - en
+
+extra_javascript:
+  - assets/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - หน้าแรก: index.md
+  - ภาพรวมวิชา: overview.md
+
+  - อ่านประกอบ:
+      - IT Project Management ในยุค AI: readings/01-it-project-management-ai.md
+      - Risk Management: readings/02-risk-management.md
+      - Software Testing: readings/03-software-testing.md
+      - System Architecture Design: readings/04-system-architecture-design.md
+      - The Mythical Man-Month: readings/05-mythical-man-month.md
+      - How to be a Senior Software Engineer: readings/06-senior-software-engineer.md
+      - วิศวกรซอฟต์แวร์ยุคใหม่: readings/07-modern-software-engineer.md
+
+  - Workshops:
+      - WS-01 · First Deploy:
+          - 1 · Self-Learning: WS-01--before/self-learning.md
+          - 2 · Homework: WS-01--before/homework.md
+          - 3 · Lecture: WS-01-RUN-first-deploy/lecture.md
+          - 4 · Lab: WS-01-RUN-first-deploy/lab.md
+          - 5 · Present: WS-01-RUN-first-deploy/present.md
+      - WS-02 · Requirements & Design:
+          - 1 · Self-Learning: WS-02--before/self-learning.md
+          - 2 · Homework: WS-02--before/homework.md
+          - 3 · Lecture: WS-02-RUN-req-design/lecture.md
+          - 4 · Lab: WS-02-RUN-req-design/lab.md
+          - 5 · Present: WS-02-RUN-req-design/present.md
+      - WS-03 · Unit Testing:
+          - 1 · Self-Learning: WS-03--before/self-learning.md
+          - 2 · Homework: WS-03--before/homework.md
+          - 3 · Lecture: WS-03-RUN-unit-test/lecture.md
+          - 4 · Lab: WS-03-RUN-unit-test/lab.md
+          - 5 · Present: WS-03-RUN-unit-test/present.md
+      - WS-04 · End-to-End Testing:
+          - 1 · Self-Learning: WS-04--before/self-learning.md
+          - 2 · Homework: WS-04--before/homework.md
+          - 3 · Lecture: WS-04-RUN-e2e/lecture.md
+          - 4 · Lab: WS-04-RUN-e2e/lab.md
+          - 5 · Present: WS-04-RUN-e2e/present.md
+      - WS-05 · Docker:
+          - 1 · Self-Learning: WS-05--before/self-learning.md
+          - 2 · Homework: WS-05--before/homework.md
+          - 3 · Lecture: WS-05-RUN-docker/lecture.md
+          - 4 · Lab: WS-05-RUN-docker/lab.md
+          - 5 · Present: WS-05-RUN-docker/present.md
+      - WS-06 · CI/CD:
+          - 1 · Self-Learning: WS-06--before/self-learning.md
+          - 2 · Homework: WS-06--before/homework.md
+          - 3 · Lecture: WS-06-RUN-cicd/lecture.md
+          - 4 · Lab: WS-06-RUN-cicd/lab.md
+          - 5 · Present: WS-06-RUN-cicd/present.md
+      - WS-07 · Performance:
+          - 1 · Self-Learning: WS-07--before/self-learning.md
+          - 2 · Homework: WS-07--before/homework.md
+          - 3 · Lecture: WS-07-RUN-perf/lecture.md
+          - 4 · Lab: WS-07-RUN-perf/lab.md
+          - 5 · Present: WS-07-RUN-perf/present.md
+      - WS-08 · Code Quality:
+          - 1 · Self-Learning: WS-08--before/self-learning.md
+          - 2 · Homework: WS-08--before/homework.md
+          - 3 · Lecture: WS-08-RUN-code-quality/lecture.md
+          - 4 · Lab: WS-08-RUN-code-quality/lab.md
+          - 5 · Present: WS-08-RUN-code-quality/present.md
+
+  - โครงงาน:
+      - Pairwise Evaluation PRD: project-ideas/pairwise_evaluation_prd.md

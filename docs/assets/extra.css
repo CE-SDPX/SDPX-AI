@@ -1,0 +1,103 @@
+/* ------------------------------------------------------------------
+   SDPX-AI — ปรับการอ่านภาษาไทยและตารางยาว
+   ------------------------------------------------------------------ */
+
+/* ภาษาไทยต้องการระยะบรรทัดมากกว่าละติน เพราะมีสระบนและวรรณยุกต์ซ้อนกัน */
+.md-typeset {
+  line-height: 1.85;
+  font-size: 0.78rem;
+}
+
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-typeset h4 {
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+.md-typeset h2 {
+  margin-top: 2.2em;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  padding-bottom: 0.3em;
+}
+
+.md-typeset li {
+  margin-bottom: 0.35em;
+}
+
+/* ตัวอักษรไทยเส้นบาง พออยู่บนพื้นดำจะดูจม — เพิ่มน้ำหนักและลด contrast ที่แสบตา */
+[data-md-color-scheme="slate"] .md-typeset {
+  font-weight: 450;
+  letter-spacing: 0.002em;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: hsl(232, 15%, 13%);
+}
+
+/* ตารางในเอกสารชุดนี้ยาวและมีหลายคอลัมน์ — ให้เลื่อนแนวนอนได้ ไม่ดันหน้าเว็บ */
+.md-typeset table:not([class]) {
+  font-size: 0.72rem;
+  display: table;
+  width: 100%;
+}
+
+.md-typeset__table {
+  overflow-x: auto;
+}
+
+.md-typeset table:not([class]) th {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.md-typeset table:not([class]) td {
+  vertical-align: top;
+}
+
+/* mermaid — จัดกลาง และเว้นระยะให้หายใจ */
+.md-typeset .mermaid {
+  margin: 1.6em auto;
+  text-align: center;
+}
+
+/* ชื่อ subgraph ที่ยาวกว่ากล่องลูกจะถูกตัดปลายทิ้ง — ปล่อยให้ล้นออกมาแทน */
+.md-typeset .mermaid svg,
+.md-typeset .mermaid foreignObject,
+.md-typeset .mermaid .cluster-label,
+.md-typeset .mermaid .cluster-label div,
+.md-typeset .mermaid .nodeLabel,
+.md-typeset .mermaid .edgeLabel {
+  overflow: visible;
+}
+
+.md-typeset .mermaid .cluster-label div {
+  white-space: nowrap;
+}
+
+/* blockquote ที่ใช้เป็นกล่อง "จากหน้างานจริง" และ "หมายเหตุก่อนอ่าน" */
+.md-typeset blockquote {
+  border-left-width: 3px;
+  color: var(--md-default-fg-color--light);
+}
+
+/* การ์ดบนหน้าแรก */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 0.4rem;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  box-shadow: 0 0 0.4rem rgba(0, 0, 0, 0.12);
+}
+
+/* checklist ที่ใช้เยอะในไฟล์ workshop */
+.md-typeset .task-list-control .task-list-indicator::before {
+  background-color: var(--md-default-fg-color--lighter);
+}
+
+/* code block ให้ตัวเล็กลงนิดเพื่อให้บรรทัดยาวไม่ต้อง scroll */
+.md-typeset pre > code {
+  font-size: 0.72rem;
+  line-height: 1.6;
+}

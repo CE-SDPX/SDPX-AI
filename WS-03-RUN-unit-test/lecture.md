@@ -13,6 +13,27 @@
 | จัดการเวลา random และ network ให้ test ไม่แกว่ง | test ที่พังเฉพาะสิ้นเดือนหรือตอนเปลี่ยน timezone เป็นเรื่องที่ทุกทีมเคยเจอ |
 | ตรวจ AI-generated test ด้วยคำถาม "ลบอะไรออกแล้วมันจะแดง" | AI ผลิต test ที่ดันตัวเลข coverage ได้เร็วมาก — คนต้องเป็นคนคัดว่าอันไหนมีค่า |
 
+## 📖 ศัพท์ที่ต้องรู้ก่อนเริ่ม
+
+คำที่จะโผล่ซ้ำตลอดคาบ — ถ้าติดตรงไหนให้ย้อนกลับมาดูตารางนี้
+
+| ศัพท์ | ความหมายในบริบทของวิชานี้ |
+|---|---|
+| **Unit test** | test ที่ตรวจ logic ก้อนเล็ก ๆ โดยไม่แตะ database, network หรือเวลาจริง |
+| **SUT** (System Under Test) | ชิ้นส่วนที่กำลังถูกทดสอบอยู่ในขณะนั้น |
+| **Test Harness** | โครงสร้างรอบ test = test doubles + fixtures + factories + runner config |
+| **Test Double** | ของแทน dependency จริงใน test — เป็นคำร่มของ Stub / Fake / Mock / Spy |
+| **Stub** | คืนค่าที่กำหนดไว้ล่วงหน้าเสมอ ใช้เมื่ออยากคุม return value |
+| **Fake** | implementation จริงแต่ย่อส่วน เช่น repository ที่เก็บข้อมูลใน memory |
+| **Mock** | ใช้ตรวจว่า method ถูกเรียกจริงหรือไม่ (verify behavior) |
+| **Fixture** | ชุด setup ที่เตรียมไว้ให้ test หยิบไปใช้ซ้ำได้ |
+| **Factory** | ฟังก์ชันสร้าง object สำหรับ test ที่ override เฉพาะ field ที่สนใจได้ |
+| **AAA** | Arrange / Act / Assert — โครงมาตรฐานของ test 1 ตัว |
+| **FIRST** | Fast, Independent, Repeatable, Self-validating, Timely — คุณสมบัติของ test ที่ดี |
+| **Coverage** | สัดส่วนบรรทัดที่ถูกรันระหว่าง test — บอกว่า "ถูกรัน" ไม่ได้บอกว่า "ถูกปกป้อง" |
+| **Zombie test** | test ที่ยังเขียวแม้ลบ business logic ออก = ไม่ได้ปกป้องอะไรเลย |
+| **Mutation testing** | เครื่องมือที่แก้ code ทีละจุดแล้วดูว่ามี test แดงไหม — *killed* = ดี, *survived* = ช่องโหว่ของ test suite |
+
 ---
 
 ## 0. เชื่อมจากสัปดาห์ที่แล้ว

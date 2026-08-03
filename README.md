@@ -82,7 +82,7 @@ WS-01  Deploy Loop         commit → build → deploy → เห็นของ
 
 ```
 WS-0X--before/
-├── self-learning.md   ← ดู/อ่านมาก่อนเข้าห้อง + entry ticket
+├── self-learning.md   ← ดู/อ่านมาก่อนเข้าห้อง + checklist เช็คตัวเอง
 └── homework.md        ← งานที่ต้องเสร็จก่อนเข้าห้อง
 
 WS-0X-RUN-*/

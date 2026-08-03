@@ -4,26 +4,39 @@
 
 ---
 
-## 1. Entry Ticket Review (5 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว (2 นาที)
 
-เปิด component diagrams ที่กลุ่มต่าง ๆ ส่งมา (anonymized) และ discuss:
-- อะไรที่หลายกลุ่มลืม (เช่น Auth layer, Database, background job)
-- อะไรที่น่าสนใจ
-- Monolith vs layered — เมื่อไหร่เลือกอะไร
+สัปดาห์ที่แล้วเราปิด **Deploy Loop** — push แล้วเห็นของจริงบน URL
+แต่ loop นั้นตอบได้แค่ *"มันขึ้นไปแล้วหรือยัง"* ยังไม่ได้ตอบว่า *"มันควรเป็นอะไร"*
 
-พร้อมกันนั้นเปิด "3 คำถามที่ยังตอบไม่ได้" ของแต่ละกลุ่ม
-แล้วชี้ให้เห็นว่า **ทุกคำถามที่เราไม่ตอบ AI จะเดาแทน** — และคำเดาจะฝังลงใน code เงียบ ๆ
+วันนี้เราสร้าง loop ที่อยู่ **ก่อนหน้า** ทุกอย่าง
+
+```mermaid
+flowchart LR
+    S["Spec Loop<br/>วันนี้"] --> B["เขียน code"] --> D["Deploy Loop<br/>WS-01"]
+    S -. "ผิดตรงนี้ = แก้เป็นนาที" .-> S
+    D -. "ผิดตรงนี้ = แก้เป็นวัน" .-> D
+```
+
+**คำถามเปิดคาบ (ให้คุยกันในกลุ่ม 1 นาที):**
+> "ในระบบของกลุ่มคุณ — user จองล่วงหน้าได้กี่วัน? ยกเลิกได้ถึงเมื่อไหร่?
+> คนหนึ่งจองพร้อมกันได้กี่รายการ?"
+
+ส่วนใหญ่จะตอบไม่ตรงกันในกลุ่มเดียวกัน — และนั่นคือประเด็น
+**ทุกคำถามที่เราไม่ตอบ AI จะเดาแทน** แล้วคำเดาจะฝังลงใน code เงียบ ๆ
 
 ---
 
-## 2. Spec Loop คืออะไร (4 นาที)
+## 1. Spec Loop คืออะไร (4 นาที)
 
-สัปดาห์ที่แล้วเราปิด Deploy Loop (commit → live) วันนี้เราสร้าง loop ที่อยู่ *ก่อนหน้า* นั้น
-
-```
-Intent ──→ User Story ──→ Acceptance Criteria ──→ API Contract
-   ↑                                                    │
-   └──────────── review / แก้เมื่อพบว่าไม่ตรงจริง ────────┘
+```mermaid
+flowchart LR
+    I["Intent<br/><i>ทำไปทำไม</i>"] --> S["User Story<br/><i>ใครได้อะไร</i>"]
+    S --> AC["Acceptance Criteria<br/><i>Given/When/Then</i>"]
+    AC --> C["API Contract<br/><i>OpenAPI</i>"]
+    C --> V{"validate<br/>+ review"}
+    V -- "ไม่ตรง / ขาด" --> S
+    V -- "ผ่าน" --> CODE["พร้อมเขียน code"]
 ```
 
 | ขั้น Verify ของ Spec Loop | ทำอย่างไร | latency |
@@ -35,9 +48,17 @@ Intent ──→ User Story ──→ Acceptance Criteria ──→ API Contract
 **ทำไมต้องปิด loop ตรงนี้ก่อนเขียน code:** แก้ requirement ที่ผิดตอนเป็นข้อความ
 ใช้เวลาเป็นนาที แต่แก้ตอนเป็น code ที่ deploy แล้วใช้เวลาเป็นวัน
 
+> 💼 **จากหน้างานจริง**
+> สาเหตุอันดับต้น ๆ ที่ project ซอฟต์แวร์ล้มเหลว ไม่ใช่ "เขียน code ไม่เก่ง"
+> แต่คือ **สร้างของที่ไม่มีใครต้องการ** หรือ **เข้าใจโจทย์คนละอย่าง**
+> ในทีมจริง คนที่ถูกมองว่า senior ไม่ใช่คนที่พิมพ์เร็ว แต่คือคนที่ถามคำถามที่ทำให้ทีมทั้งทีม
+> ค้นพบว่าเข้าใจโจทย์ผิด — **ก่อน** ที่จะมีใครเปิด editor
+> วิธีฝึกที่ถูกที่สุด: ทุกครั้งที่ได้ requirement ให้ถาม 3 คำถาม —
+> "ถ้าไม่ทำจะเกิดอะไร", "รู้ได้ยังไงว่าสำเร็จ", "อะไรที่เราจะ *ไม่* ทำ"
+
 ---
 
-## 3. User Stories ที่ Testable ได้ (6 นาที)
+## 2. User Stories ที่ Testable ได้ (6 นาที)
 
 ### รูปแบบมาตรฐาน
 ```
@@ -45,6 +66,9 @@ As a [user role],
 I want to [action],
 So that [benefit].
 ```
+
+ส่วนที่คนข้ามบ่อยที่สุดคือ **So that** — แต่มันคือส่วนเดียวที่บอกว่า
+ถ้าทำ feature นี้แล้วไม่ได้ผลตามที่หวัง เราควรเลิกทำ
 
 ### Acceptance Criteria (Given/When/Then)
 ```
@@ -80,21 +104,28 @@ Then the system rejects with "Room not available for selected time".
 ✅ แต่ละ story ต้องมี acceptance criteria ที่ pass/fail ได้ชัดเจน
 ```
 
-### เชื่อมกับสัปดาห์ถัดไป
-```
-Acceptance Criteria (วันนี้)
-        ↓
-E2E Test ที่ implement AC นั้น (WS-04)
-        ↓
-Story ถือว่า "Done" เมื่อ E2E เขียว
+### AC วันนี้ = Test จริงในอีก 2 สัปดาห์
+
+```mermaid
+flowchart LR
+    AC["Acceptance Criteria<br/>WS-02 วันนี้"] --> E2E["E2E Test<br/>WS-04"]
+    E2E --> DONE["Story = Done"]
+    BR["Business Rule<br/>ใน unit-brief"] --> UT["Unit Test<br/>WS-03"]
+    UT --> DONE
 ```
 
-AC ที่เขียนวันนี้จะกลายเป็น test จริงในอีก 2 สัปดาห์ —
-ถ้าวันนี้เขียนแบบวัดไม่ได้ วันนั้นจะเขียน test ไม่ออก
+ถ้าวันนี้เขียน AC แบบวัดไม่ได้ วันนั้นจะเขียน test ไม่ออก —
+และจะกลายเป็น story ที่ "ทำเสร็จแล้ว" โดยไม่มีใครพิสูจน์ได้ว่าเสร็จจริง
+
+> 💼 **จากหน้างานจริง**
+> คำว่า **Definition of Done** ในทีมจริงคือข้อตกลงที่เขียนไว้ชัด ว่าอะไรถึงเรียกว่าเสร็จ
+> เพราะถ้าไม่เขียนไว้ ทุกคนจะมีนิยามของตัวเอง — คนหนึ่งคิดว่า "code เสร็จ"
+> อีกคนคิดว่า "ต้องมี test" อีกคนคิดว่า "ต้องขึ้น production แล้ว"
+> ทีมที่มีปัญหาเรื่อง "งานเสร็จแล้วแต่ยังไม่เสร็จ" เกือบทั้งหมดคือทีมที่ไม่มี DoD ร่วมกัน
 
 ---
 
-## 4. RESTful API Design (8 นาที)
+## 3. RESTful API Design (8 นาที)
 
 ### HTTP Methods
 | Method | ใช้สำหรับ | ตัวอย่าง | Idempotent |
@@ -106,9 +137,45 @@ AC ที่เขียนวันนี้จะกลายเป็น test
 | DELETE | ลบ | `DELETE /bookings/123` | ✅ |
 
 > **Idempotent** = เรียกซ้ำกี่ครั้งผลก็เหมือนเดิม สำคัญมากตอน network มีปัญหาแล้ว client retry
-> ถ้า POST ไม่ idempotent แล้ว user กดปุ่มสองครั้ง = จองซ้ำ 2 รายการ
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant C as Client
+    participant S as Server
+    U->>C: กดปุ่ม "จอง"
+    C->>S: POST /bookings
+    S-->>C: (timeout — แต่ server สร้างไปแล้ว)
+    U->>C: กดซ้ำเพราะไม่เห็นอะไรเกิดขึ้น
+    C->>S: POST /bookings
+    S-->>C: 201 Created
+    Note over S: ตอนนี้มี booking ซ้ำ 2 รายการ
+```
+
+> 💼 **จากหน้างานจริง**
+> เคสนี้เกิดจริงบ่อยมากในระบบที่มีการชำระเงิน — user กดซ้ำแล้วโดนตัดเงิน 2 ครั้ง
+> วิธีแก้มาตรฐานในอุตสาหกรรมคือ **Idempotency Key**: client สร้าง key สุ่มมาต่อ 1 การกระทำ
+> ส่งมากับ request ถ้า server เห็น key ซ้ำ จะคืนผลเดิมแทนที่จะสร้างใหม่
+> ผู้ให้บริการชำระเงินรายใหญ่ ๆ ทำแบบนี้กันหมด — ถ้าระบบของกลุ่มมีการจอง/จ่ายเงิน ควรคิดถึงข้อนี้
 
 ### Status Codes ที่สำคัญ
+
+```mermaid
+flowchart TB
+    R["Request เข้ามา"] --> A{"มี token ไหม"}
+    A -- ไม่มี --> C401["401 Unauthorized"]
+    A -- มี --> B{"มีสิทธิ์ไหม"}
+    B -- ไม่มี --> C403["403 Forbidden"]
+    B -- มี --> C{"resource มีอยู่ไหม"}
+    C -- ไม่มี --> C404["404 Not Found"]
+    C -- มี --> D{"รูปแบบข้อมูลถูกไหม"}
+    D -- ผิดรูปแบบ --> C400["400 Bad Request"]
+    D -- ถูก --> E{"ผ่านกฎธุรกิจไหม"}
+    E -- "ผิดกฎ (เช่น วันที่ย้อนหลัง)" --> C422["422 Unprocessable"]
+    E -- "ชนกับ state (ห้องถูกจองแล้ว)" --> C409["409 Conflict"]
+    E -- ผ่าน --> C201["200 / 201 Created"]
+```
+
 ```
 200 OK            — สำเร็จ
 201 Created       — สร้างสำเร็จ (ใช้กับ POST) พร้อม header Location
@@ -148,28 +215,40 @@ AC ที่เขียนวันนี้จะกลายเป็น test
 `code` เป็น string คงที่ให้เครื่องอ่าน `message` ให้คนอ่าน —
 frontend และ E2E test จะเช็ค `code` ไม่ใช่ข้อความ เพราะข้อความเปลี่ยนได้
 
+> 💼 **จากหน้างานจริง**
+> API ที่ error format ไม่เหมือนกันในแต่ละ endpoint คือหนึ่งในสิ่งที่ frontend เกลียดที่สุด
+> เพราะต้องเขียน handler พิเศษต่อ endpoint และมันจะพังเงียบ ๆ เมื่อ backend เปลี่ยนข้อความ
+> ทีมที่ทำงานเป็นระบบจะกำหนด error shape ไว้ **ครั้งเดียวตั้งแต่ต้น project**
+> แล้วบังคับใช้ผ่าน middleware กลาง ไม่ปล่อยให้แต่ละคนคิดเอง
+
 ---
 
-## 5. OpenAPI Spec = API Contract (7 นาที)
-
-### OpenAPI Spec คืออะไร
-ไฟล์ YAML/JSON ที่ describe API อย่างครบถ้วน:
-- Endpoints ทั้งหมด
-- Request/response schemas
-- Authentication requirements
-- Status codes และ error responses
+## 4. OpenAPI Spec = API Contract (8 นาที)
 
 ### ทำไม Contract ถึงปิด loop ได้หลายวง
-```
-OpenAPI Spec (แหล่งความจริงเดียว)
-    ├─→ Frontend รู้ว่า API ทำอะไร → develop คู่ขนานกับ backend ได้
-    ├─→ Backend รู้ว่าต้อง implement อะไร → generate boilerplate/types ได้
-    ├─→ Test รู้ว่า contract คืออะไร → validate response อัตโนมัติได้
-    └─→ AI agent อ่าน spec เป็น context → generate code ที่ตรงกว่า prompt ยาว ๆ
+
+```mermaid
+flowchart TB
+    SPEC["OpenAPI Spec<br/><b>แหล่งความจริงเดียว</b>"]
+    SPEC --> FE["Frontend<br/>develop คู่ขนานได้<br/>ไม่ต้องรอ backend"]
+    SPEC --> BE["Backend<br/>generate types/boilerplate"]
+    SPEC --> T["Test<br/>validate response อัตโนมัติ"]
+    SPEC --> AI["AI Agent<br/>อ่านเป็น context ที่มีโครงสร้าง"]
+    SPEC --> DOC["Docs<br/>generate ให้อัตโนมัติ"]
 ```
 
-ข้อสุดท้ายคือเหตุผลที่ spec สำคัญขึ้นมากในยุค AI:
+ข้อ **AI Agent** คือเหตุผลที่ spec สำคัญขึ้นมากในยุคนี้:
 **spec คือ context ที่มีโครงสร้าง** — สั้นกว่าอธิบายด้วยประโยค แม่นกว่า และไม่ลืม
+บอก AI ว่า "อ่าน `docs/openapi.yaml` แล้ว implement `POST /bookings`"
+ได้ผลดีกว่าเขียน prompt บรรยาย 20 บรรทัดมาก
+
+> 💼 **จากหน้างานจริง**
+> รูปแบบการทำงานที่ใช้กันแพร่หลายคือ **contract-first** (หรือ design-first):
+> ตกลง spec ให้จบก่อน แล้วทีม frontend กับ backend แยกไปทำพร้อมกัน
+> โดย frontend ใช้ mock server ที่ generate จาก spec ระหว่างรอ backend จริง
+> ผลคือสองทีมไม่ต้องรอกัน และวันที่เอามาต่อกันจริงมันมักจะต่อติดเลย —
+> เทียบกับการที่ backend ทำเสร็จก่อนแล้วค่อยบอก frontend ว่า API หน้าตาเป็นแบบนี้
+> ซึ่งมักจบด้วยการแก้ทั้งสองฝั่ง
 
 ### ตัวอย่าง OpenAPI spec เบื้องต้น
 ```yaml
@@ -257,13 +336,22 @@ AI ร่าง spec ได้เร็วมาก แต่พลาดซ้�
 | ลืม 409 ตอนที่ business rule ชนกัน | ไล่จาก AC ที่มีคำว่า "reject" |
 | เดา field ที่เราไม่เคยพูดถึง | ลบทิ้ง หรือถามตัวเองว่าต้องการจริงไหม |
 
+**เทคนิคที่ใช้ได้ผล:** ให้ AI ตรวจงานตัวเองด้วยเกณฑ์ที่เรากำหนด
+```
+Re-read the spec you just wrote and check it against this list:
+[วาง checklist ข้างบน]
+For each item, quote the line that satisfies it, or say MISSING.
+```
+บังคับให้มัน **อ้างบรรทัด** จะทำให้มันโกหกได้ยากขึ้นมาก
+
 ---
 
 ## Key Takeaways
 - Spec Loop ปิดข้อผิดพลาดตอนที่มันยังเป็นข้อความ ซึ่งถูกกว่าตอนเป็น code เป็นสิบเท่า
-- User story ที่ดีต้องมี acceptance criteria ที่ pass/fail ได้ — AC วันนี้คือ E2E test ใน WS-04
+- ทุกคำถามที่เราไม่ตอบ AI จะเดาแทน — และคำเดาจะฝังลงใน code เงียบ ๆ
+- AC วันนี้คือ E2E test ใน WS-04 และ business rule คือ unit test ใน WS-03
 - OpenAPI spec คือ contract เดียวที่ frontend, backend, test และ AI ใช้ร่วมกัน
-- API endpoint ตั้งชื่อตาม resource ไม่ใช่ action และเลือก status code ให้ตรงความหมาย
+- เลือก status code ให้ตรงความหมาย และคิดเรื่อง idempotency ตั้งแต่ออกแบบ
 - AI ร่าง spec ได้เร็ว แต่พลาดที่เดิมเสมอ: error case, auth, `required`, 201/409
 
 ---
@@ -272,12 +360,15 @@ AI ร่าง spec ได้เร็วมาก แต่พลาดซ้�
 
 ### สิ่งที่ทำใน lab วันนี้ = Inception Phase ของ AI-DLC
 
-```
-Inception Phase
-├── Intent Capture           ← เขียน intent.md (ทำใน lab)
-├── Requirement Elaboration  ← user stories + acceptance criteria
-├── Unit Decomposition       ← unit-brief.md (ทำใน lab)
-└── Bolt Planning            ← GitHub Projects board
+```mermaid
+flowchart LR
+    A["Intent Capture<br/><i>intent.md</i>"] --> B["Requirement Elaboration<br/><i>stories + AC</i>"]
+    B --> C["Unit Decomposition<br/><i>unit-brief.md</i>"]
+    C --> D["Bolt Planning<br/><i>GitHub Projects</i>"]
+    A -.-> H1{{"human validate"}}
+    B -.-> H2{{"human validate"}}
+    C -.-> H3{{"human validate"}}
+    D -.-> H4{{"human approve"}}
 ```
 
 ### Intent vs Unit vs Story vs Bolt

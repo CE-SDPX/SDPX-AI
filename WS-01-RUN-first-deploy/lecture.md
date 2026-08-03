@@ -4,6 +4,35 @@
 
 ---
 
+## 0. เปิดคาบ: คำถามเดียวที่ทั้งวิชานี้พยายามตอบ (3 นาที)
+
+ถามทั้งห้อง แล้วให้ยกมือ:
+
+> **"ครั้งล่าสุดที่คุณเขียน code ผิด — กว่าจะรู้ว่าผิด ใช้เวลานานแค่ไหน"**
+
+- ยกมือถ้าตอบว่า "ไม่กี่วินาที เพราะ editor ขีดแดง"
+- ยกมือถ้าตอบว่า "ตอนกด run แล้วมัน error"
+- ยกมือถ้าตอบว่า "ตอนเพื่อนในกลุ่มมาบอกว่าพัง"
+- ยกมือถ้าตอบว่า "ตอนอาจารย์ตรวจ / ตอนลูกค้าโทรมา"
+
+ช่องว่างระหว่างมือแรกกับมือสุดท้ายคือ **ต้นทุนที่แท้จริงของงานพัฒนาซอฟต์แวร์**
+และเป็นสิ่งเดียวที่ทั้ง 8 สัปดาห์นี้พยายามลด
+
+```mermaid
+flowchart LR
+    A["เขียนผิด"] --> B["รู้ว่าผิด"]
+    B --> C["แก้"]
+    A -. "ยิ่งช่องนี้กว้าง<br/>ยิ่งแพง" .-> B
+```
+
+> 💼 **จากหน้างานจริง**
+> ในอุตสาหกรรมมีกฎที่รู้กันมานาน: ต้นทุนของการแก้ bug เพิ่มขึ้นแบบทวีคูณตามระยะที่มันหลุดไป —
+> จับได้ตอนเขียน = ฟรี, จับได้ตอน code review = ถูก, จับได้ตอน QA = แพง,
+> จับได้ตอนลูกค้าเจอ = แพงมากและเสียความน่าเชื่อถือด้วย
+> วิศวกรที่เก่งไม่ได้เขียนผิดน้อยกว่าคนอื่น — เขาแค่ **รู้เร็วกว่า**
+
+---
+
 ## 1. AI-Driven Development Lifecycle (12 นาที)
 
 ### ทำไม Traditional Agile ไม่พอในยุค AI
@@ -16,9 +45,28 @@ Agile ถูกออกแบบมาสำหรับ human-driven, week-lon
 - Context loss เมื่อ team member เปลี่ยน
 - Quality issues จาก steps ที่ถูก skip เมื่อมี deadline
 
-พอ AI เขียน code ได้ในหลักนาที ต้นทุนของการ "ลงมือทำ" ลดลงมหาศาล
+พอ AI เขียน code ได้ในหลักนาที **ต้นทุนของการ "ลงมือทำ" ลดลงมหาศาล**
 แต่ต้นทุนของการ **ตัดสินใจผิดแล้วไม่รู้ตัว** เท่าเดิมหรือแพงขึ้น
+
+```mermaid
+flowchart LR
+    subgraph BEFORE["ยุคก่อน AI"]
+        B1["คิด<br/>20%"] --> B2["เขียน code<br/>60%"] --> B3["ตรวจ<br/>20%"]
+    end
+    subgraph AFTER["ยุค AI agent"]
+        A1["คิด + ให้ context<br/>40%"] --> A2["เขียน<br/>10%"] --> A3["ตรวจ + ตัดสินใจ<br/>50%"]
+    end
+```
+
+คอขวดย้ายจาก "เขียนไม่ทัน" ไปเป็น **"ตรวจไม่ทัน"**
 unit of work จึงย่อจาก **Sprint (2 สัปดาห์)** → **Bolt (ชั่วโมงหรือวัน)**
+เพื่อให้แต่ละก้อนเล็กพอที่คนจะตรวจไหว
+
+> 💼 **จากหน้างานจริง**
+> หลายทีมที่เพิ่งรับ AI เข้ามาเจอปัญหาเดียวกัน: จำนวน PR พุ่งขึ้นเท่าตัว
+> แต่ความเร็วในการส่งของ **ไม่ได้เพิ่มตาม** เพราะ PR ไปกองรออยู่ที่ reviewer
+> ทีมที่แก้ได้คือทีมที่ทำ 2 อย่าง — บังคับให้ PR เล็กลง และย้ายการตรวจส่วนที่เครื่องตรวจได้
+> ไปให้ CI ทำแทน เหลือให้คนตรวจเฉพาะเรื่องที่ต้องใช้วิจารณญาณ
 
 ### Core Insight: AI Proposes, Human Validates
 
@@ -27,14 +75,19 @@ unit of work จึงย่อจาก **Sprint (2 สัปดาห์)** �
 
 ### 3 Phases ของ AI-DLC
 
-```
-Inception          Construction         Operations
-─────────────      ─────────────────    ──────────────
-Intent Capture     Domain Model         Build
-Requirement        Technical Design     Deploy
-Elaboration        ADR                  Verify
-Unit Decompose     Implement            Monitor
-Bolt Planning      Test
+```mermaid
+flowchart LR
+    subgraph I["Inception"]
+        I1[Intent Capture] --> I2[Requirement<br/>Elaboration] --> I3[Unit<br/>Decomposition] --> I4[Bolt Planning]
+    end
+    subgraph C["Construction"]
+        C1[Domain Model] --> C2[Technical Design] --> C3[ADR] --> C4[Implement] --> C5[Test]
+    end
+    subgraph O["Operations"]
+        O1[Build] --> O2[Deploy] --> O3[Verify] --> O4[Monitor]
+    end
+    I --> C --> O
+    O -. "สิ่งที่เรียนรู้จากของจริง" .-> I
 ```
 
 | Phase | AI ทำอะไร | Human ทำอะไร |
@@ -45,37 +98,33 @@ Bolt Planning      Test
 
 ### Map กับ Course นี้
 
-```
-WS-01  ← AI-DLC + Loop Engineering overview (วันนี้)
-WS-02  ← Inception: Intent → Units → Stories → Bolt Plan
-WS-03  ← Construction: Test stage (unit tests)
-WS-04  ← Construction: Acceptance test stage (E2E)
-WS-05  ← Operations: Build stage (Docker)
-WS-06  ← Operations: Deploy + Verify (CI/CD)
-WS-07  ← Operations: Monitor (Performance & Observability)
-WS-08  ← Construction: ADR + Refactoring
+```mermaid
+flowchart TB
+    W1["WS-01<br/>AI-DLC + Loop Engineering"] --> W2["WS-02<br/>Inception<br/>Intent → Units → Stories"]
+    W2 --> W3["WS-03<br/>Construction: Test stage"]
+    W3 --> W4["WS-04<br/>Construction: Acceptance test"]
+    W4 --> W5["WS-05<br/>Operations: Build"]
+    W5 --> W6["WS-06<br/>Operations: Deploy + Verify"]
+    W6 --> W7["WS-07<br/>Operations: Monitor"]
+    W7 --> W8["WS-08<br/>Construction: ADR + Refactor"]
 ```
 
 ---
 
 ## 2. Loop Engineering (18 นาที)
 
-### จาก Entry Ticket
-
-เปิดคำตอบข้อ 2 ที่นักศึกษาส่งมา (anonymized) — "กว่าจะรู้ว่าเขียนผิดใช้เวลานานแค่ไหน"
-คำตอบมักกระจายตั้งแต่ "2 วินาที เพราะ editor ขีดแดง" ไปจนถึง "อาทิตย์หนึ่ง เพราะเพื่อนมาบอก"
-ช่องว่างระหว่างสองอันนี้แหละคือสิ่งที่วิชานี้ทั้งวิชาพยายามลด
-
 ### นิยาม
 
 > **Loop Engineering** = การออกแบบวงจร feedback ให้ **สั้น เชื่อถือได้ และรันซ้ำได้**
 > เพื่อให้ทั้งมนุษย์และ AI agent รู้ให้เร็วที่สุดว่าสิ่งที่เพิ่งทำไปนั้นถูกหรือผิด
 
-```
-   ┌──────────────────────────────────────────────┐
-   ↓                                              │
-Context ──→ Plan ──→ Act ──→ Verify ──→ Feedback ─┘
-(รู้อะไร)  (จะทำ)  (ลงมือ)  (ตรวจ)    (แก้/เรียนรู้)
+```mermaid
+flowchart LR
+    CTX["Context<br/><i>รู้อะไร</i>"] --> PLAN["Plan<br/><i>จะทำอะไร</i>"]
+    PLAN --> ACT["Act<br/><i>ลงมือ</i>"]
+    ACT --> VER["Verify<br/><i>ตรวจ</i>"]
+    VER --> FB["Feedback<br/><i>แก้ / เรียนรู้</i>"]
+    FB --> CTX
 ```
 
 ทุกอย่างในวิชานี้ — test, Docker, CI/CD, k6, code review — คือความพยายามทำให้
@@ -89,20 +138,35 @@ Context ──→ Plan ──→ Act ──→ Verify ──→ Feedback ─┘
 | **Fidelity** | signal บอกความจริงแค่ไหน | test ที่ผ่านตลอดไม่ว่า code จะพังแค่ไหน | test ที่แดงทันทีเมื่อลบ business rule |
 | **Coverage** | จับความผิดพลาดได้กี่แบบ | ตรวจแค่ happy path | ตรวจ error case + integration + performance |
 
-**ข้อควรระวัง — Fidelity สำคัญกว่า Latency:** loop ที่เร็วแต่โกหก
-อันตรายกว่าไม่มี loop เลย เพราะมันทำให้เรา (และ AI) มั่นใจผิด ๆ
+**ข้อควรระวัง — Fidelity สำคัญกว่า Latency:**
+
+|  | **signal ซื่อสัตย์** | **signal โกหก** |
+|---|---|---|
+| **เร็ว** | ✅ เป้าหมายของวิชานี้ — unit test ที่ดี | ⛔ **อันตรายที่สุด** — flaky test, test ที่เขียวตลอด |
+| **ช้า** | 🟡 ยังพอไหว — manual QA, E2E ที่ดี | ⬜ เท่ากับไม่มี loop |
+
+มุมขวาล่างอันตรายกว่ามุมซ้ายล่าง เพราะ **loop ที่เร็วแต่โกหกทำให้เรา (และ AI) มั่นใจผิด**
+ไม่มี loop เลยยังรู้ตัวว่าไม่รู้ — แต่ loop ที่โกหกทำให้เชื่อว่ารู้แล้ว
+
+> 💼 **จากหน้างานจริง**
+> อาการที่บอกว่าทีมกำลังตายเพราะ fidelity: ประโยคที่ว่า *"อ๋อ อันนั้นมันแดงประจำ กด re-run เถอะ"*
+> วันที่ทีมเริ่มพูดประโยคนี้ คือวันที่ test suite ทั้งชุดหมดค่าลง —
+> เพราะเมื่อคนเลิกเชื่อสัญญาณ สัญญาณจริงก็จะถูกมองข้ามไปด้วย
+> ทีมที่ดูแลเรื่องนี้จริงจังจะถือว่า flaky test คือ **bug ระดับ production** ต้องแก้หรือลบทันที
 
 ### Loop ทั้ง 8 ชั้นที่จะสร้างในวิชานี้
 
-```
-WS-08  Quality Loop        review → refactor → verify → ADR
-WS-07  Production Loop     measure → analyze → optimize → measure
-WS-06  Integration Loop    CI/CD รวมทุก loop ให้เป็น gate เดียว
-WS-05  Environment Loop    compose up แล้วได้ผลเหมือนกันทุกเครื่อง
-WS-04  Acceptance Loop     user journey → E2E → report   [E2E Test Harness]
-WS-03  Unit Test Loop      red → green → refactor        [Unit Test Harness]
-WS-02  Spec Loop           intent → story → API contract → review
-WS-01  Deploy Loop         commit → build → deploy → เห็นของจริงบน URL  ← วันนี้
+```mermaid
+flowchart TB
+    L8["WS-08 · Quality Loop<br/><i>review → refactor → verify</i>"]
+    L7["WS-07 · Production Loop<br/><i>measure → analyze → optimize</i>"]
+    L6["WS-06 · Integration Loop<br/><i>CI/CD รวมทุก loop เป็น gate เดียว</i>"]
+    L5["WS-05 · Environment Loop<br/><i>compose up แล้วเหมือนกันทุกเครื่อง</i>"]
+    L4["WS-04 · Acceptance Loop<br/><i>E2E Test Harness</i>"]
+    L3["WS-03 · Unit Test Loop<br/><i>Unit Test Harness</i>"]
+    L2["WS-02 · Spec Loop<br/><i>intent → story → contract</i>"]
+    L1["WS-01 · Deploy Loop<br/><i>commit → build → deploy → เห็นของจริง</i>"]
+    L1 --> L2 --> L3 --> L4 --> L5 --> L6 --> L7 --> L8
 ```
 
 > **คำศัพท์:** *Test Harness* เป็นคำเฉพาะของฝั่ง testing — หมายถึงโครงสร้างรอบ test
@@ -113,26 +177,36 @@ WS-01  Deploy Loop         commit → build → deploy → เห็นของ
 
 AI coding agent **ทำงานเป็น loop อยู่แล้ว** ทุกตัว:
 
-```
-อ่าน context (repo, AGENTS.md, error ก่อนหน้า)
-   → เสนอแผน
-   → แก้ไฟล์
-   → รันคำสั่ง (test / lint / typecheck)
-   → อ่าน output
-   → แก้ใหม่  ↺  จนกว่าสัญญาณจะเขียว
-   → หยุดให้ human review          ← checkpoint
+```mermaid
+flowchart TB
+    S["อ่าน context<br/>repo, AGENTS.md, error ก่อนหน้า"] --> P["เสนอแผน"]
+    P --> E["แก้ไฟล์"]
+    E --> R["รันคำสั่ง<br/>test / lint / typecheck"]
+    R --> O{"สัญญาณ<br/>เขียวไหม"}
+    O -- "แดง" --> RE["อ่าน error<br/>แก้ใหม่"]
+    RE --> E
+    O -- "เขียว" --> H["หยุด<br/>ให้ human review"]
+    H --> D["commit"]
 ```
 
 จากตรงนี้จะเห็นข้อสรุปที่เป็นหัวใจของทั้งวิชา:
 
-> **ความสามารถของ AI agent ถูกจำกัดด้วยคุณภาพของขั้น Verify ที่เราสร้างให้มัน**
+> **ความสามารถของ AI agent ถูกจำกัดด้วยคุณภาพของกล่อง "รันคำสั่ง" ที่เราสร้างให้มัน**
 
-- ไม่มี test → agent ไม่มีทางรู้ว่าตัวเองทำพัง มันจะรายงานว่า "เสร็จแล้ว" ทุกครั้ง
-- test อ่อน (fidelity ต่ำ) → agent จะ "แก้" จนกว่า test ผ่าน ซึ่งบางทีแปลว่าแก้ test ไม่ใช่แก้ code
-- test ช้า → agent วนได้น้อยรอบต่อเวลา คุณภาพตกตาม
+| สิ่งที่เราให้ agent | ผลที่เกิด |
+|---|---|
+| ไม่มี test เลย | agent ไม่มีทางรู้ว่าทำพัง — จะรายงานว่า "เสร็จแล้ว" ทุกครั้ง |
+| test อ่อน (fidelity ต่ำ) | agent จะวนแก้จนเขียว ซึ่งบางทีแปลว่าไปแก้ test ไม่ใช่แก้ code |
+| test ช้า | agent วนได้น้อยรอบต่อเวลา คุณภาพตกตาม |
+| test เร็ว + ซื่อสัตย์ | agent แก้เองได้หลายรอบ แล้วส่งของที่ผ่านการตรวจจริงมาให้เรา |
 
-จาก homework: คนที่ให้ agent รัน pytest ได้เอง ใช้รอบน้อยกว่าและได้ code ที่ถูกกว่า
+จาก homework: คนที่ให้ agent รัน `pytest` ได้เอง ใช้รอบน้อยกว่าและได้ code ที่ถูกกว่า
 คนที่ต้อง copy error ไปวางเอง — เพราะ loop ของสองกลุ่มนี้ latency ต่างกันสิบเท่า
+
+> 💼 **จากหน้างานจริง**
+> นี่คือเหตุผลที่ทีมซึ่งลงทุนกับ test มานานหลายปี ได้ประโยชน์จาก AI มากกว่าทีมที่ไม่มี test
+> — ไม่ใช่เพราะเขาใช้ AI เก่งกว่า แต่เพราะ **codebase ของเขาบอกความจริงได้เร็วกว่า**
+> ทีมที่ไม่มี test แล้วเร่งใช้ AI มักได้ code เยอะขึ้นและหนี้ทางเทคนิคเยอะขึ้นพร้อมกัน
 
 ### กติกาที่ตามมา 3 ข้อ
 
@@ -142,17 +216,31 @@ AI coding agent **ทำงานเป็น loop อยู่แล้ว** �
 
 ### Deploy Loop ของวันนี้
 
-```
-เขียน code → git push → build อัตโนมัติ → ได้ URL จริง → เปิดดู
+```mermaid
+flowchart LR
+    W["เขียน code"] --> P["git push"]
+    P --> B["build อัตโนมัติ"]
+    B --> U["ได้ URL จริง"]
+    U --> S["เปิดดูด้วยตา"]
+    S -. "commit-to-live time" .-> P
 ```
 
 เป้าหมายของ lab: ทำให้ loop นี้ **ปิดครบและวัดเวลาได้** ก่อนออกจากห้อง
 ตัวเลขที่จะจดคือ *commit-to-live time* — จาก push ถึงเห็นของบน URL ใช้เวลากี่นาที
-สัปดาห์ต่อ ๆ ไปเราจะเพิ่มด่านตรวจเข้าไปใน loop นี้โดยพยายามไม่ให้เวลาบานปลาย
+
+สังเกตว่าตอนนี้ขั้น Verify ของเรายังเป็น **"เปิดดูด้วยตา"** ซึ่ง latency สูง fidelity ต่ำ
+สัปดาห์ต่อ ๆ ไปเราจะแทนที่ตาคนด้วยเครื่อง ทีละชั้น โดยพยายามไม่ให้เวลารวมบานปลาย
+
+> 💼 **จากหน้างานจริง**
+> วัฒนธรรมที่แพร่หลายในอุตสาหกรรมคือ **"deploy บ่อย ๆ ทีละนิด"** ไม่ใช่ "สะสมไว้แล้วปล่อยทีเดียว"
+> เหตุผลไม่ใช่เรื่องความเร็ว แต่เป็นเรื่องความเสี่ยง: ถ้า deploy มีของ 3 อย่าง แล้วพัง
+> คุณรู้ทันทีว่าปัญหาอยู่ใน 3 อย่างนั้น แต่ถ้าสะสมไว้ 300 อย่าง คุณจะหาไม่เจอ
+> ทีมระดับสูงหลายแห่งยัง **แยก deploy ออกจาก release** ด้วย feature flag — code ขึ้น production แล้ว
+> แต่ยังปิดอยู่ เปิดให้ผู้ใช้ทีหลังเมื่อพร้อม ทำให้การ deploy กลายเป็นเรื่องน่าเบื่อ ซึ่งเป็นเรื่องดี
 
 ---
 
-## 3. Context Engineering, Ethics & Skills (15 นาที)
+## 3. Context Engineering, Ethics & Skills (12 นาที)
 
 ### จาก Prompt Engineering สู่ Context Engineering
 
@@ -162,7 +250,18 @@ AI coding agent **ทำงานเป็น loop อยู่แล้ว** �
 > **Context Engineering** = การจัดการว่า *ข้อมูลอะไร* ควรอยู่ใน context ของ AI
 > *ตอนไหน* และ *มากแค่ไหน* เพื่อให้มันตัดสินใจได้ถูก
 
-หลักปฏิบัติ 4 ข้อ:
+```mermaid
+flowchart LR
+    subgraph SRC["แหล่ง context"]
+        A["AGENTS.md<br/><i>กติกา + คำสั่ง</i>"]
+        B["memory-bank/<br/><i>เหตุผล + การตัดสินใจ</i>"]
+        C["ไฟล์ที่เกี่ยวข้อง<br/><i>เท่าที่จำเป็น</i>"]
+        D["output ของจริง<br/><i>error, log, test result</i>"]
+    end
+    SRC --> AI["AI Agent"]
+    AI --> OUT["diff ที่เสนอ"]
+    OUT --> HUMAN["human review"]
+```
 
 | หลัก | ความหมาย | ในวิชานี้คือ |
 |---|---|---|
@@ -201,6 +300,13 @@ agent ส่วนใหญ่จะอ่านให้อัตโนมั�
 
 > บรรทัดสุดท้ายสำคัญที่สุด — มันคือการป้องกัน agent จาก "ทางลัด" ที่ทำลาย fidelity ของ loop
 
+> 💼 **จากหน้างานจริง**
+> `AGENTS.md` ที่ดีมีลักษณะเหมือน **เอกสารรับน้องใหม่** ของทีม: บอกคำสั่งที่ใช้จริง
+> บอกกติกาที่ถ้าไม่รู้จะทำผิด และบอกสิ่งที่ห้ามแตะ
+> ทีมที่ทำเรื่องนี้ได้ดีมักค้นพบผลข้างเคียงที่ดี — เอกสารที่เขียนให้ AI อ่าน
+> กลายเป็นเอกสารที่ **คนใหม่ในทีมอ่านแล้วเข้าใจงานได้เร็วขึ้นด้วย**
+> ถ้าไฟล์นี้ล้าสมัย มันจะทำร้ายทั้งคนและ AI พร้อมกัน จึงต้องอัปเดตเหมือน code
+
 ### AI Ethics: เส้นแบ่งที่ต้องรู้
 
 **ใช้ได้:**
@@ -220,6 +326,12 @@ agent ส่วนใหญ่จะอ่านให้อัตโนมั�
 **กฎทองของ course นี้:**
 > "ถ้า oral defense ถามแล้วตอบไม่ได้ว่า code ทำอะไร — นั่นคือ code ที่ไม่ควร commit"
 
+> 💼 **จากหน้างานจริง**
+> ในองค์กรจริง คนที่กด merge คือคนที่ **รับผิดชอบ** code นั้น ไม่ว่าใครหรืออะไรจะเป็นคนเขียน
+> ข้ออ้างว่า "AI เขียนมา" ไม่มีอยู่จริงในรายงาน incident
+> หลายบริษัทมีนโยบายชัดเจนว่า AI-generated code ต้องผ่าน review เหมือน code จากคน
+> และห้ามวาง source code หรือข้อมูลลูกค้าลงในเครื่องมือที่ไม่ได้รับอนุมัติ — ผิดข้อนี้คือเรื่องวินัย ไม่ใช่แค่เรื่องเทคนิค
+
 ### Skills ที่ AI ทำแทนไม่ได้
 
 | Skill | ทำไมสำคัญ |
@@ -234,24 +346,26 @@ agent ส่วนใหญ่จะอ่านให้อัตโนมั�
 
 ### วิธีใช้ AI ให้ได้ทั้ง Speed และ Skill
 
-```
-❌ วิธีที่ทำให้ไม่ได้ skill:
-   Prompt → Copy → Paste → Submit
-
-✅ วิธีที่ได้ทั้ง speed และ skill:
-   1. คิด design เองก่อน (5 นาที) — เขียน 3 บรรทัดว่าจะทำอะไร
-   2. เตรียม verify ก่อน — จะรู้ได้อย่างไรว่าถูก
-   3. ใช้ AI generate draft
-   4. อ่านและ explain ทุก line ให้ตัวเองฟัง
-   5. แก้ส่วนที่ไม่เข้าใจหรือไม่เห็นด้วย
-   6. Commit เฉพาะ code ที่อธิบายได้
+```mermaid
+flowchart LR
+    subgraph BAD["❌ ไม่ได้ skill"]
+        X1[Prompt] --> X2[Copy] --> X3[Paste] --> X4[Submit]
+    end
+    subgraph GOOD["✅ ได้ทั้ง speed และ skill"]
+        Y1["คิด design เอง<br/>5 นาที"] --> Y2["เตรียม verify<br/>จะรู้ได้ยังไงว่าถูก"]
+        Y2 --> Y3["AI generate draft"]
+        Y3 --> Y4["อ่าน + อธิบายทุกบรรทัด"]
+        Y4 --> Y5["แก้ส่วนที่ไม่เห็นด้วย"]
+        Y5 --> Y6["commit เฉพาะที่อธิบายได้"]
+    end
 ```
 
 ---
 
 ## Key Takeaways
-- AI-DLC: AI proposes → human validates ทุก checkpoint — ไม่ใช่ปล่อย AI วิ่งเอง
-- Loop Engineering คือแกนของวิชานี้ — วัดที่ latency, fidelity, coverage
-- คุณภาพของ AI agent ถูกจำกัดด้วยคุณภาพของขั้น Verify ที่เราสร้างให้มัน
+- คำถามหลักของวิชานี้: *"กว่าจะรู้ว่าผิด ใช้เวลานานแค่ไหน และเชื่อสัญญาณนั้นได้แค่ไหน"*
+- AI-DLC: AI proposes → human validates ทุก checkpoint — คอขวดย้ายจาก "เขียน" ไป "ตรวจ"
+- Loop Engineering วัดที่ latency, fidelity, coverage — และ **fidelity สำคัญกว่า latency**
+- ความสามารถของ AI agent ถูกจำกัดด้วยคุณภาพของขั้น Verify ที่เราสร้างให้มัน
 - Context Engineering (`AGENTS.md`, memory-bank) สำคัญกว่าการเขียน prompt สวย ๆ
-- Skills ที่สำคัญที่สุดคือสิ่งที่ AI ทำแทนไม่ได้ โดยเฉพาะ "ออกแบบว่าอะไรคือหลักฐานว่าถูก"
+- คนที่กด merge คือคนที่รับผิดชอบ ไม่ว่าใครจะเป็นคนเขียน

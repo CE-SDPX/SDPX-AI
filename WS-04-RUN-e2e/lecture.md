@@ -4,23 +4,36 @@
 
 ---
 
-## 1. Entry Ticket Review (4 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว (2 นาที)
 
-เปิด user stories ที่กลุ่มเลือกมา discuss:
-- Stories ไหนที่เหมาะกับ E2E test และทำไม
-- Stories ไหนที่ควรเป็น unit test แทน (มักเป็นพวก "คำนวณราคา", "ตรวจ format")
-- ขั้นตอนที่นักศึกษาเขียนมา ตรงกับ Acceptance Criteria ที่เขียนไว้ตอน WS-02 ไหม
+WS-03 เราคุ้มครอง *business rule* ด้วย unit test แล้ว
+แต่ unit test ที่เขียวทั้งชุด **ไม่ได้แปลว่า user ใช้งานได้**
+
+```mermaid
+flowchart LR
+    U1["✅ BookingService<br/>unit test เขียว"] --- G["ทุกชิ้นถูก"]
+    U2["✅ RoomRepository<br/>unit test เขียว"] --- G
+    U3["✅ AuthMiddleware<br/>unit test เขียว"] --- G
+    G --> Q{"แต่ user กดปุ่มจองแล้ว<br/>ได้ห้องจริงไหม"}
+    Q --> A["ปุ่มไม่ได้ต่อกับ API<br/>route สะกดผิด<br/>build ไม่ได้ copy asset"]
+```
+
+**คำถามเปิดคาบ:**
+> "bug แบบไหนที่ unit test ทุกตัวเขียวหมดแต่ยังหลุดขึ้น production ได้"
+
+คำตอบคือ bug ที่อยู่ **ระหว่าง** ชิ้นส่วน ไม่ใช่ภายในชิ้นส่วน — และนั่นคืองานของ E2E
 
 ---
 
-## 2. Acceptance Loop: จาก AC สู่ test ที่รันได้ (4 นาที)
+## 1. Acceptance Loop: จาก AC สู่ test ที่รันได้ (4 นาที)
 
-```
-Acceptance Criteria (WS-02)
-        ↓
-   E2E Test (วันนี้)
-        ↓
-   Story = Done เมื่อเขียว
+```mermaid
+flowchart LR
+    AC["Acceptance Criteria<br/><i>เขียนไว้ตอน WS-02</i>"] --> E["E2E Test<br/><i>วันนี้</i>"]
+    E --> R{"เขียวไหม"}
+    R -- เขียว --> D["Story = Done"]
+    R -- แดง --> F["แก้ code<br/>หรือแก้ความเข้าใจ"]
+    F --> E
 ```
 
 E2E คือ loop ที่ **ครอบคลุมกว้างที่สุดแต่ช้าที่สุด** ในวิชานี้
@@ -34,27 +47,33 @@ E2E คือ loop ที่ **ครอบคลุมกว้างที่�
 
 **กติกา:** ถ้าเรื่องหนึ่ง unit test ตรวจได้ ให้ตรวจด้วย unit test
 เก็บ E2E ไว้สำหรับสิ่งที่ต้องมี browser จริงเท่านั้น
-E2E ที่เยอะเกินจะทำให้ latency ของ loop รวมพุ่ง จนสุดท้ายไม่มีใครรัน
 
-**ใช้ E2E เมื่อ:**
-- ต้องการยืนยัน user journey ทั้งหมด end-to-end
-- มี acceptance criteria ที่ involve หลาย components
-- ต้องการ catch integration bugs ที่ unit test ไม่จับ
-
-**ไม่ใช้ E2E เมื่อ:**
-- ทดสอบ business logic ที่ unit test จับได้
-- ต้องการ test ที่รันเร็ว
-- ต้องการครอบคลุมทุก edge case
+> 💼 **จากหน้างานจริง**
+> ทีมที่ทำ E2E มาสักพักจะมีคำถามประจำว่า *"จะเขียน E2E กี่ตัวถึงจะพอ"*
+> คำตอบที่ใช้กันได้จริงคือ: เขียนให้ครอบ **เส้นทางที่ถ้าพังแล้วธุรกิจหยุด**
+> (สมัครสมาชิก, เข้าสู่ระบบ, ทำรายการหลัก, จ่ายเงิน) แล้วหยุดแค่นั้น
+> ที่เหลือปล่อยให้ unit/integration ดูแล
+> เกณฑ์ตรวจสอบง่าย ๆ: ถ้า E2E suite ใช้เวลานานจน **ไม่มีใครยอมรอให้มันจบก่อน merge**
+> แปลว่ามันเยอะเกินไปแล้ว ไม่ว่ามันจะ cover ได้ดีแค่ไหน
 
 ---
 
-## 3. กับดักใหญ่: Flaky Tests (7 นาที)
+## 2. กับดักใหญ่: Flaky Tests (7 นาที)
 
 Flaky test คือ test ที่บางครั้ง pass บางครั้ง fail โดยไม่มีการเปลี่ยน code
 
-> Flaky test อันตรายกว่า test ที่ fail เสมอ เพราะมันทำลาย **fidelity** —
-> พอทีมเริ่มพูดว่า "อ๋อ อันนั้นมันแดงประจำ กด re-run เถอะ"
-> loop ทั้งวงก็หมดความหมาย และ AI agent ที่อ่านผลก็จะได้ข้อมูลขยะ
+```mermaid
+flowchart TB
+    F["test แดงแบบสุ่ม"] --> R["ทีมกด re-run"]
+    R --> G["เขียว → merge"]
+    G --> H["ครั้งหน้าแดงอีก กด re-run อีก"]
+    H --> I["เริ่มพูดว่า 'อันนั้นมันแดงประจำ'"]
+    I --> J["วันหนึ่ง test แดงเพราะ bug จริง"]
+    J --> K["⛔ ทีมกด re-run แล้ว merge"]
+```
+
+> Flaky test อันตรายกว่า test ที่ fail เสมอ เพราะมันทำลาย **fidelity** ของ loop ทั้งวง
+> — และมันทำลายความเชื่อของ *ทุก* test ในชุด ไม่ใช่แค่ตัวมันเอง
 
 ### สาเหตุที่ 1 — รอตามเวลาแทนรอตาม state
 ```typescript
@@ -88,6 +107,18 @@ await page.getByRole('button', { name: 'Book Now' }).click();
 await page.getByTestId('submit-booking').click();
 ```
 
+**ลำดับการเลือก locator:**
+```mermaid
+flowchart LR
+    A["getByRole<br/><i>ดีที่สุด</i>"] --> B["getByLabel"]
+    B --> C["getByText"]
+    C --> D["getByTestId<br/><i>เมื่อไม่มีทางอื่น</i>"]
+    D --> E["CSS/XPath<br/><i>หลีกเลี่ยง</i>"]
+```
+
+ข้อดีที่ได้แถมจาก `getByRole`: ถ้าเขียน test ด้วย role ไม่ได้
+แปลว่า **หน้าเว็บนั้นมีปัญหา accessibility จริง ๆ** — screen reader ก็หาไม่เจอเหมือนกัน
+
 ### สาเหตุที่ 4 — ข้อมูลที่ขึ้นกับเวลาจริง
 ```typescript
 // แย่: test จะพังทุกวันจันทร์ หรือพังตอนสิ้นเดือน
@@ -99,7 +130,6 @@ await page.getByLabel('Date').fill(tomorrow);
 ```
 
 ### เครื่องมือ debug: Trace Viewer
-เปิดใน config แล้ว Playwright จะเก็บ trace ตอน retry:
 ```typescript
 use: { trace: 'on-first-retry' }
 ```
@@ -108,18 +138,33 @@ npx playwright show-trace trace.zip
 ```
 ได้ timeline, DOM snapshot ทุก step, network, console — ใช้ debug test ที่แดงเฉพาะใน CI ได้จริง
 
-> **นโยบายที่แนะนำ:** ถ้า test แดงแบบสุ่ม ห้ามใส่ `retry` แล้วปล่อยผ่าน
-> ให้หา root cause หรือ `test.skip` พร้อมเปิด issue — การซ่อนอาการคือการทำลาย loop
+> 💼 **จากหน้างานจริง**
+> นโยบายที่ทีมซึ่งเอาจริงเรื่องนี้ใช้กัน: **flaky test ถือเป็น bug ที่ต้องมี ticket และมีเจ้าของ**
+> ถ้าแก้ไม่ทันในเวลาที่กำหนด ให้ `skip` พร้อมลิงก์ ticket ไปเลย — ดีกว่าปล่อยให้มันแดงสุ่ม ๆ
+> เพราะ test ที่ถูก skip อย่างเปิดเผยยังซื่อสัตย์ แต่ test ที่แดงสุ่มแล้วทุกคนกด re-run
+> คือการโกหกที่ทั้งทีมร่วมมือกัน
+> อย่าใช้ `retries` สูง ๆ เพื่อกลบอาการ — retry มีไว้กัน network สะดุด ไม่ได้มีไว้กัน test ที่เขียนไม่ดี
 
 ---
 
-## 4. E2E Test Harness (8 นาที)
+## 3. E2E Test Harness (9 นาที)
 
 > **E2E Test Harness** = โครงสร้างที่ทำให้ E2E test รันซ้ำได้ผลเดิม
 > ประกอบด้วย **Page Objects + Fixtures + Seed Data + Config**
 > (คำว่า harness ในวิชานี้ใช้กับเรื่อง testing เท่านั้น — WS-03 และ WS-04)
 
-### 4.1 Page Object Model — ชั้น locator
+```mermaid
+flowchart TB
+    subgraph H["E2E Test Harness"]
+        CFG["Config<br/><i>baseURL, retries, trace</i>"]
+        FX["Fixtures + Seed<br/><i>ทุก test เริ่มจากจุดเดียวกัน</i>"]
+        PO["Page Objects<br/><i>ซ่อนรายละเอียด UI</i>"]
+    end
+    H --> SPEC["Specs<br/><i>อ่านแล้วเห็น user journey</i>"]
+    SPEC --> APP["App จริงใน browser จริง"]
+```
+
+### 3.1 Page Object Model — ชั้น locator
 
 **ปัญหาที่ POM แก้**
 ```typescript
@@ -134,6 +179,23 @@ test('double booking rejected', async ({ page }) => {
   await page.click('[data-testid="room-card-1"]');          // ซ้ำ
   await page.fill('[data-testid="date-input"]', '2024-12-01'); // ซ้ำ
 });
+```
+
+```mermaid
+flowchart LR
+    subgraph NO["ไม่มี POM"]
+        T1[test 1] --> UI1["UI"]
+        T2[test 2] --> UI1
+        T3[test 3] --> UI1
+        UI1 -. "UI เปลี่ยน = แก้ 3 ที่" .-> X["😖"]
+    end
+    subgraph YES["มี POM"]
+        S1[test 1] --> P["Page Object"]
+        S2[test 2] --> P
+        S3[test 3] --> P
+        P --> UI2["UI"]
+        UI2 -. "UI เปลี่ยน = แก้ที่เดียว" .-> Y["🙂"]
+    end
 ```
 
 **POM Solution**
@@ -171,7 +233,6 @@ export class BookingPage {
 ```
 
 ```typescript
-// tests/e2e/specs/booking.spec.ts
 test('booking flow', async ({ page }) => {
   const bookingPage = new BookingPage(page);
   await bookingPage.goto();
@@ -187,9 +248,26 @@ test('booking flow', async ({ page }) => {
 - **ห้ามใส่ `expect` ไว้ใน Page Object** — assertion อยู่ใน test เท่านั้น
   เพราะ Page Object บอกว่า "ทำอะไรได้" ส่วน test บอกว่า "คาดหวังอะไร"
 
-### 4.2 Fixtures + Seed Data — ชั้น state
+> 💼 **จากหน้างานจริง**
+> ข้อผิดพลาดที่พบบ่อยคือทำ Page Object แล้วยัด assertion ลงไปด้วย
+> จนกลายเป็น `bookingPage.verifyBookingSucceeded()` — พอถึงจุดนั้น
+> คนอ่าน test จะไม่รู้ว่ามันเช็คอะไรบ้างถ้าไม่เปิดไฟล์อื่นดู
+> **test ควรอ่านจบในไฟล์เดียว** — ทำอะไร แล้วคาดหวังอะไร ต้องเห็นครบตรงนั้น
 
-E2E Harness ต้องการ seed data ที่ consistent เพื่อให้ทุก test run เริ่มจาก known state
+### 3.2 Fixtures + Seed Data — ชั้น state
+
+```mermaid
+sequenceDiagram
+    participant F as Fixture
+    participant DB as Database
+    participant T as Test
+    F->>DB: POST /api/test/seed
+    DB-->>F: ข้อมูลชุดคงที่พร้อม
+    F->>T: ปล่อยให้ test รัน
+    T->>T: ทำงานบน state ที่รู้แน่
+    T-->>F: จบ (ไม่ว่าเขียวหรือแดง)
+    F->>DB: POST /api/test/cleanup
+```
 
 ```typescript
 // tests/e2e/fixtures/index.ts
@@ -209,13 +287,9 @@ export { expect };
 ```typescript
 // ใช้ใน tests — import จาก fixtures ไม่ใช่จาก @playwright/test
 import { test, expect } from '../fixtures';
-
-test('booking flow', async ({ page }) => {
-  // มั่นใจว่า database มี test data พร้อมแล้ว และจะถูกล้างหลังจบ
-});
 ```
 
-### 4.3 สรุปองค์ประกอบของ E2E Harness
+### 3.3 สรุปองค์ประกอบของ E2E Harness
 
 | ชั้น | ไฟล์ | หน้าที่ |
 |---|---|---|
@@ -224,13 +298,19 @@ test('booking flow', async ({ page }) => {
 | Locator | `pages/` | ซ่อนรายละเอียด UI จาก test |
 | Scenario | `specs/` | อ่านแล้วเห็น user journey เป็นภาษาคน |
 
-ถ้า 4 ชั้นนี้ครบ E2E จะรันได้เหมือนกันทั้งบนเครื่องตัวเองและใน CI (WS-06)
+> 💼 **จากหน้างานจริง**
+> seed endpoint แบบที่เราทำวันนี้เป็นวิธีที่ใช้กันจริงในหลายทีม
+> แต่ **มันคือช่องโหว่ที่ร้ายแรงถ้าหลุดขึ้น production** — ลองนึกภาพ endpoint
+> ที่ล้าง database ได้โดยไม่ต้อง login เปิดอยู่บน internet
+> กติกาในทีมจริงคือต้องมี guard อย่างน้อย 2 ชั้น: เช็ค `NODE_ENV`
+> และไม่ deploy route กลุ่มนี้ขึ้น production เลยตั้งแต่ตอน build
+> เรื่องนี้จะถูกหยิบมาตรวจอีกครั้งใน WS-08
 
 ---
 
-## 5. ให้ AI ช่วยเขียน E2E อย่างไรให้ไม่พัง (4 นาที)
+## 4. ให้ AI ช่วยเขียน E2E อย่างไรให้ไม่พัง (4 นาที)
 
-E2E เป็นจุดที่ AI พลาดบ่อยที่สุด เพราะมันไม่เห็นหน้าจอจริง
+E2E เป็นจุดที่ AI พลาดบ่อยที่สุด เพราะมัน **ไม่เห็นหน้าจอจริง**
 
 | AI มักทำ | ปัญหา | แก้โดย |
 |---|---|---|
@@ -255,27 +335,34 @@ Rules:
 Then run `npx playwright test` and fix until green.
 ```
 
+> 💼 **จากหน้างานจริง**
+> มีเครื่องมือรุ่นใหม่ที่ให้ agent **เปิด browser ดูหน้าจอเองแล้วเขียน test**
+> ซึ่งแก้ปัญหา "เดา selector" ได้ตรงจุด แต่ก็มีกับดักใหม่:
+> agent มักเขียน test ที่ผูกกับสิ่งที่มันเห็น ณ วินาทีนั้นเป๊ะ ๆ จนแตะอะไรนิดเดียวก็แดง
+> หลักที่ยังใช้ได้เหมือนเดิมคือ — **คนต้องเป็นคนตัดสินว่า test ควรยืนยันอะไร**
+> ให้เครื่องมือช่วยเรื่อง "หา element ยังไง" ได้ แต่ "อะไรคือความสำเร็จ" ยังเป็นงานของเรา
+
 ---
 
 ## Key Takeaways
-- E2E คือ loop ที่กว้างที่สุดแต่ช้าที่สุด — ใช้เท่าที่จำเป็น ให้ unit test รับงานส่วนใหญ่
-- Flaky test ทำลาย fidelity ของ loop ทั้งวง อย่าปล่อยผ่านด้วย retry
+- unit test เขียวหมด ≠ user ใช้ได้ — E2E จับ bug ที่อยู่ *ระหว่าง* ชิ้นส่วน
+- E2E คือ loop ที่กว้างที่สุดแต่ช้าที่สุด — เขียนเฉพาะเส้นทางที่ถ้าพังแล้วธุรกิจหยุด
+- Flaky test ทำลายความเชื่อของ test ทั้งชุด ไม่ใช่แค่ตัวมันเอง — อย่ากลบด้วย retry
+- ลำดับ locator: role → label → text → testid และ role ช่วยเรื่อง accessibility ไปด้วย
 - E2E Test Harness = Config + Seed/Fixtures + Page Objects + Specs
-- Page Object เก็บ locator และ action ไว้ — assertion อยู่ใน test เท่านั้น
-- AI เขียน E2E ได้ก็ต่อเมื่อได้อ่าน component จริงก่อน และถูกห้ามใช้ทางลัดที่ทำให้ flaky
+- Page Object เก็บ locator และ action — assertion อยู่ใน test เท่านั้น
 
 ---
 
 ## AI-DLC Connection: Construction Phase — Acceptance Test Stage
 
-ใน AI-DLC Construction Phase E2E tests คือ **Acceptance Test** ที่ verify story:
-
-```
-Story มี Acceptance Criteria (Given/When/Then)
-    ↓
-E2E Test implement acceptance criteria นั้น
-    ↓
-ถ้า E2E pass = story "Done" ตาม AI-DLC definition
+```mermaid
+flowchart LR
+    S["Story + AC<br/>WS-02"] --> E["E2E Test<br/>WS-04"]
+    E --> P{"pass?"}
+    P -- yes --> D["Story = Done<br/>ตาม AI-DLC"]
+    P -- no --> B["กลับไปที่ bolt"]
+    B --> E
 ```
 
 **E2E Test Harness = AI-DLC Acceptance Test Infrastructure:**

@@ -4,40 +4,96 @@
 
 ---
 
-## 1. Entry Ticket Review (4 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว (2 นาที)
 
-เปิด test cases ที่กลุ่มต่าง ๆ ส่งมา (anonymized):
-- Test ไหนที่จะแดงจริงถ้าลบ business rule ออก
-- Test ไหนที่ดูเหมือนดีแต่จะเขียวตลอดไม่ว่า code จะเป็นอย่างไร
-- Pattern ที่มักพลาด
+WS-02 เราเขียน business rules ไว้ใน `unit-brief.md` — วันนี้เราทำให้มันมี "ผู้คุ้มกัน"
+
+```mermaid
+flowchart LR
+    BR["Business Rule<br/><i>เขียนไว้ใน unit-brief</i>"] --> UT["Unit Test<br/><i>วันนี้</i>"]
+    UT --> G{"มีคนลบกฎนี้"}
+    G -- "test แดง" --> SAFE["✅ กฎถูกคุ้มครอง"]
+    G -- "test เขียว" --> DANGER["⛔ กฎนี้ไม่มีใครดูแล"]
+```
+
+**คำถามเปิดคาบ (คิดในใจ 30 วินาที):**
+> "ถ้าคืนนี้มีคนเข้าไปลบเงื่อนไข `if not room.is_available` ออกจาก code ของกลุ่มคุณ
+> พรุ่งนี้เช้าจะมีอะไรบอกคุณไหม"
+
+ถ้าคำตอบคือ "ไม่มี" — นั่นแปลว่ากฎข้อนั้นอยู่ได้ด้วยความจำของคนในกลุ่มเท่านั้น
+และความจำจะหายไปเมื่อจบเทอม เมื่อคนเปลี่ยน หรือเมื่อมี AI เข้ามาแก้ code
 
 ---
 
-## 2. Unit Test Loop: loop ที่สั้นที่สุดในวิชานี้ (4 นาที)
+## 1. Unit Test Loop: loop ที่สั้นที่สุดในวิชานี้ (4 นาที)
 
-```
-       ┌──── Red ────┐
-       │  เขียน test  │
-       ↓  ที่ยังแดง   │
-   Refactor          │
-       ↑             ↓
-       └──── Green ──┘
-          เขียน code
-        ให้น้อยที่สุด
-        ที่ทำให้เขียว
+```mermaid
+flowchart LR
+    R["🔴 Red<br/>เขียน test ที่ยังแดง"] --> G["🟢 Green<br/>เขียน code ให้น้อยที่สุด<br/>ที่ทำให้เขียว"]
+    G --> RF["🔵 Refactor<br/>จัดระเบียบโดยไม่เปลี่ยนพฤติกรรม"]
+    RF --> R
 ```
 
-| คุณสมบัติของ loop | เป้าหมายในวิชานี้ |
-|---|---|
-| **Latency** | test suite ทั้งชุด < 10 วินาที |
-| **Fidelity** | ลบ business rule 1 ข้อ → ต้องมี test แดงอย่างน้อย 1 ตัว |
-| **Coverage** | ทุก business rule ใน `unit-brief.md` มี test คู่กัน |
+| คุณสมบัติของ loop | เป้าหมายในวิชานี้ | ทำไม |
+|---|---|---|
+| **Latency** | test suite ทั้งชุด < 10 วินาที | ถ้าช้ากว่านี้ คนจะเลิกรันระหว่างเขียน |
+| **Fidelity** | ลบ business rule 1 ข้อ → ต้องมี test แดงอย่างน้อย 1 ตัว | signal ต้องไม่โกหก |
+| **Coverage** | ทุก business rule ใน `unit-brief.md` มี test คู่กัน | ครอบคลุมสิ่งที่สำคัญ ไม่ใช่ทุกบรรทัด |
 
 **และนี่คือ loop เดียวกันกับที่ AI agent ใช้** — เมื่อ agent รัน `npm test` แล้วอ่านผล
-มันกำลังยืมขั้น Verify ที่เราสร้างไว้ ดังนั้น:
+มันกำลังยืมขั้น Verify ที่เราสร้างไว้
+
+```mermaid
+flowchart LR
+    subgraph HUMAN["คนใช้"]
+        H1[แก้ code] --> H2[รัน test] --> H3[อ่านผล]
+        H3 --> H1
+    end
+    subgraph AGENT["agent ใช้"]
+        A1[แก้ code] --> A2[รัน test] --> A3[อ่านผล]
+        A3 --> A1
+    end
+    TS[("test suite<br/>เดียวกัน")] --- HUMAN
+    TS --- AGENT
+```
 
 > test suite ที่เร็วและซื่อสัตย์ = agent ที่ฉลาดขึ้น
 > test suite ที่ช้าหรือหลอก = agent ที่มั่นใจแบบผิด ๆ
+
+> 💼 **จากหน้างานจริง**
+> มีเส้นแบ่งทางจิตวิทยาที่ชัดมากอยู่ราว ๆ **10 วินาที**: ถ้า test รันเสร็จภายในนั้น
+> คนจะรันมันระหว่างเขียน code เป็นธรรมชาติ แต่ถ้ามันใช้เวลาเป็นนาที
+> คนจะเปลี่ยนไปทำอย่างอื่นระหว่างรอ แล้วเสียสมาธิ สุดท้ายก็จะเลิกรันจนกว่าจะ push
+> ทีมที่ดูแล test suite เป็นระบบจะ **มอนิเตอร์เวลารัน test เหมือน monitor performance ของ product**
+> เพราะเมื่อไหร่ที่มันช้าเกินไป loop ทั้งวงก็ตายลงเงียบ ๆ
+
+---
+
+## 2. Test Pyramid: จะเขียน test แบบไหน อย่างละเท่าไร (3 นาที)
+
+```mermaid
+flowchart TB
+    E2E["E2E — น้อย<br/><i>ช้า แพง แต่จับ integration bug</i>"]
+    INT["Integration — ปานกลาง<br/><i>ต่อกับ db/service จริง</i>"]
+    UNIT["Unit — เยอะที่สุด<br/><i>เร็ว ถูก จับ logic bug</i>"]
+    UNIT --> INT --> E2E
+```
+
+| ระดับ | ตอบคำถาม | ความเร็ว | เขียนกี่ตัว |
+|---|---|---|---|
+| Unit | logic ถูกไหม | มิลลิวินาที | มาก |
+| Integration | ต่อกันติดไหม | วินาที | ปานกลาง |
+| E2E | user ใช้ได้จริงไหม | นาที | น้อยแต่สำคัญ |
+
+**หลักตัดสินง่าย ๆ:** ถ้าเรื่องหนึ่ง unit test ตรวจได้ ให้ตรวจด้วย unit test
+อย่ายกไปเป็น E2E เพราะ "มันสำคัญ" — ความสำคัญไม่ใช่เกณฑ์เลือกระดับของ test
+
+> 💼 **จากหน้างานจริง**
+> รูปทรงที่ผิดที่พบบ่อยเรียกกันว่า **"ice cream cone"** — E2E เยอะ unit น้อย
+> เกิดเพราะทีมเริ่มจากการ test ผ่านหน้าจอ (ซึ่งเป็นธรรมชาติ) แล้วไม่เคยถอยกลับมาทำชั้นล่าง
+> อาการคือ CI ใช้เวลาเป็นชั่วโมง มี flaky เต็มไปหมด และไม่มีใครกล้าแก้ code
+> ทางแก้ไม่ใช่ลบ E2E ทิ้ง แต่คือ **ทุกครั้งที่ E2E จับ bug ได้ ให้ถามว่า
+> "bug นี้ควรถูกจับด้วย unit test ตัวไหน"** แล้วเขียนตัวนั้นเพิ่ม
 
 ---
 
@@ -75,20 +131,37 @@ def test_booking_confirmed_when_room_available():
 ✅ def test_booking_rejected_when_room_unavailable()
 ```
 
-ชื่อที่ดีบอก 3 อย่าง: ทำอะไร, ภายใต้เงื่อนไขไหน, คาดหวังอะไร
-เวลา test แดงใน CI ตอนตีสอง ชื่อ test คือสิ่งเดียวที่คุณได้อ่าน
+ชื่อที่ดีบอก 3 อย่าง: **ทำอะไร / ภายใต้เงื่อนไขไหน / คาดหวังอะไร**
+
+> 💼 **จากหน้างานจริง**
+> เวลา test แดงใน CI ตอนตีสอง สิ่งเดียวที่คุณได้อ่านคือ **ชื่อ test**
+> ถ้ามันชื่อ `test_booking_2` คุณต้องเปิด code มาไล่อ่านก่อนถึงจะรู้ว่าอะไรพัง
+> แต่ถ้ามันชื่อ `test_booking_rejected_when_room_unavailable` คุณรู้ทันทีว่าต้องไปดูตรงไหน
+> อีกมุมหนึ่งที่มีค่ามาก: รายชื่อ test ทั้งหมดของ module หนึ่ง
+> คือ **เอกสารที่อัปเดตตัวเองเสมอ** ว่า module นั้นรับประกันอะไรบ้าง — ต่างจาก README ที่ล้าสมัยได้
 
 ---
 
-## 4. Unit Test Harness: Test Doubles, Fixtures, Factories (10 นาที)
+## 4. Unit Test Harness: Test Doubles, Fixtures, Factories (9 นาที)
 
 > **Test Harness** = โครงสร้างรอบ ๆ test ที่ทำให้ test รันได้แบบ isolated และได้ผลเหมือนเดิมทุกครั้ง
 > ประกอบด้วย **test doubles + fixtures + factories + runner config**
 > คำว่า "harness" ในวิชานี้ใช้เฉพาะกับเรื่อง testing (WS-03, WS-04) เท่านั้น
 
-### 4.1 Test Doubles
+```mermaid
+flowchart TB
+    subgraph HARNESS["Unit Test Harness"]
+        F["Factories<br/><i>สร้าง object</i>"]
+        FX["Fixtures<br/><i>setup ที่ใช้ซ้ำ</i>"]
+        D["Test Doubles<br/><i>แทน dependency</i>"]
+        CFG["Runner Config<br/><i>pytest.ini / vitest.config</i>"]
+    end
+    HARNESS --> T["Unit Tests"]
+    T --> SUT["Code ที่กำลังทดสอบ"]
+    SUT -. "ไม่แตะของจริง" .-x EXT[("Database<br/>Network<br/>เวลา")]
+```
 
-Test doubles คือ objects ที่ใช้แทน real dependencies ใน tests
+### 4.1 Test Doubles
 
 **Stub — ให้ข้อมูลที่กำหนดไว้ล่วงหน้า**
 ```python
@@ -131,7 +204,6 @@ def test_notification_sent_after_booking():
 **Spy — record การเรียก แต่ delegate ไปยัง real implementation**
 ```python
 # ใช้น้อย ส่วนใหญ่ใช้ Mock แทนได้
-# ใช้เมื่อ: ต้องการ real behavior + verify ว่าถูกเรียก
 ```
 
 | ต้องการ | ใช้ |
@@ -154,8 +226,26 @@ def test_create_booking():
     repo.save.assert_called_once()
     # ถ้า logic ใน service ผิดหมด test นี้ก็ยังเขียว
 ```
-**กติกา:** mock เฉพาะสิ่งที่ข้ามขอบเขต unit (I/O, network, เวลา, random)
+
+**กติกา:** mock เฉพาะสิ่งที่ **ข้ามขอบเขต unit** — I/O, network, เวลา, random
 ส่วน logic ภายใน ให้ใช้ของจริง
+
+```mermaid
+flowchart LR
+    subgraph UNIT["ขอบเขตของ unit — ใช้ของจริง"]
+        S["BookingService"] --> V["Validator"]
+        S --> C["PriceCalculator"]
+    end
+    S -. "mock ตรงนี้" .-> DB[("Database")]
+    S -. "mock ตรงนี้" .-> MAIL["Email Service"]
+    S -. "mock ตรงนี้" .-> CLK["System Clock"]
+```
+
+> 💼 **จากหน้างานจริง**
+> อาการของ over-mocking ที่สังเกตได้ง่ายที่สุดคือ **refactor ทีไร test แดงทุกที
+> ทั้งที่พฤติกรรมของระบบไม่เปลี่ยน** เพราะ test ไปผูกกับ *วิธีการ* ไม่ใช่ *ผลลัพธ์*
+> เมื่อถึงจุดนั้น test จะกลายเป็นตัวถ่วงแทนที่จะเป็นตัวช่วย และทีมจะเริ่มเกลียดการเขียน test
+> หลักที่ใช้ได้: **test ควรรู้ว่าระบบทำอะไรได้ ไม่ควรรู้ว่าระบบทำมันอย่างไร**
 
 ### 4.2 Fixtures & Factories
 
@@ -178,10 +268,6 @@ def test_booking_rejected():
 @pytest.fixture
 def available_room():
     return Room(id=1, name="A101", capacity=10, is_available=True)
-
-@pytest.fixture
-def student_user():
-    return User(id=42, name="John", email="john@uni.ac.th")
 
 def test_booking_confirmed(available_room, student_user):
     service = BookingService(room_repo=FakeRoomRepo([available_room]))
@@ -220,6 +306,12 @@ def test_expired_booking():
 ```
 เช่นเดียวกับ `random`, UUID, และ network — ทั้งหมดต้องควบคุมได้จาก test
 
+> 💼 **จากหน้างานจริง**
+> มีเรื่องเล่าซ้ำ ๆ ในทุกทีมที่ทำระบบมานาน: **test ที่พังเฉพาะวันที่ 31, พังเฉพาะสิ้นเดือน,
+> พังเฉพาะช่วงเปลี่ยน timezone หรือปีอธิกสุรทิน** ทั้งหมดมีสาเหตุเดียวกันคือ code เรียก `now()` เอง
+> การรับเวลาเป็น parameter (หรือฉีด clock เข้าไป) แก้ปัญหานี้ได้ทั้งชุด
+> และยังทำให้เขียน test กรณี "ถ้าเป็นปีหน้า" ได้ฟรี ๆ ด้วย
+
 ---
 
 ## 5. กับดักใหญ่: AI-Generated Tests ที่ไม่มีค่า (8 นาที)
@@ -252,7 +344,17 @@ def test_booking_rejected_when_room_unavailable():
 | **ลอก logic มาไว้ใน assert** | `assert price == hours * RATE` | ถ้าสูตรผิด ทั้ง code และ test ผิดพร้อมกัน |
 
 ### วิธีตรวจแบบมือ: Zombie Test Detection
-Comment out business logic แล้วดูว่า test ยัง pass ไหม:
+
+```mermaid
+flowchart LR
+    A["comment out<br/>business rule 1 ข้อ"] --> B["รัน test"]
+    B --> C{"มี test แดงไหม"}
+    C -- "แดง ✅" --> D["harness ปกป้องกฎนี้"]
+    C -- "เขียวหมด ⛔" --> E["กฎนี้ไม่มีใครคุ้มครอง<br/>ต้องเขียน test เพิ่ม"]
+    D --> F["undo การแก้"]
+    E --> F
+```
+
 ```python
 def create_booking(self, room_id, ...):
     room = self.room_repo.find_by_id(room_id)
@@ -279,7 +381,13 @@ npx stryker run
 - **mutant survived** = แก้ code แล้วไม่มีใครรู้ → ตรงนั้นคือช่องโหว่ของ test suite
 
 > Coverage บอกว่า "บรรทัดนี้ถูกรัน" — mutation score บอกว่า "บรรทัดนี้ถูกปกป้อง"
-> อย่างที่สองคือสิ่งที่เราต้องการจริง ๆ และคือสิ่งที่ทำให้ AI agent เชื่อถือได้
+
+> 💼 **จากหน้างานจริง**
+> ในองค์กรที่ตั้งเป้า coverage เป็น KPI มักเกิดผลข้างเคียงที่รู้กันดี:
+> ตัวเลข coverage ขึ้นถึงเป้า แต่ bug ไม่ได้ลดลง เพราะคนเขียน test ที่ "รันผ่าน" code
+> โดยไม่ได้ **ยืนยัน** อะไร — และตอนนี้ AI ช่วยผลิต test แบบนั้นได้เร็วมาก
+> ทีมที่เอาจริงจึงหันมาดู mutation score หรืออย่างน้อยก็ใช้คำถามคัดกรองข้อเดียว:
+> **"ถ้าลบ logic อะไรออก test ตัวนี้จะแดง"** — ตอบไม่ได้ = ลบ test ทิ้ง
 
 ### วิธีสั่ง AI ให้เขียน test ที่มีค่า
 ```
@@ -301,16 +409,15 @@ Rules:
 
 ## Key Takeaways
 - Unit Test Harness = test doubles + fixtures + factories ที่ทำให้ test รันได้อย่าง isolated
-- เลือก test double ให้ถูกประเภท: Stub/Fake สำหรับ data, Mock สำหรับ verify behavior — และอย่า mock เกินจำเป็น
+- Test pyramid: unit เยอะ, E2E น้อย — ความสำคัญไม่ใช่เกณฑ์เลือกระดับของ test
+- mock เฉพาะสิ่งที่ข้ามขอบเขต unit — test ควรรู้ว่าระบบ *ทำอะไรได้* ไม่ใช่ *ทำอย่างไร*
+- ควบคุมเวลา/random/network ให้ได้ ไม่งั้น test จะแกว่งโดยไม่มีสาเหตุ
 - Coverage สูงไม่ได้แปลว่าปลอดภัย ใช้ zombie test detection หรือ mutation testing วัด fidelity
-- AI generate tests ได้เร็วแต่มักสร้าง trivial tests — คำถามคัดกรองคือ "ลบอะไรออกแล้วมันจะแดง"
-- Test suite ที่เร็วและซื่อสัตย์คือสิ่งที่ทำให้ AI agent ทำงานได้จริง ไม่ใช่แค่ดูเหมือนทำงาน
+- คำถามคัดกรอง test ทุกตัว: **"ลบอะไรออกแล้วมันจะแดง"**
 
 ---
 
 ## AI-DLC Connection: Construction Phase — Test Stage
-
-ใน AI-DLC Construction Phase แต่ละ bolt จบด้วย **Test Stage**:
 
 ```
 Construction Bolt (DDD):

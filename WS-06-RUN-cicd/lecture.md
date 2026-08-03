@@ -4,36 +4,44 @@
 
 ---
 
-## 1. Entry Ticket Review (4 นาที)
+## 0. เชื่อมจากสัปดาห์ที่แล้ว (3 นาที)
 
-เปิด entry tickets discuss ปัญหาจริงที่เกิดโดยไม่มี CI:
-- "works on my machine" — code พังใน environment อื่น
-- Merge conflict ที่ไม่รู้ตัวจนถึง production
-- ไม่มีใคร run tests ก่อน merge
+5 สัปดาห์ที่ผ่านมาเราสร้าง loop ไว้ 4 วง — แต่ทั้งหมดมีจุดอ่อนเดียวกัน:
+**มันทำงานก็ต่อเมื่อมีคนจำได้ว่าต้องรัน**
 
-แล้วเปิดตัวเลข lead time / deployment frequency ที่แต่ละกลุ่มประเมินมา —
-เก็บไว้เทียบตอนจบ lab
+**คำถามเปิดคาบ (ให้ยกมือ):**
+> "ยกมือถ้าสัปดาห์ที่ผ่านมา เคย push code โดยไม่ได้รัน test ก่อน"
+
+มือจะขึ้นเกือบทั้งห้อง — และนั่นไม่ใช่ความผิดของใคร มันคือธรรมชาติของมนุษย์ภายใต้ deadline
+วันนี้เราจะทำให้ test **หลบไม่ได้**
+
+```mermaid
+flowchart LR
+    subgraph B["ก่อนวันนี้"]
+        B1["push"] --> B2{"มีคนจำได้<br/>ว่าต้องรัน test?"}
+        B2 -- "จำได้" --> B3["✅"]
+        B2 -- "ลืม / รีบ" --> B4["⛔ หลุด"]
+    end
+    subgraph A["หลังวันนี้"]
+        A1["push"] --> A2["CI รันเองทุกครั้ง"]
+        A2 --> A3{"เขียว?"}
+        A3 -- ไม่ --> A4["merge ถูกบล็อก"]
+        A3 -- ใช่ --> A5["merge ได้"]
+    end
+```
 
 ---
 
-## 2. Integration Loop: รวมทุก loop ให้เป็นด่านเดียว (5 นาที)
+## 1. Integration Loop: รวมทุก loop ให้เป็นด่านเดียว (5 นาที)
 
-5 สัปดาห์ที่ผ่านมาเราสร้าง loop แยกกันไว้ 4 วง วันนี้เอามาต่อกันให้รันเองทุกครั้งที่ push
-
-```
-Push / Open PR
-    ↓
-[Lint + Typecheck]  ← เร็วที่สุด ให้แดงก่อนถ้าจะแดง
-    ↓
-[Unit Tests]        ← WS-03 harness
-    ↓
-[E2E Tests]         ← WS-04 harness (บน container จาก WS-05)
-    ↓
-[Build]             ← WS-05
-    ↓
-[Deploy Staging]    ← อัตโนมัติเมื่อเข้า develop
-    ↓
-[Deploy Prod]       ← ต้องมีคน approve
+```mermaid
+flowchart TB
+    P["Push / Open PR"] --> L["Lint + Typecheck<br/><i>เร็วที่สุด แดงก่อนถ้าจะแดง</i>"]
+    L --> U["Unit Tests<br/><i>WS-03 harness</i>"]
+    U --> E["E2E Tests<br/><i>WS-04 harness บน container จาก WS-05</i>"]
+    E --> B["Build<br/><i>WS-05</i>"]
+    B --> S["Deploy Staging<br/><i>อัตโนมัติเมื่อเข้า develop</i>"]
+    S --> PR["Deploy Production<br/><i>ต้องมีคน approve</i>"]
 ```
 
 | | ก่อนมี CI | หลังมี CI |
@@ -42,22 +50,40 @@ Push / Open PR
 | **Fidelity** | ขึ้นกับว่าใครจำรัน test ได้บ้าง | รันทุกครั้ง เหมือนกันทุกครั้ง |
 | **Coverage** | เฉพาะที่คนนึกออก | ทุก loop ที่เคยสร้างไว้ |
 
-**สิ่งที่เปลี่ยนไปจริง ๆ ไม่ใช่ "มี test" — แต่คือ "test กลายเป็นสิ่งที่หลบไม่ได้"**
+> สิ่งที่เปลี่ยนไปจริง ๆ ไม่ใช่ "มี test" — แต่คือ **"test กลายเป็นสิ่งที่หลบไม่ได้"**
 
 ### วัดผลด้วย DORA
-| ตัวชี้วัด | ความหมาย | เกี่ยวกับ loop อย่างไร |
-|---|---|---|
-| Deployment frequency | deploy บ่อยแค่ไหน | loop สั้น → กล้า deploy บ่อย |
-| Lead time for changes | commit → production ใช้เวลาเท่าไร | คือ latency ของ loop รวม |
-| Change failure rate | deploy แล้วพังกี่ % | คือ fidelity ที่หลุดออกไปถึง user |
-| Recovery time | พังแล้วกู้คืนเร็วแค่ไหน | loop ของการแก้ไข |
 
-สองตัวแรกวัด **ความเร็ว** สองตัวหลังวัด **ความมั่นคง** — และของจริงคือมันไปด้วยกัน
-ทีมที่ deploy บ่อยมัก failure rate ต่ำกว่า เพราะแต่ละครั้งเปลี่ยนน้อย จึงหาสาเหตุง่าย
+```mermaid
+flowchart LR
+    subgraph SPEED["ความเร็ว"]
+        S1["Deployment Frequency<br/><i>deploy บ่อยแค่ไหน</i>"]
+        S2["Lead Time for Changes<br/><i>commit → production</i>"]
+    end
+    subgraph STAB["ความมั่นคง"]
+        T1["Change Failure Rate<br/><i>deploy แล้วพังกี่ %</i>"]
+        T2["Recovery Time<br/><i>พังแล้วกู้เร็วแค่ไหน</i>"]
+    end
+    SPEED <-. "ไม่ใช่สิ่งที่ต้องแลกกัน" .-> STAB
+```
+
+| ตัวชี้วัด | เกี่ยวกับ loop อย่างไร |
+|---|---|
+| Deployment frequency | loop สั้น → กล้า deploy บ่อย |
+| Lead time for changes | คือ latency ของ loop รวม |
+| Change failure rate | คือ fidelity ที่หลุดออกไปถึง user |
+| Recovery time | loop ของการแก้ไข |
+
+> 💼 **จากหน้างานจริง**
+> สิ่งที่งานวิจัยด้าน software delivery พบซ้ำ ๆ และขัดกับสัญชาตญาณของหลายคนคือ
+> **ความเร็วกับความมั่นคงไม่ใช่สิ่งที่ต้องแลกกัน** — ทีมที่ deploy บ่อยที่สุดมักเป็นทีมที่พังน้อยที่สุดด้วย
+> เหตุผลตรงไปตรงมา: deploy ที่มีของ 3 อย่างแล้วพัง คุณรู้ทันทีว่าปัญหาอยู่ใน 3 อย่างนั้น
+> แต่ deploy ที่สะสมของไว้ 300 อย่าง คุณจะหาไม่เจอ และ rollback ก็ทำไม่ได้เพราะมันพันกันไปหมด
+> **"ปล่อยของทีละนิดบ่อย ๆ" จึงเป็นกลยุทธ์ลดความเสี่ยง ไม่ใช่การเร่งงาน**
 
 ---
 
-## 3. GitHub Actions Workshop (10 นาที)
+## 2. GitHub Actions Workshop (9 นาที)
 
 ### โครงสร้าง Workflow ที่ครบ
 ```yaml
@@ -158,23 +184,32 @@ jobs:
 ### 4 บรรทัดที่คนมักลืม แต่สำคัญมาก
 | บรรทัด | ป้องกันอะไร |
 |---|---|
-| `permissions: contents: read` | workflow ที่ถูกแก้โดยไม่ตั้งใจ (หรือโดย dependency) เขียนอะไรก็ได้ใน repo |
+| `permissions: contents: read` | workflow เขียนอะไรก็ได้ใน repo เมื่อถูกแก้โดยไม่ตั้งใจหรือโดย dependency |
 | `concurrency` + `cancel-in-progress` | job เก่าค้างกินเวลา ทำให้ latency ของ loop บาน |
 | `cache: 'npm'` | pipeline ช้าเพราะ install ใหม่ทุกครั้ง |
 | `if: github.event_name == 'push'` | deploy ซ้ำจาก event ที่ไม่ได้ตั้งใจ |
 
+> 💼 **จากหน้างานจริง**
+> pipeline เป็นสิ่งที่ **โตขึ้นเรื่อย ๆ ตามอายุ project** และไม่มีใครสังเกตจนกว่ามันจะช้าเกินทน
+> ทีมที่ดูแลเรื่องนี้ตั้งงบเวลาไว้ล่วงหน้าเลย เช่น *"PR check ต้องจบใน 10 นาที"*
+> แล้วเมื่อเกินงบ ก็ต้องแก้ ไม่ใช่ยอมรับ
+> วิธีที่ใช้กันคือ: แยกเป็น 2 ชั้น — ชั้นเร็วรันทุก PR (lint, unit, E2E เฉพาะเส้นทางหลัก)
+> และชั้นเต็มรันตอน merge เข้า main หรือรันกลางคืน
+> **การรอ pipeline คือเวลาที่ทั้งทีมเสียไปพร้อมกัน จึงคุ้มที่จะลงทุนทำให้มันเร็ว**
+
 ---
 
-## 4. กับดัก: Secrets และ Supply Chain (5 นาที)
+## 3. กับดัก: Secrets และ Supply Chain (6 นาที)
 
 ### Secrets หลุดเข้า Repo
-```bash
-# Developer commit โดยไม่ตั้งใจ
-git add .
-git commit -m "add database config"
-# ไฟล์ .env ที่มี DATABASE_URL=postgres://user:realpassword@... ถูก commit
 
-# Force push ไม่ช่วย — history ยังอยู่ใน GitHub caches และใน clone ของคนอื่น
+```mermaid
+flowchart LR
+    A["git add ."] --> B[".env ติดไปด้วย"]
+    B --> C["push ขึ้น GitHub"]
+    C --> D["bot สแกน repo สาธารณะ<br/>ภายในไม่กี่วินาที"]
+    D --> E["key ถูกใช้"]
+    C -. "ลบ commit ไม่ช่วย —<br/>history อยู่ใน cache และใน clone ของคนอื่นแล้ว" .-> F["⛔"]
 ```
 
 **วิธีป้องกัน:**
@@ -192,7 +227,13 @@ env:
 1. **Revoke ทันที** ที่ service ที่ออก secret นั้น
 2. Generate ใหม่ แล้ว update ใน GitHub Secrets
 3. ค่อยไปจัดการ git history
-> อย่าคิดว่า "ลบ commit แล้วปลอดภัย" — bot scan repo สาธารณะภายในไม่กี่วินาที
+
+> 💼 **จากหน้างานจริง**
+> ลำดับข้างบนสำคัญมาก และคนมักทำสลับ — คือรีบไปลบ commit ก่อน แล้วค่อยคิดเรื่อง revoke
+> ซึ่งช้าเกินไป เพราะมี bot ที่ไล่สแกน commit สาธารณะตลอดเวลา และเวลาตอบสนองวัดกันเป็นวินาที
+> **สมมติเสมอว่า secret ที่ push ขึ้นไปแล้ว = secret ที่หลุดแล้ว** ไม่ว่าจะลบเร็วแค่ไหน
+> ในทีมจริง เรื่องนี้ไม่ถือเป็นความผิดของคน ๆ เดียว แต่ถือเป็นความล้มเหลวของระบบ —
+> จึงต้องเปิด push protection และ pre-commit hook ไว้ เพื่อให้ระบบจับก่อนที่คนจะพลาด
 
 ### Supply Chain: action ที่เราเรียกใช้ก็คือ code ที่เรารัน
 ```yaml
@@ -202,19 +243,35 @@ env:
 # ปลอดภัยที่สุด: pin commit SHA — ไม่มีใครเปลี่ยนของใต้เท้าเราได้
 - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 ```
+
 สำหรับ action จาก third-party (ไม่ใช่ `actions/*`) ให้ pin SHA เสมอ
 เพราะ tag เป็นแค่ label ที่เจ้าของ repo เลื่อนไปชี้ code อื่นได้ทุกเมื่อ
+
+```mermaid
+flowchart LR
+    W["workflow ของเรา"] --> A["third-party action"]
+    A --> S["มีสิทธิ์เข้าถึง<br/>secrets + source code<br/>ของเราทั้งหมด"]
+    A -. "เจ้าของเลื่อน tag<br/>ไปชี้ code ใหม่" .-> M["code ที่เราไม่เคยเห็น<br/>รันในเครื่อง CI ของเรา"]
+```
+
+> 💼 **จากหน้างานจริง**
+> Build pipeline เป็นเป้าหมายที่มีค่าสูงมากสำหรับผู้โจมตี — เพราะมันมีสิทธิ์เข้าถึงทั้ง source code
+> และ credential สำหรับ deploy ขึ้น production มีเหตุการณ์จริงหลายครั้งที่ผู้โจมตีเข้าทาง
+> dependency หรือ action ที่ทีมเรียกใช้ แทนที่จะเจาะระบบตรง ๆ
+> แนวปฏิบัติที่กลายเป็นมาตรฐานคือ: pin SHA, ให้ `permissions` น้อยที่สุด,
+> ไม่ให้ workflow ที่รันจาก PR ของคนนอกแตะ secret ได้ และแยก credential ของ deploy
+> ออกจาก credential ทั่วไป
 
 ### Log ก็รั่วได้
 ```yaml
 - run: echo "Deploying with $DATABASE_URL"   # ❌ โผล่ใน log
 ```
 GitHub มาสก์ค่า secret ให้บางกรณี แต่ไม่เสมอไป (เช่นถ้าถูกแปลงเป็น base64 ก่อน)
-กติกาง่าย ๆ: อย่า echo อะไรที่มาจาก `secrets.*`
+กติกาง่าย ๆ: **อย่า echo อะไรที่มาจาก `secrets.*`**
 
 ---
 
-## 5. Branch Protection & Fail Fast (6 นาที)
+## 4. Branch Protection & Fail Fast (5 นาที)
 
 ### Branch Protection = ทำให้ loop หลบไม่ได้
 Settings > Branches (หรือ Rules > Rulesets) สำหรับ `main`:
@@ -224,31 +281,44 @@ Settings > Branches (หรือ Rules > Rulesets) สำหรับ `main`:
 - ✅ Block force pushes
 
 > ถ้าไม่มีข้อนี้ CI ก็เป็นแค่ "ไฟสัญญาณที่มองข้ามได้"
-> Loop จะมีความหมายก็ต่อเมื่อผลของมันมีผลจริง
+> **Loop จะมีความหมายก็ต่อเมื่อผลของมันมีผลจริง**
 
 ### Fail Fast
-```yaml
-jobs:
-  pipeline:
-    steps:
-      - name: Lint           # fail → หยุด ไม่รัน unit test
-      - name: Unit Tests     # fail → หยุด ไม่รัน E2E
-      - name: E2E Tests      # fail → หยุด ไม่ deploy
-      - name: Deploy
+```mermaid
+flowchart LR
+    A["Lint<br/>~20 วิ"] --> B["Unit<br/>~1 นาที"]
+    B --> C["E2E<br/>~5 นาที"]
+    C --> D["Build<br/>~3 นาที"]
+    D --> E["Deploy"]
+    A -. "แดงตรงนี้<br/>ประหยัดไป 9 นาที" .-> X["หยุด"]
 ```
+
 เรียงจากเร็ว/ถูก ไปช้า/แพง — ประหยัดเวลา developer และ compute
 
 ### เมื่อ Pipeline แดง
-```
-1. คลิก job ที่ fail → คลิก step ที่แดง
-2. อ่าน error จากบนลงล่าง หา error แรก ไม่ใช่ error สุดท้าย
-3. reproduce ใน local ด้วยคำสั่งเดียวกับ CI:
-   docker compose -f compose.test.yaml up unit --abort-on-container-exit --exit-code-from unit
-4. แก้ใน local จน green แล้วค่อย push
+
+```mermaid
+flowchart TB
+    F["job แดง"] --> R["อ่าน error แรก<br/>ไม่ใช่ error สุดท้าย"]
+    R --> L["reproduce ใน local<br/>ด้วยคำสั่งเดียวกับ CI"]
+    L --> FIX["แก้จน green ใน local"]
+    FIX --> P["push ครั้งเดียว"]
+    F -. "❌ อย่าทำ" .-> BAD["push ซ้ำ ๆ เพื่อ debug<br/>loop 10 วินาที → 5 นาที"]
 ```
 
-**ข้อห้าม:** debug ด้วยการ push ซ้ำ ๆ — นั่นคือการเปลี่ยน loop ที่ latency 10 วินาที
-ให้กลายเป็น loop ที่ latency 5 นาที
+```bash
+docker compose -f compose.test.yaml up unit \
+  --abort-on-container-exit --exit-code-from unit
+```
+
+นี่คือเหตุผลที่เราทำ container ไว้ตั้งแต่ WS-05 — เพื่อให้ reproduce ปัญหาของ CI ได้ในเครื่องตัวเอง
+
+> 💼 **จากหน้างานจริง**
+> "แก้ CI ด้วยการ push ซ้ำ ๆ" เป็นนิสัยที่แพงมาก และมองเห็นได้จากภายนอก —
+> commit history ที่เต็มไปด้วย `fix ci`, `fix ci again`, `please work`
+> คือสัญญาณว่าคนนั้นกำลังทำงานใน loop ที่ latency สูงกว่าที่ควรจะเป็นสิบเท่า
+> ทีมที่ทำงานเป็นระบบจะลงทุนให้ **รัน pipeline เดียวกันได้ในเครื่องตัวเอง**
+> เพราะมันเปลี่ยน loop จาก 5 นาทีเหลือไม่กี่วินาที
 
 > **ให้ AI ช่วยได้ตรงไหน:** วาง log ของ job ที่แดงให้ agent อ่านพร้อมไฟล์ workflow
 > มันเก่งเรื่องตีความ error ของ YAML/CI มาก แต่ **อย่าให้มันแก้ workflow แล้ว push ทันที** —
@@ -258,20 +328,20 @@ jobs:
 
 ## Key Takeaways
 - Integration Loop ทำให้ทุก loop ที่สร้างมา 5 สัปดาห์กลายเป็นสิ่งที่หลบไม่ได้
+- ความเร็วกับความมั่นคงไม่ใช่สิ่งที่ต้องแลกกัน — deploy ทีละนิดคือกลยุทธ์ลดความเสี่ยง
 - ตั้ง `permissions`, `concurrency`, cache และ pin version — 4 บรรทัดที่คนลืมบ่อยที่สุด
-- Secrets อยู่ใน GitHub Secrets เท่านั้น หลุดเมื่อไหร่ให้ revoke ก่อนทำอย่างอื่น
+- สมมติเสมอว่า secret ที่ push แล้ว = secret ที่หลุดแล้ว — **revoke ก่อน แล้วค่อยจัดการ history**
+- Build pipeline คือเป้าหมายที่มีค่าสูงของผู้โจมตี — pin SHA และให้สิทธิ์น้อยที่สุด
 - Branch protection คือสิ่งที่ทำให้ผลของ loop มีความหมาย
-- วัดผลด้วย DORA — ความเร็วกับความมั่นคงไม่ใช่สิ่งที่ต้องแลกกัน
+- ตั้งงบเวลาให้ pipeline แล้วรักษาไว้ — การรอ pipeline คือเวลาที่ทั้งทีมเสียพร้อมกัน
 
 ---
 
 ## AI-DLC Connection: Operations Phase — Deploy & Verify Stages
 
-```
-Operations Phase:
-Build → [Deploy] → [Verify] → Monitor
-          ↑            ↑
-        วันนี้       วันนี้
+```mermaid
+flowchart LR
+    B["Build<br/>WS-05"] --> D["Deploy<br/><b>วันนี้</b>"] --> V["Verify<br/><b>วันนี้</b>"] --> M["Monitor<br/>WS-07"]
 ```
 
 **CI/CD = AI-DLC Operations Automation:**

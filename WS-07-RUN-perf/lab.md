@@ -99,7 +99,7 @@ echo "exit code: $?"   # ≠ 0 แปลว่ามี threshold ไม่ผ�
 - วันที่ทดสอบ: [วันที่]
 
 ## Hypothesis vs Actual
-| Hypothesis (entry ticket) | ผลจริง | ถูก/ผิด |
+| Hypothesis (ที่เดาไว้ก่อนวัด) | ผลจริง | ถูก/ผิด |
 |---|---|---|
 | [endpoint] จะช้าที่สุด p95 > 500ms | p95 = ___ms | |
 

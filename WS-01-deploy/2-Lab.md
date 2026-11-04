@@ -159,7 +159,7 @@ npm install
 |---|---|---|
 | Frontend | Next.js (App Router, TypeScript) | |
 | Backend | Next.js Route Handlers | |
-| Database | PostgreSQL (เริ่มใช้จริงใน WS-05 ก่อนหน้านั้นใช้ SQLite หรือข้อมูลในหน่วยความจำได้) | |
+| Database | PostgreSQL ผ่าน Docker ตั้งแต่ WS-05 ส่วนก่อนหน้านั้นตัดสินใน ADR-001 ของ WS-02 | |
 | Deployment | Vercel | |
 | AI agent | [ชื่อเครื่องมือ] | |
 ```

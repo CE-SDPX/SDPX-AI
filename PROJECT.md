@@ -104,8 +104,8 @@ feature แต่ละรายการมีโฟลเดอร์ของ
 | บท | ขั้นตรวจสอบที่เพิ่ม | feature ที่ควรเสร็จเมื่อจบบท | ไฟล์ใน artifact chain |
 |---|---|---|---|
 | **01 Deploy** | CI ตรวจ build และ deploy อัตโนมัติ | หน้าแรกขึ้นเว็บจริง | `AGENTS.md` |
-| **02 Spec** | API contract | spec ของ 01-events และ 02-register พร้อม `openapi.yaml` | `intent.md`, `spec.md`, ADR-001, ADR-002 |
-| **03 Unit Test** | unit test ของกฎ R1, R3, R4, R5 โดยเขียน test ก่อนแก้ code | 01-events และ 02-register ใช้งานได้ | `plan.md` |
+| **02 Spec** | API contract | spec ของ 01-events และ 02-register พร้อม `openapi.yaml` | `intent.md`, `spec.md`, ADR-001 (การเก็บข้อมูล) |
+| **03 Unit Test** | unit test ของกฎ R1, R3, R4, R5 โดยเขียน test ก่อนแก้ code | 01-events และ 02-register ใช้งานได้ | `plan.md`, ADR-002 (การแบ่งชั้นของ code) |
 | **04 CI/CD** | branch protection, test ทุก PR และ AI review | 03-cancel พัฒนาผ่าน PR ที่ผ่าน gate (R2) | `REVIEW.md` |
 | **05 Docker** | environment เดียวกันทุกเครื่อง ใช้ PostgreSQL และ seed data | ระบบทั้งหมดรันได้ด้วย `docker compose up` | guard ใน `.agents/guards/` |
 | **06 E2E** | ทดสอบตาม journey: ลงทะเบียนจนเต็ม → เข้าคิวสำรอง → มีผู้ยกเลิก → ได้ที่นั่ง | 04-access และหน้าจอครบ 5 หน้า | `.agents/verifier.md` |

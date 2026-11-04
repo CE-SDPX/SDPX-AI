@@ -19,6 +19,41 @@ lab ทุกบทในวิชานี้เป็นการพัฒน�
 
 ---
 
+## โครงสร้าง repository ที่จะได้เมื่อจบบทนี้
+
+ภาพรวมของสิ่งที่กลุ่มจะสร้างในบทนี้ ตัวเลขหลังชื่อไฟล์คือขั้นตอนที่สร้างไฟล์นั้น
+
+```
+sdpx-[ชื่อกลุ่ม]/
+├── AGENTS.md              ← 3.4  กติกาที่ AI agent อ่านทุกครั้ง (มีบล็อกจาก Next.js ต่อท้าย)
+├── PROJECT.md             ← 3.3  สำเนาจากรายวิชา ห้ามแก้
+├── README.md              ← 2.1 Next.js สร้างให้ และ 6 เพิ่มชื่อสมาชิก
+├── .env.example           ← 3.2
+├── .gitignore             ← 2.1 Next.js สร้างให้ และ 2.2 เพิ่ม !.env.example
+├── docs/
+│   └── tech-stack.md      ← 3.1
+├── evidence/
+│   └── ws-01.md           ← 7.3
+├── .github/
+│   └── workflows/
+│       └── ci.yml         ← 5.1
+├── src/
+│   └── app/               ← 2.1 โครงจาก Next.js และ 4 หน้าแรกที่ AI สร้าง
+├── public/                ← 2.1
+├── package.json           ← 2.1
+├── package-lock.json      ← 2.1
+├── tsconfig.json          ← 2.1
+├── next.config.ts         ← 2.1
+└── eslint.config.mjs      ← 2.1
+```
+
+เมื่อทำครบทุกขั้นตอน ให้ตรวจด้วยคำสั่ง `git ls-files` ซึ่งต้องแสดงไฟล์ข้างต้น
+โฟลเดอร์ `node_modules/` และ `.next/` ไม่อยู่ใน git เพราะ `.gitignore` ซ่อนไว้ และไม่ควรมีไฟล์ `.env` หรือ `.env.local`
+
+โฟลเดอร์อื่น เช่น `tests/` และ `docs/features/` จะถูกสร้างในบทถัดไป
+
+---
+
 ## ขั้นตอนที่ 1 — สร้าง repository เปล่า
 
 **ทำ**
@@ -386,41 +421,6 @@ git push -u origin demo/broken-build
 - push แล้วเว็บไม่เปลี่ยน: ตรวจแท็บ Actions ว่า `CI` ผ่านแล้วหรือยัง และดู build log บน Vercel
 - เว็บยังแสดงข้อความเดิมทั้งที่ deploy เสร็จ: refresh แบบล้าง cache (Ctrl+Shift+R หรือ Cmd+Shift+R) หรือเปิดในหน้าต่างส่วนตัว
 - PR break-it-live ไม่ขึ้นสีแดง: ตรวจว่าเพิ่มบรรทัดใน `src/app/page.tsx` แล้ว และ `npm run build` ในเครื่องไม่ผ่านจริง
-
----
-
-## โครงสร้าง repository หลังจบบทนี้
-
-ใช้ตรวจตัวเองว่ามีไฟล์ครบ ตัวเลขหลังชื่อไฟล์คือขั้นตอนที่สร้างไฟล์นั้น
-
-```
-sdpx-[ชื่อกลุ่ม]/
-├── AGENTS.md              ← 3.4  กติกาที่ AI agent อ่านทุกครั้ง (มีบล็อกจาก Next.js ต่อท้าย)
-├── PROJECT.md             ← 3.3  สำเนาจากรายวิชา ห้ามแก้
-├── README.md              ← 2.1 Next.js สร้างให้ และ 6 เพิ่มชื่อสมาชิก
-├── .env.example           ← 3.2
-├── .gitignore             ← 2.1 Next.js สร้างให้ และ 2.2 เพิ่ม !.env.example
-├── docs/
-│   └── tech-stack.md      ← 3.1
-├── evidence/
-│   └── ws-01.md           ← 7.3
-├── .github/
-│   └── workflows/
-│       └── ci.yml         ← 5.1
-├── src/
-│   └── app/               ← 2.1 โครงจาก Next.js และ 4 หน้าแรกที่ AI สร้าง
-├── public/                ← 2.1
-├── package.json           ← 2.1
-├── package-lock.json      ← 2.1
-├── tsconfig.json          ← 2.1
-├── next.config.ts         ← 2.1
-└── eslint.config.mjs      ← 2.1
-```
-
-ตรวจด้วยคำสั่ง `git ls-files` ซึ่งต้องแสดงไฟล์ข้างต้น
-โฟลเดอร์ `node_modules/` และ `.next/` ไม่อยู่ใน git เพราะ `.gitignore` ซ่อนไว้ และไม่ควรมีไฟล์ `.env` หรือ `.env.local`
-
-โฟลเดอร์อื่น เช่น `tests/` และ `docs/features/` จะถูกสร้างในบทถัดไป
 
 ---
 

@@ -291,7 +291,7 @@ flowchart LR
 > [ITPro](https://www.itpro.com/software/development/think-ai-coding-tools-are-speeding-up-work-think-again-theyre-actually-slowing-developers-down)
 
 ผู้ที่กด merge เป็นผู้รับผิดชอบ code นั้น ไม่ว่าผู้เขียนจะเป็นคนหรือ AI
-ในการนำเสนอทุกครั้ง ผู้สอนจะถามให้อธิบาย code ที่ส่ง หากอธิบายไม่ได้ แสดงว่า code นั้นยังไม่ควรถูก commit
+ในการสาธิตทุกครั้ง กลุ่มต้องอธิบายด้วยคำของตนเองว่ากติกาและการตัดสินใจเกี่ยวกับ AI มีเหตุผลอย่างไร หากอธิบายไม่ได้ แสดงว่า code นั้นยังไม่ควรถูก commit
 
 ### ลำดับการทำงานกับ AI ที่แนะนำ
 

@@ -44,16 +44,21 @@ cd sdpx-[ชื่อกลุ่ม]
 
 ```
 AGENTS.md
+PROJECT.md
 README.md
 .env.example
 .gitignore
-docs/
-src/
-tests/
+docs/tech-stack.md
 evidence/
 .github/workflows/ci.yml
 .github/pull_request_template.md
 ```
+
+โฟลเดอร์ `src/` และ `tests/` ยังไม่มีในขั้นตอนนี้ `src/` จะถูกสร้างในขั้นตอนที่ 3 และ `tests/` จะเพิ่มในบทที่ 3
+
+`PROJECT.md` เป็นสำเนาจากรายวิชา ห้ามแก้ไข หากผู้สอนปรับปรุง จะแจ้งให้นำฉบับใหม่มาแทน
+
+แท็บ Actions อาจแสดง `CI` เป็นสีแดงในตอนนี้ เนื่องจากยังไม่มี `package.json` ซึ่งเป็นเรื่องปกติ และจะเป็นสีเขียวเมื่อทำขั้นตอนที่ 3 เสร็จ
 
 **หากติดปัญหา**
 
@@ -130,7 +135,37 @@ agent ตอบได้ตรงกับที่เขียนไว้ใ�
 
 ---
 
-## ขั้นตอนที่ 3 — สร้างหน้าแรกด้วย AI (15 นาที)
+## ขั้นตอนที่ 3 — สร้างโครงโปรเจคและหน้าแรก (20 นาที)
+
+### 3.1 สร้างโครงโปรเจค
+
+คำสั่งสร้างโครงของ framework ปฏิเสธโฟลเดอร์ที่มีไฟล์ชื่อซ้ำ เช่น `README.md` และ `AGENTS.md`
+จึงให้สร้างในโฟลเดอร์ชั่วคราวก่อน แล้วคัดลอกเฉพาะไฟล์ที่ยังไม่มีใน repository
+
+**Next.js** (รันในโฟลเดอร์ของ repository)
+
+```bash
+mkdir ../tmp-scaffold
+npx create-next-app@latest ../tmp-scaffold/sdpx-[ชื่อกลุ่ม] --ts --eslint --app --src-dir --no-tailwind --import-alias "@/*" --use-npm --skip-install --yes
+rsync -a --ignore-existing --exclude .git ../tmp-scaffold/sdpx-[ชื่อกลุ่ม]/ ./
+rm -rf ../tmp-scaffold
+npm install
+```
+
+- `--ignore-existing` ทำให้ไฟล์จาก template ไม่ถูกเขียนทับ
+- ตั้งชื่อโฟลเดอร์ชั่วคราวตามชื่อ repository เพื่อให้ `name` ใน `package.json` ตรงกับชื่อกลุ่ม
+- หากไม่มี `rsync` (เช่น Windows) ให้คัดลอกไฟล์จากโฟลเดอร์ชั่วคราวด้วยตนเอง โดยข้าม `README.md`, `AGENTS.md`, `.gitignore` และโฟลเดอร์ `.git`
+
+**FastAPI**
+
+```bash
+python3.12 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install fastapi "uvicorn[standard]"
+pip freeze > requirements.txt
+```
+
+### 3.2 สร้างหน้าแรกด้วย AI
 
 **ทำ**
 
@@ -143,6 +178,7 @@ Create a minimal landing page for this project that shows the service name,
 a navigation bar, and a placeholder for the main feature.
 Add data-testid to the navigation bar and the main call-to-action button.
 Do not add dependencies other than the framework itself.
+For FastAPI, create main.py that returns the page as HTML at the path /.
 Then run the lint and build commands from AGENTS.md and fix any errors.
 ```
 
@@ -153,11 +189,13 @@ Then run the lint and build commands from AGENTS.md and fix any errors.
 
 - `npm run dev` (หรือคำสั่งที่เทียบเท่า) แล้วเปิด `http://localhost:3000` เห็นหน้าแรก
 - `npm run lint` และ `npm run build` ผ่านโดยไม่มี error
+- หลังรัน `npm run dev` ครั้งแรก Next.js จะเพิ่มบล็อก `nextjs-agent-rules` (ประมาณ 10 บรรทัด) ท้ายไฟล์ `AGENTS.md` เองโดยอัตโนมัติ เป็นเรื่องปกติ ให้เก็บไว้และ commit พร้อมกับงานนี้
 
 **หากติดปัญหา**
 
 - AI ติดตั้ง library เพิ่มโดยไม่จำเป็น: ให้ลบออกและย้ำข้อจำกัดในคำสั่ง
 - build ไม่ผ่าน: วางข้อความ error ทั้งหมดให้ agent แทนการอธิบายด้วยคำพูด
+- lint ไม่ผ่านแต่ build ผ่าน: เป็นเรื่องที่พบได้จริง เช่น ใช้ `<a>` แทน `<Link>` ใน Next.js ให้วางข้อความ error ให้ agent แก้ และบันทึกลงตาราง "AI เสนอแต่ไม่รับ" ใน `evidence/ws-01.md`
 - AI ทำผิดเรื่องเดิมเป็นครั้งที่ 2: เพิ่ม 1 บรรทัดในหัวข้อ Known mistakes ของ `AGENTS.md` แล้วสั่งใหม่
 
 ---
@@ -271,14 +309,17 @@ git push          # เริ่มจับเวลา
 # เปิด URL ซ้ำจนเห็นข้อความใหม่  -- หยุดจับเวลา
 ```
 
+ขั้นตอนนี้คือการซ้อมสาธิต ในคาบสาธิตจริง ผู้ตรวจจะกำหนดข้อความใหม่ให้และจับเวลาเอง
+
 บันทึกผลใน `evidence/ws-01.md`
 
 ```markdown
 # WS-01 Evidence
 
 - Live URL: [URL]
-- Commit-to-live time: [X นาที Y วินาที]
-- Break-it-live: [ลิงก์ CI run ที่ไม่ผ่าน — เตรียมสำหรับการนำเสนอ]
+- Commit-to-live time: [X นาที Y วินาที จากการซ้อม]
+- Break-it-live: [ลิงก์ PR ที่ CI ไม่ผ่านและปิดแล้ว เตรียมไว้ก่อนสาธิต]
+- Sign-off จากกลุ่มผู้ตรวจ: [ลิงก์คอมเมนต์ กรอกหลังสาธิต]
 - สิ่งที่ AI เสนอแต่กลุ่มไม่รับ:
 
 | AI เสนอ | เหตุผลที่ไม่รับ |
@@ -293,7 +334,8 @@ git push          # เริ่มจับเวลา
 
 ## Checklist (5 คะแนน)
 
-ผู้สอนตรวจจาก repository ของกลุ่ม ข้อละ 1 คะแนน
+กลุ่มอื่นเป็นผู้ตรวจ โดยดูจากการสาธิตจริงใน `3-Present.md` ข้อละ 1 คะแนน ผู้สอนไม่ต้องตรวจ
+ทุกข้อต้องสาธิตให้ผู้ตรวจเห็นได้ภายในเวลาที่กำหนด จึงควรซ้อมก่อนถึงคาบสาธิต
 
 - [ ] 1. Live URL เปิดได้ และแสดงหน้าแรกของระบบ
 - [ ] 2. push เข้า `main` แล้ว CI ผ่านและ deploy โดยอัตโนมัติ
@@ -301,7 +343,7 @@ git push          # เริ่มจับเวลา
 - [ ] 4. `AGENTS.md` ยาวไม่เกิน 1 หน้า มีหัวข้อ Commands, Rules และ Known mistakes รวมถึงข้อห้ามแก้ test เพื่อให้ผ่าน
 - [ ] 5. ไม่มีไฟล์ `.env` หรือค่าความลับใน repository และมี `.env.example`
 
-**เงื่อนไขรายบุคคล:** สมาชิกที่ไม่มี PR ที่ถูก merge ในบทนี้ จะได้คะแนน lab ของบทนี้ครึ่งหนึ่ง
+**เงื่อนไขรายบุคคล:** สมาชิกที่ไม่มี PR ที่ถูก merge ในบทนี้ จะได้คะแนน lab ของบทนี้ครึ่งหนึ่ง ผู้ตรวจจะเปิดรายการ PR ที่ merge แล้วดูระหว่างสาธิต
 
 ---
 

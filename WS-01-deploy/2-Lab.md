@@ -389,17 +389,38 @@ git push -u origin demo/broken-build
 
 ---
 
-## Checklist
+## โครงสร้าง repository หลังจบบทนี้
 
-ตรวจในคาบสาธิตตามขั้นตอนใน `3-Present.md`
+ใช้ตรวจตัวเองว่ามีไฟล์ครบ ตัวเลขหลังชื่อไฟล์คือขั้นตอนที่สร้างไฟล์นั้น
 
-- [ ] 1. Live URL เปิดได้ และแสดงหน้าแรกของระบบ
-- [ ] 2. push เข้า `main` แล้ว CI ผ่านและ deploy โดยอัตโนมัติ
-- [ ] 3. `evidence/ws-01.md` มี commit-to-live time และตาราง "AI เสนอแต่ไม่รับ" อย่างน้อย 2 แถว
-- [ ] 4. `AGENTS.md` ยาวไม่เกิน 1 หน้า มีหัวข้อ Commands, Rules และ Known mistakes รวมถึงข้อห้ามแก้ test เพื่อให้ผ่าน
-- [ ] 5. ไม่มีไฟล์ `.env` หรือค่าความลับใน repository และมี `.env.example`
+```
+sdpx-[ชื่อกลุ่ม]/
+├── AGENTS.md              ← 3.4  กติกาที่ AI agent อ่านทุกครั้ง (มีบล็อกจาก Next.js ต่อท้าย)
+├── PROJECT.md             ← 3.3  สำเนาจากรายวิชา ห้ามแก้
+├── README.md              ← 2.1 Next.js สร้างให้ และ 6 เพิ่มชื่อสมาชิก
+├── .env.example           ← 3.2
+├── .gitignore             ← 2.1 Next.js สร้างให้ และ 2.2 เพิ่ม !.env.example
+├── docs/
+│   └── tech-stack.md      ← 3.1
+├── evidence/
+│   └── ws-01.md           ← 7.3
+├── .github/
+│   └── workflows/
+│       └── ci.yml         ← 5.1
+├── src/
+│   └── app/               ← 2.1 โครงจาก Next.js และ 4 หน้าแรกที่ AI สร้าง
+├── public/                ← 2.1
+├── package.json           ← 2.1
+├── package-lock.json      ← 2.1
+├── tsconfig.json          ← 2.1
+├── next.config.ts         ← 2.1
+└── eslint.config.mjs      ← 2.1
+```
 
-**เงื่อนไขรายบุคคล:** สมาชิกทุกคนต้องมี PR ที่ถูก merge ในบทนี้
+ตรวจด้วยคำสั่ง `git ls-files` ซึ่งต้องแสดงไฟล์ข้างต้น
+โฟลเดอร์ `node_modules/` และ `.next/` ไม่อยู่ใน git เพราะ `.gitignore` ซ่อนไว้ และไม่ควรมีไฟล์ `.env` หรือ `.env.local`
+
+โฟลเดอร์อื่น เช่น `tests/` และ `docs/features/` จะถูกสร้างในบทถัดไป
 
 ---
 

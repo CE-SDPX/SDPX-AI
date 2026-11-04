@@ -26,22 +26,18 @@
 
 ## B. ติดตั้งและทดสอบ
 
-ทุกคนในกลุ่มติดตั้งเครื่องมือของ stack ที่กลุ่มเลือก (Next.js เป็นตัวเลือกที่แนะนำ)
-ส่วน Docker ใช้ในบทที่ 5 จึงติดตั้งไว้ก่อนได้ ไม่ต้องใช้ในสัปดาห์นี้
+ทุกคนในกลุ่มติดตั้งเครื่องมือด้านล่าง ส่วน Docker ใช้ในบทที่ 5 จึงติดตั้งไว้ก่อนได้ ไม่ต้องใช้ในสัปดาห์นี้
 
-| เครื่องมือ | จำเป็นเมื่อ | คำสั่งทดสอบ | ผลที่ต้องได้ |
-|---|---|---|---|
-| Git | ทุกกลุ่ม | `git --version` | 2.40 ขึ้นไป |
-| บัญชี GitHub | ทุกกลุ่ม | push repository ทดลองขึ้น GitHub | repository ปรากฏบนหน้า GitHub ของตน |
-| VS Code | ทุกกลุ่ม | เปิดโฟลเดอร์และแก้ไฟล์ได้ | ติดตั้ง extension: GitLens และ Prettier (JS/TS) หรือ Ruff (Python) |
-| AI coding agent อย่างน้อย 1 ตัว | ทุกกลุ่ม | สั่งให้ agent รัน `git status` | agent รันคำสั่งได้เองและรายงานผลกลับมา |
-| Python และ pytest | ทุกกลุ่ม (ใช้ในส่วน C) | `python --version` และ `python -m pytest --version` | Python 3.9 ขึ้นไป และแสดงเลขรุ่นของ pytest (ติดตั้งด้วย `pip install pytest`) |
-| Node.js | เลือก Next.js | `node --version` | v22 ขึ้นไป |
-| บัญชี Vercel | เลือก Next.js | เข้าสู่ระบบด้วยบัญชี GitHub | เห็นหน้า dashboard ของ Vercel |
-| Python 3.12 | เลือก FastAPI | `python --version` | 3.12 ขึ้นไป |
-| บัญชี Render | เลือก FastAPI | เข้าสู่ระบบด้วยบัญชี GitHub | เห็นหน้า dashboard ของ Render |
-| Docker Desktop | บทที่ 5 | `docker --version` | 27 ขึ้นไป |
-| Docker Compose | บทที่ 5 | `docker compose version` | v2 (ใช้คำสั่งแบบเว้นวรรค ไม่ใช่ `docker-compose`) |
+| เครื่องมือ | คำสั่งทดสอบ | ผลที่ต้องได้ |
+|---|---|---|
+| Node.js | `node --version` | v22 ขึ้นไป (Next.js ที่ใช้ต้องการอย่างน้อย v20.9) |
+| Git | `git --version` | 2.40 ขึ้นไป |
+| VS Code | เปิดโฟลเดอร์และแก้ไฟล์ได้ | ติดตั้ง extension: GitLens และ Prettier |
+| AI coding agent อย่างน้อย 1 ตัว | สั่งให้ agent รัน `git status` | agent รันคำสั่งได้เองและรายงานผลกลับมา |
+| บัญชี GitHub | push repository ทดลองขึ้น GitHub | repository ปรากฏบนหน้า GitHub ของตน |
+| บัญชี Vercel | เข้าสู่ระบบด้วยบัญชี GitHub ส่วนตัวของตนเอง (ไม่ใช่บัญชีขององค์กร) | เห็นหน้า dashboard ของ Vercel |
+| Docker Desktop (ใช้ในบทที่ 5) | `docker --version` | 27 ขึ้นไป |
+| Docker Compose (ใช้ในบทที่ 5) | `docker compose version` | v2 (ใช้คำสั่งแบบเว้นวรรค ไม่ใช่ `docker-compose`) |
 
 AI coding agent ที่ใช้ได้ เช่น Claude Code, Gemini CLI, Codex CLI หรือ GitHub Copilot ในโหมด agent
 ข้อสำคัญคือต้องรันคำสั่งในเครื่องได้เอง เนื่องจากตลอดวิชาจะให้ agent รัน test และอ่านผลด้วยตนเอง
@@ -53,7 +49,6 @@ AI coding agent ที่ใช้ได้ เช่น Claude Code, Gemini CLI
 | เครื่องมือ | วิธีแก้ |
 |---|---|
 | Node.js | ติดตั้ง nvm (macOS/Linux: https://github.com/nvm-sh/nvm, Windows: https://github.com/coreybutler/nvm-windows) แล้วรัน `nvm install 22` และ `nvm use 22` |
-| Python 3.12 | ติดตั้งจาก https://www.python.org/downloads/ แล้วสร้าง virtual environment ด้วย `python3.12 -m venv .venv` |
 | Docker | อัปเดต Docker Desktop เป็นรุ่นล่าสุด หาก `docker compose version` ใช้ไม่ได้ แต่ `docker-compose --version` ใช้ได้ แสดงว่ายังเป็น Compose v1 ซึ่งเลิกใช้แล้ว |
 
 ---
@@ -64,9 +59,9 @@ AI coding agent ที่ใช้ได้ เช่น Claude Code, Gemini CLI
 - [ ] ใน repository เดียวกัน ให้ AI agent ทำงานต่อไปนี้ แล้วบันทึกผลใน `LOOP_NOTES.md`
 
   ```
-  Create a Python file fizzbuzz.py with a function fizzbuzz(n),
-  and a pytest file test_fizzbuzz.py that tests it.
-  Then run pytest and fix the code until all tests pass.
+  Create fizzbuzz.js that exports a function fizzbuzz(n),
+  and fizzbuzz.test.js that tests it using node:test.
+  Then run `node --test` and fix the code until all tests pass.
   ```
 
   สิ่งที่ต้องบันทึก

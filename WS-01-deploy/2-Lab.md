@@ -15,63 +15,104 @@ lab ทุกบทในวิชานี้เป็นการพัฒน�
 ทุกคนในกลุ่มต้องทำ `0-Before.md` ส่วน B และ C เสร็จแล้ว
 หากสมาชิกคนใดยังติดตั้งไม่ครบ ให้ใช้เครื่องของเพื่อนในกลุ่มทำงานไปก่อน และติดตั้งให้เรียบร้อยหลังคาบ
 
+ในแต่ละขั้นตอน ให้สมาชิกผลัดกันเป็นผู้ลงมือ และให้ทุกคนอ่านสิ่งที่เกิดขึ้นบนหน้าจอ
+
 ---
 
-## ขั้นตอนที่ 1 — สร้าง repository จาก template
+## ขั้นตอนที่ 1 — สร้าง repository เปล่า
 
 **ทำ**
 
-1. สมาชิกคนที่ 1 เปิด `https://github.com/CE-SDPX/sdpx-template` แล้วเลือก **Use this template**
-2. ตั้งชื่อ repository เป็น `sdpx-[ชื่อกลุ่ม]` และกำหนดเป็น Public
-3. เพิ่มสมาชิกทุกคนเป็น collaborator ที่ Settings > Collaborators
-4. สมาชิกทุกคน clone repository ลงเครื่องของตน
+1. สมาชิกคนที่ 1 เปิด https://github.com/new
+2. ตั้งชื่อ repository เป็น `sdpx-[ชื่อกลุ่ม]` และกำหนดเป็น **Public**
+3. สร้างในบัญชีส่วนตัวของสมาชิกคนที่ 1 **ไม่ใช่บัญชีขององค์กร (organization)**
+4. **ไม่เลือก** Add a README file, Add .gitignore และ Choose a license ปล่อยให้ว่างทั้งหมด
+5. เพิ่มสมาชิกทุกคนเป็น collaborator ที่ Settings > Collaborators
+6. สมาชิกทุกคน clone repository ลงเครื่องของตน
 
 ```bash
 git clone https://github.com/[username]/sdpx-[ชื่อกลุ่ม].git
 cd sdpx-[ชื่อกลุ่ม]
 ```
 
+ข้อ 2 และ 3 ทำเพื่อหลีกเลี่ยงข้อจำกัดของ Vercel แผนฟรีที่มีกับ repository ขององค์กร
+
 **ผลที่ควรเห็น**
 
-ในโฟลเดอร์มีโครงสร้างดังนี้
-
-```
-AGENTS.md
-PROJECT.md
-README.md
-.env.example
-.gitignore
-docs/tech-stack.md
-evidence/
-.github/workflows/ci.yml
-.github/pull_request_template.md
-```
-
-โฟลเดอร์ `src/` และ `tests/` ยังไม่มีในขั้นตอนนี้ `src/` จะถูกสร้างในขั้นตอนที่ 3 และ `tests/` จะเพิ่มในบทที่ 3
-
-`PROJECT.md` เป็นสำเนาจากรายวิชา ห้ามแก้ไข หากผู้สอนปรับปรุง จะแจ้งให้นำฉบับใหม่มาแทน
-
-แท็บ Actions อาจแสดง `CI` เป็นสีแดงในตอนนี้ เนื่องจากยังไม่มี `package.json` ซึ่งเป็นเรื่องปกติ และจะเป็นสีเขียวเมื่อทำขั้นตอนที่ 3 เสร็จ
+- ขณะ clone จะมีข้อความ `You appear to have cloned an empty repository` ซึ่งเป็นเรื่องปกติ
+- ในโฟลเดอร์ไม่มีไฟล์ใดนอกจาก `.git`
+- `git branch --show-current` แสดง `main`
 
 **หากติดปัญหา**
 
 - clone ไม่ได้เนื่องจากสิทธิ์: ตรวจว่าได้ยอมรับคำเชิญ collaborator ทางอีเมลแล้ว
-- template ยังไม่พร้อมใช้งาน: สร้าง repository ใหม่แบบว่าง แล้วสร้างโฟลเดอร์ตามโครงสร้างข้างต้นด้วยตนเอง
+- branch ชื่อ `master`: รัน `git branch -M main`
 
 ---
 
-## ขั้นตอนที่ 2 — เลือก stack และเขียน context ให้ AI
+## ขั้นตอนที่ 2 — สร้างโครง Next.js
 
-### 2.1 เลือก stack
+สมาชิกคนที่ 1 ทำขั้นตอนนี้จนถึง push ส่วนสมาชิกคนอื่นรอแล้วทำตามหัวข้อ "สมาชิกคนอื่น"
 
-| ตัวเลือก | เหมาะกับ |
-|---|---|
-| **Next.js** (TypeScript) | กลุ่มที่ต้องการ frontend และ backend ในโปรเจคเดียว แนะนำหากยังไม่แน่ใจ |
-| **FastAPI + React** | กลุ่มที่ถนัด Python สำหรับ backend |
+### 2.1 สร้างโครงโปรเจค
 
-เมื่อเลือกแล้ว ให้ใช้ stack นี้ตลอดภาคการศึกษา หากต้องการเปลี่ยนต้องบันทึกเหตุผลเป็น ADR (จะเรียนใน WS-02)
+รันในโฟลเดอร์ของ repository
 
-### 2.2 เขียน `docs/tech-stack.md`
+```bash
+npx create-next-app@16 . --ts --eslint --app --src-dir --no-tailwind --import-alias "@/*" --use-npm --yes
+```
+
+คำสั่งนี้สร้างไฟล์ของโปรเจคและติดตั้ง package ให้ ซึ่งใช้เวลาสักครู่
+
+### 2.2 แก้ `.gitignore`
+
+เปิด `.gitignore` หาบรรทัด `.env*` แล้วเพิ่มอีกบรรทัดต่อท้ายทันที
+
+```
+.env*
+!.env.example
+```
+
+บรรทัด `.env*` ที่ Next.js สร้างให้ ซ่อนไฟล์ `.env.example` ไปด้วย
+ซึ่งในขั้นตอนที่ 3 ต้องเพิ่มไฟล์นี้เข้า repository
+
+### 2.3 ตรวจและ push
+
+```bash
+npm run lint
+npm run build
+git add .
+git commit -m "chore: scaffold Next.js app"
+git push -u origin main
+```
+
+### สมาชิกคนอื่น
+
+```bash
+git pull origin main
+npm install
+```
+
+**ผลที่ควรเห็น**
+
+- `npm run lint` และ `npm run build` ผ่านโดยไม่มี error
+- หน้า repository บน GitHub แสดงไฟล์ของโปรเจค รวมถึง `AGENTS.md` ที่ Next.js สร้างให้
+- ในไฟล์ `AGENTS.md` มีบล็อกที่ขึ้นต้นด้วย `<!-- BEGIN:nextjs-agent-rules -->` ให้เก็บไว้ ห้ามลบ
+
+**หากติดปัญหา**
+
+- ข้อความ error ระบุว่าต้องใช้ Node.js เวอร์ชันสูงกว่านี้: ดูหัวข้อ "หากเวอร์ชันต่ำกว่าที่กำหนด" ใน `0-Before.md`
+- ข้อความ `directory contains files that could conflict`: ตรวจว่า repository ว่างจริง โดยไม่ได้เลือก README หรือ `.gitignore` ตอนสร้าง
+- คำสั่งถามคำถามให้เลือกตัวเลือก: ตรวจว่าพิมพ์ตัวเลือกครบทุกตัว (`--ts --eslint ...` และ `--yes`)
+
+---
+
+## ขั้นตอนที่ 3 — เขียน context ให้ AI
+
+ขั้นตอนนี้สร้างไฟล์ 4 ไฟล์ ซึ่งเป็นสิ่งที่ AI agent จะอ่านก่อนทำงานทุกครั้ง
+การแก้ไขครั้งแรกนี้ commit เข้า `main` ได้โดยตรง ตั้งแต่ขั้นตอนที่ 6 เป็นต้นไป การแก้ `AGENTS.md` ต้องผ่าน PR
+
+### 3.1 `docs/tech-stack.md`
 
 ```markdown
 # Tech Stack
@@ -81,16 +122,30 @@ evidence/
 
 | ส่วน | เลือกใช้ | เหตุผล |
 |---|---|---|
-| Frontend | [Next.js / React] | |
-| Backend | [Next.js Route Handlers / FastAPI] | |
+| Frontend | Next.js (App Router, TypeScript) | |
+| Backend | Next.js Route Handlers | |
 | Database | PostgreSQL (เริ่มใช้จริงใน WS-05 ก่อนหน้านั้นใช้ SQLite หรือข้อมูลในหน่วยความจำได้) | |
-| Deployment | [Vercel / Render] | |
+| Deployment | Vercel | |
 | AI agent | [ชื่อเครื่องมือ] | |
 ```
 
-### 2.3 แก้ไข `AGENTS.md`
+### 3.2 `.env.example`
 
-แก้ไฟล์ที่ได้จาก template ให้ตรงกับ stack ของกลุ่ม อย่างน้อยต้องมี 4 หัวข้อต่อไปนี้
+```
+# ชื่อตัวแปรที่ระบบต้องใช้ ห้ามใส่ค่าจริงในไฟล์นี้
+# คัดลอกเป็น .env.local แล้วกรอกค่าในเครื่องของตนเอง
+DATABASE_URL=
+```
+
+### 3.3 `PROJECT.md`
+
+เปิด https://github.com/CE-SDPX/SDPX-AI/blob/main/PROJECT.md คัดลอกเนื้อหาทั้งไฟล์
+แล้วสร้างไฟล์ `PROJECT.md` ที่โฟลเดอร์หลักของ repository โดย **ไม่แก้ไข**
+หากผู้สอนปรับปรุงไฟล์นี้ จะแจ้งให้นำฉบับใหม่มาแทน
+
+### 3.4 `AGENTS.md`
+
+เปิด `AGENTS.md` ที่ Next.js สร้างให้ แล้วเพิ่มเนื้อหาต่อไปนี้ **ไว้ด้านบนของบล็อก** `nextjs-agent-rules` ห้ามลบบล็อกนั้น
 
 ```markdown
 # AGENTS.md
@@ -99,13 +154,13 @@ evidence/
 [1 บรรทัด: ระบบนี้ทำอะไร ให้ใคร] — รายละเอียดดู PROJECT.md
 
 ## Commands
-- install: `npm ci`            (หรือ `pip install -r requirements.txt`)
-- dev:     `npm run dev`
-- lint:    `npm run lint`
-- build:   `npm run build`
+- install: `npm ci`
+- dev: `npm run dev`
+- lint: `npm run lint`
+- build: `npm run build`
 
 ## Conventions
-- ภาษา: [TypeScript strict / Python 3.12 พร้อม type hints]
+- ภาษา: TypeScript strict
 - ทำงานบน branch แยก แล้วเปิด PR เข้า `main`
 - ข้อความ commit ตาม Conventional Commits (`feat:`, `fix:`, `docs:`, `test:`)
 
@@ -119,51 +174,30 @@ evidence/
 - (เพิ่มเมื่อ AI ทำผิดเรื่องเดิมซ้ำ 2 ครั้ง)
 ```
 
-`AGENTS.md` ต้องยาวไม่เกิน 1 หน้า และหลังจากขั้นตอนนี้ ให้แก้ไขผ่าน PR เท่านั้น
+ส่วนที่เขียนเองต้องยาวไม่เกิน 1 หน้า
+
+### 3.5 commit และ push
+
+```bash
+git add .
+git commit -m "docs: add project context for AI agents"
+git push
+```
 
 **ผลที่ควรเห็น**
 
-เมื่อเปิด AI agent ใน repository แล้วถามว่า "โปรเจคนี้ใช้คำสั่งอะไรในการ build"
-agent ตอบได้ตรงกับที่เขียนไว้ใน `AGENTS.md`
+- เมื่อเปิด AI agent ใน repository แล้วถามว่า "โปรเจคนี้ใช้คำสั่งอะไรในการ build" agent ตอบ `npm run build` ตรงกับที่เขียนไว้ใน `AGENTS.md`
+- `git ls-files` แสดงไฟล์ `.env.example`
 
 **หากติดปัญหา**
 
-- agent ตอบคำสั่ง build ไม่ตรงกับ `AGENTS.md`: ตรวจว่าเปิด agent ในโฟลเดอร์ของ repository และไฟล์อยู่ที่ root หากเครื่องมือที่ใช้อ่านไฟล์ชื่ออื่น เช่น `CLAUDE.md` ให้สร้างไฟล์นั้นโดยอ้างถึง `AGENTS.md`
-- ยังไม่แน่ใจว่าจะเลือก stack ใด: เลือก Next.js
+- agent ตอบไม่ตรงกับ `AGENTS.md`: ตรวจว่าเปิด agent ในโฟลเดอร์ของ repository และไฟล์อยู่ที่โฟลเดอร์หลัก หากเครื่องมือที่ใช้อ่านไฟล์ชื่ออื่น เช่น `CLAUDE.md` ให้สร้างไฟล์นั้นโดยอ้างถึง `AGENTS.md`
+- `git add` ปฏิเสธไฟล์ `.env.example`: ย้อนไปตรวจขั้นตอนที่ 2.2 ว่าเพิ่มบรรทัด `!.env.example` แล้ว
+- เปิดลิงก์ `PROJECT.md` ไม่ได้: แจ้งผู้สอน และใช้ไฟล์จากเพื่อนร่วมชั้นไปก่อน
 
 ---
 
-## ขั้นตอนที่ 3 — สร้างโครงโปรเจคและหน้าแรก
-
-### 3.1 สร้างโครงโปรเจค
-
-คำสั่งสร้างโครงของ framework ปฏิเสธโฟลเดอร์ที่มีไฟล์ชื่อซ้ำ เช่น `README.md` และ `AGENTS.md`
-จึงให้สร้างในโฟลเดอร์ชั่วคราวก่อน แล้วคัดลอกเฉพาะไฟล์ที่ยังไม่มีใน repository
-
-**Next.js** (รันในโฟลเดอร์ของ repository)
-
-```bash
-mkdir ../tmp-scaffold
-npx create-next-app@latest ../tmp-scaffold/sdpx-[ชื่อกลุ่ม] --ts --eslint --app --src-dir --no-tailwind --import-alias "@/*" --use-npm --skip-install --yes
-rsync -a --ignore-existing --exclude .git ../tmp-scaffold/sdpx-[ชื่อกลุ่ม]/ ./
-rm -rf ../tmp-scaffold
-npm install
-```
-
-- `--ignore-existing` ทำให้ไฟล์จาก template ไม่ถูกเขียนทับ
-- ตั้งชื่อโฟลเดอร์ชั่วคราวตามชื่อ repository เพื่อให้ `name` ใน `package.json` ตรงกับชื่อกลุ่ม
-- หากไม่มี `rsync` (เช่น Windows) ให้คัดลอกไฟล์จากโฟลเดอร์ชั่วคราวด้วยตนเอง โดยข้าม `README.md`, `AGENTS.md`, `.gitignore` และโฟลเดอร์ `.git`
-
-**FastAPI**
-
-```bash
-python3.12 -m venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-pip install fastapi "uvicorn[standard]"
-pip freeze > requirements.txt
-```
-
-### 3.2 สร้างหน้าแรกด้วย AI
+## ขั้นตอนที่ 4 — สร้างหน้าแรกด้วย AI
 
 **ทำ**
 
@@ -176,18 +210,24 @@ Create a minimal landing page for this project that shows the service name,
 a navigation bar, and a placeholder for the main feature.
 Add data-testid to the navigation bar and the main call-to-action button.
 Do not add dependencies other than the framework itself.
-For FastAPI, create main.py that returns the page as HTML at the path /.
 Then run the lint and build commands from AGENTS.md and fix any errors.
 ```
 
 ก่อน commit สมาชิกทุกคนอ่าน code ที่ AI สร้าง และผลัดกันอธิบายให้กลุ่มฟัง
 บรรทัดที่ไม่มีใครอธิบายได้ ให้ลบออก หรือให้ AI อธิบายจนเข้าใจก่อน
 
+จากนั้น commit และ push
+
+```bash
+git add .
+git commit -m "feat: add landing page"
+git push
+```
+
 **ผลที่ควรเห็น**
 
-- `npm run dev` (หรือคำสั่งที่เทียบเท่า) แล้วเปิด `http://localhost:3000` เห็นหน้าแรก
+- `npm run dev` แล้วเปิด `http://localhost:3000` เห็นหน้าแรก
 - `npm run lint` และ `npm run build` ผ่านโดยไม่มี error
-- หลังรัน `npm run dev` ครั้งแรก Next.js จะเพิ่มบล็อก `nextjs-agent-rules` (ประมาณ 10 บรรทัด) ท้ายไฟล์ `AGENTS.md` เองโดยอัตโนมัติ เป็นเรื่องปกติ ให้เก็บไว้และ commit พร้อมกับงานนี้
 
 **หากติดปัญหา**
 
@@ -198,13 +238,11 @@ Then run the lint and build commands from AGENTS.md and fix any errors.
 
 ---
 
-## ขั้นตอนที่ 4 — ตั้งค่า CI และ deploy อัตโนมัติ
+## ขั้นตอนที่ 5 — ตั้งค่า CI และ deploy อัตโนมัติ
 
-### 4.1 CI
+### 5.1 CI
 
-ตรวจสอบว่า `.github/workflows/ci.yml` ใช้คำสั่งตรงกับ stack ของกลุ่ม
-
-**Next.js**
+สร้างไฟล์ `.github/workflows/ci.yml` โดยระวังเรื่องย่อหน้า (ใช้ช่องว่างเท่านั้น)
 
 ```yaml
 name: CI
@@ -226,55 +264,43 @@ jobs:
       - run: npm run build
 ```
 
-**FastAPI**
-
-```yaml
-name: CI
-on:
-  push:
-    branches: [main]
-  pull_request:
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install -r requirements.txt ruff
-      - run: ruff check .
-      - run: python -c "import main"
+```bash
+git add .
+git commit -m "ci: add build workflow"
+git push
 ```
 
-### 4.2 Deploy
+### 5.2 Deploy
 
-- **Vercel (Next.js):** vercel.com > Add New Project > Import repository > Deploy
-- **Render (FastAPI):** render.com > New Web Service > เชื่อม repository
-  - Build command: `pip install -r requirements.txt`
-  - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+1. สมาชิกคนที่ 1 (เจ้าของ repository) เข้า vercel.com ด้วยบัญชี GitHub ของตนเอง
+2. เลือก Add New > Project แล้วเลือก repository `sdpx-[ชื่อกลุ่ม]`
+3. กด Deploy โดยไม่ต้องแก้การตั้งค่า
 
-ตั้งค่าให้ deploy อัตโนมัติเมื่อมีการ push เข้า `main`
+Vercel จะ deploy ใหม่อัตโนมัติทุกครั้งที่มีการ push เข้า `main`
 
 **ผลที่ควรเห็น**
 
 - แท็บ Actions บน GitHub แสดง workflow `CI` เป็นสีเขียว
-- URL ที่ได้จาก Vercel หรือ Render เปิดได้จาก browser ของสมาชิกทุกคน
+- URL ที่ได้จาก Vercel เปิดได้จาก browser ของสมาชิกทุกคน และเห็นหน้าแรกของระบบ
 
 **หากติดปัญหา**
 
-- CI ไม่ทำงาน: ตรวจว่าไฟล์อยู่ที่ `.github/workflows/` และชื่อ branch ตรงกับที่กำหนด
-- deploy สำเร็จแต่หน้าเว็บว่าง: ตรวจ build log บน Vercel หรือ Render เพื่อดูข้อความ error
+- CI ไม่ทำงาน: ตรวจว่าไฟล์อยู่ที่ `.github/workflows/ci.yml` และย่อหน้าถูกต้อง GitHub จะแจ้ง error ของไฟล์ที่แท็บ Actions
+- `npm ci` ไม่ผ่าน: ตรวจว่า `package-lock.json` ถูก commit แล้ว (`git ls-files package-lock.json`)
+- Vercel ไม่แสดง repository ที่ต้องการ: เลือก Adjust GitHub App Permissions แล้วอนุญาตให้เข้าถึง repository นั้น
+- Vercel ไม่ยอมเชื่อม repository: ตรวจว่า repository เป็น Public และอยู่ในบัญชีส่วนตัว ไม่ใช่ organization
+- deploy สำเร็จแต่หน้าเว็บว่าง: ดู build log บน Vercel เพื่อดูข้อความ error
 
 ---
 
-## ขั้นตอนที่ 5 — Pull Request แรกของสมาชิกทุกคน
+## ขั้นตอนที่ 6 — Pull Request แรกของสมาชิกทุกคน
 
 **ทำ**
 
 สมาชิกแต่ละคนทำการแก้ไขเล็ก ๆ ของตนเอง เช่น เพิ่มชื่อของตนใน `README.md`
 
 ```bash
+git pull origin main
 git switch -c docs/add-[ชื่อ]
 # แก้ README.md
 git add README.md
@@ -287,17 +313,18 @@ git push -u origin docs/add-[ชื่อ]
 **ผลที่ควรเห็น**
 
 - PR แต่ละรายการแสดงผล CI เป็นสีเขียวก่อน merge
-- หลัง merge เว็บจริงแสดงรายชื่อที่เพิ่มเข้ามา
+- หลัง merge เว็บจริงแสดงเนื้อหาล่าสุด
 
 **หากติดปัญหา**
 
 - merge แล้วเกิด conflict: ให้ `git pull origin main` ใน branch ของตน แก้ conflict แล้ว push อีกครั้ง
+- Vercel ไม่ deploy commit ของสมาชิกที่ไม่ใช่เจ้าของบัญชี: อาจเป็นข้อจำกัดของแผนฟรี ให้จดข้อความที่ Vercel แสดงไว้ และแจ้งผู้สอน
 
 ---
 
-## ขั้นตอนที่ 6 — วัด commit-to-live time
+## ขั้นตอนที่ 7 — วัด commit-to-live time และเตรียมหลักฐาน
 
-**ทำ**
+### 7.1 วัดเวลา
 
 แก้ข้อความบนหน้าแรก 1 บรรทัด แล้วจับเวลา
 
@@ -307,43 +334,64 @@ git push          # เริ่มจับเวลา
 # เปิด URL ซ้ำจนเห็นข้อความใหม่  -- หยุดจับเวลา
 ```
 
-ขั้นตอนนี้คือการซ้อมสาธิต ในคาบสาธิตจริง ผู้ตรวจจะกำหนดข้อความใหม่ให้และจับเวลาเอง
+ในคาบสาธิตจริง ผู้ตรวจจะกำหนดข้อความใหม่ให้และจับเวลาเอง ขั้นตอนนี้จึงเป็นการซ้อม
 
-บันทึกผลใน `evidence/ws-01.md`
+### 7.2 เตรียม PR break-it-live
+
+สร้าง PR ที่ CI ไม่ผ่าน เพื่อใช้แสดงว่า loop ตรวจพบข้อผิดพลาดก่อนถึงเว็บจริง
+
+```bash
+git switch main
+git pull origin main
+git switch -c demo/broken-build
+```
+
+เพิ่มบรรทัดนี้ท้ายไฟล์ `src/app/page.tsx` ซึ่งเป็น type error
+
+```ts
+const n: number = "a";
+```
+
+```bash
+git commit -am "test: break the build on purpose"
+git push -u origin demo/broken-build
+```
+
+เปิด PR บน GitHub รอให้ `CI` เป็นสีแดง แล้วเปิด Live URL เพื่อยืนยันว่ายังเป็นเวอร์ชันเดิม จากนั้น **ปิด PR โดยไม่ merge**
+
+### 7.3 บันทึกใน `evidence/ws-01.md`
 
 ```markdown
 # WS-01 Evidence
 
 - Live URL: [URL]
 - Commit-to-live time: [X นาที Y วินาที จากการซ้อม]
-- Break-it-live: [ลิงก์ PR ที่ CI ไม่ผ่านและปิดแล้ว เตรียมไว้ก่อนสาธิต]
-- Sign-off จากกลุ่มผู้ตรวจ: [ลิงก์คอมเมนต์ กรอกหลังสาธิต]
+- Break-it-live: [ลิงก์ PR ที่ CI ไม่ผ่านและปิดแล้ว]
 - สิ่งที่ AI เสนอแต่กลุ่มไม่รับ:
 
 | AI เสนอ | เหตุผลที่ไม่รับ |
 |---|---|
 | | |
 | | |
-
-- Checklist: [ ] 1 [ ] 2 [ ] 3 [ ] 4 [ ] 5
 ```
 
 **ผลที่ควรเห็น**
 
 - เปิด URL ซ้ำแล้วเห็นข้อความใหม่บนเว็บจริง
-- `evidence/ws-01.md` มี Commit-to-live time ที่จดจากการซ้อม
+- PR break-it-live แสดง `CI` เป็นสีแดงและปิดแล้ว ส่วน Live URL ยังเป็นเวอร์ชันเดิม
+- `evidence/ws-01.md` มีครบทุกหัวข้อ และตาราง "AI เสนอแต่ไม่รับ" อย่างน้อย 2 แถว
 
 **หากติดปัญหา**
 
-- push แล้วเว็บไม่เปลี่ยน: ตรวจแท็บ Actions ว่า `CI` ผ่านแล้วหรือยัง และดู build log บน Vercel หรือ Render
+- push แล้วเว็บไม่เปลี่ยน: ตรวจแท็บ Actions ว่า `CI` ผ่านแล้วหรือยัง และดู build log บน Vercel
 - เว็บยังแสดงข้อความเดิมทั้งที่ deploy เสร็จ: refresh แบบล้าง cache (Ctrl+Shift+R หรือ Cmd+Shift+R) หรือเปิดในหน้าต่างส่วนตัว
+- PR break-it-live ไม่ขึ้นสีแดง: ตรวจว่าเพิ่มบรรทัดใน `src/app/page.tsx` แล้ว และ `npm run build` ในเครื่องไม่ผ่านจริง
 
 ---
 
-## Checklist (5 คะแนน)
+## Checklist
 
-กลุ่มอื่นเป็นผู้ตรวจ โดยดูจากการสาธิตจริงใน `3-Present.md` ข้อละ 1 คะแนน ผู้สอนไม่ต้องตรวจ
-ทุกข้อต้องสาธิตให้ผู้ตรวจเห็นได้ภายในเวลาที่กำหนด จึงควรซ้อมก่อนถึงคาบสาธิต
+ตรวจในคาบสาธิตตามขั้นตอนใน `3-Present.md`
 
 - [ ] 1. Live URL เปิดได้ และแสดงหน้าแรกของระบบ
 - [ ] 2. push เข้า `main` แล้ว CI ผ่านและ deploy โดยอัตโนมัติ
@@ -351,7 +399,7 @@ git push          # เริ่มจับเวลา
 - [ ] 4. `AGENTS.md` ยาวไม่เกิน 1 หน้า มีหัวข้อ Commands, Rules และ Known mistakes รวมถึงข้อห้ามแก้ test เพื่อให้ผ่าน
 - [ ] 5. ไม่มีไฟล์ `.env` หรือค่าความลับใน repository และมี `.env.example`
 
-**เงื่อนไขรายบุคคล:** สมาชิกที่ไม่มี PR ที่ถูก merge ในบทนี้ จะได้คะแนน lab ของบทนี้ครึ่งหนึ่ง ผู้ตรวจจะเปิดรายการ PR ที่ merge แล้วดูระหว่างสาธิต
+**เงื่อนไขรายบุคคล:** สมาชิกทุกคนต้องมี PR ที่ถูก merge ในบทนี้
 
 ---
 

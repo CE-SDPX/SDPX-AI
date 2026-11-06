@@ -134,13 +134,13 @@ loop ที่เร็วแต่ให้ผลไม่ตรงความ
 | บท | Loop | สิ่งที่ทำหน้าที่ตรวจ | ไฟล์ที่เพิ่ม |
 |---|---|---|---|
 | 01 | Deploy | การเปิดดูเว็บจริงด้วยตนเอง และ CI ที่ตรวจว่า build ผ่าน | `AGENTS.md` |
-| 02 | Spec | การตรวจ API contract | `intent.md`, `spec.md` |
-| 03 | Unit Test | unit test ที่เขียนก่อนแก้ code | `plan.md` |
+| 02 | Spec | การตรวจ API contract | `intent.md`, `spec.md`, ADR-001 |
+| 03 | Unit Test | unit test ที่เขียนก่อนแก้ code | `plan.md`, ADR-002 |
 | 04 | CI/CD | gate ที่ทุก PR ต้องผ่าน และ AI review | `REVIEW.md` |
-| 05 | Docker | environment ที่เหมือนกันทุกเครื่อง และข้อห้ามของ agent | hook config |
-| 06 | E2E | การทดสอบตาม user journey โดย agent ที่ตรวจแต่ไม่แก้ | verifier agent |
-| 07 | Performance | load test และค่าขอบเขตที่ยอมรับได้ | `bands.yaml` |
-| 08 | Quality | code review, refactoring และ security review | `SKILL.md`, `LESSONS.md` |
+| 05 | Environment | environment ที่เหมือนกันทุกเครื่อง และ guard ที่ขวางคำสั่งอันตรายของ agent | `.agents/guards/`, ADR-003 |
+| 06 | E2E | การทดสอบตาม user journey และ verifier ที่ตรวจแต่ไม่แก้ | `.agents/verifier.md` |
+| 07 | Performance | load test และค่าขอบเขตที่ยอมรับได้ | `ops/bands.yaml` |
+| 08 | Quality | access test, เครื่องมือตรวจความปลอดภัย และ security review ด้วย skill | `SKILL.md`, `LESSONS.md` |
 
 ### Deploy Loop ของสัปดาห์นี้
 

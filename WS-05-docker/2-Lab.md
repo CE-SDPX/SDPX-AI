@@ -29,8 +29,7 @@ sdpx-[ชื่อกลุ่ม]/
 ├── compose.yaml                      ← 2 service db · 4 service app
 ├── Dockerfile                        ← 4
 ├── .dockerignore                     ← 4
-├── .env.example                      ← 2
-├── .gitignore                        ← 2 ให้ .env.example อยู่ใน git ได้
+├── .env.example                      ← 2 ใส่ค่าของฐานข้อมูลในเครื่อง
 ├── next.config.ts                    ← 4
 ├── vitest.config.mts                 ← 5
 ├── package.json                      ← 3 script test, test:db, db:setup
@@ -135,7 +134,8 @@ git switch -c feat/postgres-db
 Read AGENTS.md, PROJECT.md section 3, docs/adr/ADR-003-postgresql.md, and the seed data
 in src/data/. Create:
 1. db/schema.sql: CREATE TABLE IF NOT EXISTS for users, events, registrations with the
-   fields in PROJECT.md section 3 in snake_case. Use text primary keys. Add CHECK
+   fields in PROJECT.md section 3 in snake_case. Use text primary keys; the ids of events
+   and registrations default to gen_random_uuid()::text. Add CHECK
    constraints for role and status values, NOT NULL where the field is required,
    and foreign keys. created_at defaults to now().
 2. db/seed.sql: INSERT the same seed users and events that src/data/ has now,
@@ -173,16 +173,11 @@ volumes:
 
 PostgreSQL รันไฟล์ใน `db/` ตามลำดับตัวอักษร `schema.sql` จึงทำงานก่อน `seed.sql`
 
-สร้าง `.env.example` และ `.env.local` ซึ่งมีบรรทัดเดียวกัน
+แก้บรรทัด `DATABASE_URL=` ใน `.env.example` ที่สร้างไว้ตั้งแต่ WS-01 ให้เป็นค่าของฐานข้อมูลในเครื่อง
+แล้วสร้าง `.env.local` ที่มีบรรทัดเดียวกัน ค่านี้ใช้ได้เฉพาะฐานข้อมูลในเครื่องซึ่งไม่มีข้อมูลจริง จึงอยู่ใน `.env.example` ได้
 
 ```
 DATABASE_URL=postgres://app:app@localhost:5432/events
-```
-
-`.gitignore` ที่ create-next-app สร้างไม่รับไฟล์ `.env*` ทั้งหมด ให้เพิ่มบรรทัดนี้ต่อจาก `.env*`
-
-```
-!.env.example
 ```
 
 เปิดฐานข้อมูลแล้วตรวจ seed data
@@ -761,6 +756,8 @@ git push -u origin demo/leaked-secret
 ---
 
 ## ขั้นตอนที่ 7 — บันทึกหลักฐาน
+
+**ทำ**
 
 สร้าง branch `docs/evidence-05` และ `evidence/ws-05.md`
 

@@ -331,6 +331,8 @@ git push -u origin demo/broken-gate
 
 ## ขั้นตอนที่ 7 — บันทึกหลักฐาน
 
+**ทำ**
+
 สร้าง branch `docs/evidence-04` และ `evidence/ws-04.md`
 
 ```markdown

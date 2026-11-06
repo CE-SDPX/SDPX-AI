@@ -135,7 +135,7 @@ git switch -c feat/session
 Read AGENTS.md, docs/features/04-access/spec.md and plan.md, and src/lib/current-user.ts.
 Implement the session part of the plan:
 1. src/lib/session.ts: create a session for a seed user with a random 32-byte id stored
-   in the sessions table, and set the cookie with the attributes in the spec
+   in the sessions table, and set a cookie named session with the attributes in the spec
    (HttpOnly, SameSite=Lax, Secure when NODE_ENV is production, Max-Age from the spec).
    Delete the session row and the cookie on logout.
 2. src/app/api/session/route.ts: POST and DELETE as the spec says.
@@ -304,7 +304,9 @@ git commit -m "test: add journey e2e (red)"
 
 **ทำ**
 
-ทำต่อบน branch `feat/screens` สั่ง AI agent
+ทำต่อบน branch `feat/screens`
+`next.config.ts` ที่ create-next-app 16 สร้างไว้ตั้งแต่ WS-01 มี `cacheComponents: true` อยู่แล้ว ซึ่งมีผลต่อวิธีเขียนหน้าที่อ่านฐานข้อมูล
+สั่ง AI agent
 
 ```
 Read AGENTS.md, PROJECT.md section 5, docs/features/04-access/spec.md and plan.md,
@@ -530,6 +532,8 @@ git push -u origin demo/broken-e2e
 ---
 
 ## ขั้นตอนที่ 7 — บันทึกหลักฐาน
+
+**ทำ**
 
 สร้าง branch `docs/evidence-06` และ `evidence/ws-06.md`
 

@@ -509,6 +509,8 @@ curl -s -w " %{http_code}\n" -X POST http://localhost:3000/api/events/[id]/regis
 
 ## ขั้นตอนที่ 7 — เตรียมหลักฐาน
 
+**ทำ**
+
 ### 7.1 เตรียม PR break-it-live
 
 ```bash

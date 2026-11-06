@@ -12,3 +12,4 @@
 | 4 | ผู้ตรวจเลือก endpoint 1 รายการจาก spec กลุ่มเปิดตำแหน่งนั้นใน `docs/openapi.yaml` | endpoint นั้นมีใน `openapi.yaml` พร้อม error response ตรงกับ spec |
 | 5 | เปิด `docs/adr/ADR-001-data-storage.md` แล้วอธิบาย | บอกได้ว่าทางเลือกที่ไม่ได้เลือกคืออะไร และเหตุใดจึงไม่เลือก |
 | 6 | เปิด PR break-it-live จากขั้นตอนที่ 7.2 ของ lab (PR ที่สะกด `responses` ผิดโดยตั้งใจ แล้วปิดโดยไม่ merge) | ผู้ตรวจเห็น CI สีแดงที่ขั้น lint ของ `openapi.yaml` |
+| 7 | ถาม AI agent ใน repository ว่า "ถ้าจะเขียน code ลงทะเบียน ต้องอ่านไฟล์ใดก่อน" | agent ตอบ `docs/features/02-register/spec.md` |

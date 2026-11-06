@@ -606,6 +606,8 @@ git push -u origin demo/no-lock
 
 ## ขั้นตอนที่ 7 — บันทึกหลักฐาน
 
+**ทำ**
+
 สร้าง branch `docs/evidence-07` และ `evidence/ws-07.md`
 
 ```markdown

@@ -220,7 +220,7 @@ git pull origin main
 git switch -c ci/audit
 ```
 
-เพิ่มใน `.github/workflows/ci.yml` ต่อจาก `- run: npm ci` ของ job `build`
+เพิ่มใน `.github/workflows/ci.yml` ต่อจาก `- run: npm ci` และก่อน `- run: node .agents/guards/no-secrets.mjs` ของ job `build`
 
 ```yaml
       - run: npm audit --omit=dev --audit-level=high
@@ -420,6 +420,8 @@ git switch -c docs/lessons
 ---
 
 ## ขั้นตอนที่ 7 — บันทึกหลักฐาน
+
+**ทำ**
 
 สร้าง branch `docs/evidence-08` และ `evidence/ws-08.md`
 

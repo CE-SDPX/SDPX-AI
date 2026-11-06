@@ -293,7 +293,7 @@ flowchart LR
 | 02 | `intent.md`, `spec.md`, ADR-001 | lint ของ `openapi.yaml` |
 | 03 | `plan.md`, ADR-002 | unit test ของกฎ R1–R5 |
 | 04 | `REVIEW.md` | ruleset, CI ทุก PR และ AI review |
-| 05 | `.agents/guards/` | guard ก่อนคำสั่งของ agent และ integration test |
+| 05 | `.agents/guards/`, ADR-003 | guard ก่อนคำสั่งของ agent และ integration test |
 | 06 | `.agents/verifier.md` | E2E test ของ journey |
 | 07 | `ops/bands.yaml` | load test ของ R6 และ p95 |
 | 08 | `SKILL.md`, `LESSONS.md` | access test, CodeQL และ `npm audit` |

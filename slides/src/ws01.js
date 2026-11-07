@@ -321,4 +321,4 @@ const GL = [["Loop", "วงจร feedback: ทำ แล้วตรวจ แ
   q.forEach((t, i) => { const y = 1.4 + i * 1.15; box(s, pres, 0.5, y, 9, 1.0, K.paper); chip(s, pres, 0.75, y + 0.29, i + 1);
     T(s, t, { x: 1.4, y, w: 7.9, h: 1.0, fontSize: 16, valign: "middle" }); }); }
 
-L.save(pres, "../WS-01-deploy/1-Lecture.pptx").then(() => console.log("saved"));
+L.save(pres, "ws-01-deploy.pptx").then(() => console.log("saved"));

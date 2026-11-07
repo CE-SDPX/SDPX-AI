@@ -78,5 +78,26 @@ function caseSlide(pres, section, o) {
   ref(s, o.refs);
   return s;
 }
-async function save(pres, file) { await pres.writeFile({ fileName: file }); await applyTheme(file, THEME); }
-module.exports = { K, FONT, newDeck, T, box, chip, arrow, flow, lightSlide, darkSlide, caseSlide, ref, save };
+
+// กล่อง code พื้นเข้ม
+function codeBox(s, pres, x, y, w, h, lines, fs = 12, fill = K.ink) {
+  box(s, pres, x, y, w, h, fill);
+  T(s, lines.map((l, i) => ({ text: l, options: { breakLine: i < lines.length - 1 } })), { x: x + 0.2, y: y + 0.15, w: w - 0.4, h: h - 0.3, fontSize: fs, fontFace: "Courier New", color: "E6EDF5" });
+}
+// ตารางแบบการ์ดแถว: rows = [[c1,c2,...]], cw = ความกว้างคอลัมน์, head = หัวตาราง
+function rowsTable(s, pres, rows, x, y, cw, rh, o = {}) {
+  const w = cw.reduce((a, b) => a + b, 0), fs = o.fs || 13;
+  if (o.head) { let cx = x + 0.2; o.head.forEach((h, j) => { T(s, h, { x: cx, y, w: cw[j] - 0.1, h: 0.28, fontSize: 11, bold: true, color: K.mute }); cx += cw[j]; }); y += 0.3; }
+  rows.forEach((r, i) => { const yy = y + i * (rh + 0.08); box(s, pres, x, yy, w, rh, (o.fills && o.fills[i]) || K.paper);
+    let cx = x + 0.2; r.forEach((c, j) => { T(s, c, { x: cx, y: yy, w: cw[j] - 0.15, h: rh, fontSize: fs, valign: "middle", bold: j === 0 && !o.noBold, fontFace: (o.mono && o.mono.includes(j)) ? "Courier New" : FONT }); cx += cw[j]; }); });
+}
+// สไลด์เปรียบเทียบ ดี / ไม่ดี  (บล็อก code สองฝั่ง)
+function goodBad(pres, section, title, notes, bad, good, fs = 11) {
+  const s = lightSlide(pres, section, title, notes);
+  [[bad, K.red, K.redT, "ตัวอย่างที่ไม่ดี", 0.5], [good, K.green, K.greenT, "ตัวอย่างที่ดี", 5.1]].forEach(([lines, c, tint, lab, x]) => {
+    box(s, pres, x, 1.3, 4.4, 3.65, tint); T(s, lab, { x: x + 0.2, y: 1.4, w: 4, h: 0.3, fontSize: 13, bold: true, color: c });
+    T(s, lines.map((l, i) => ({ text: l, options: { breakLine: i < lines.length - 1 } })), { x: x + 0.2, y: 1.75, w: 4.0, h: 3.1, fontSize: fs, fontFace: "Courier New" }); });
+  return s;
+}
+async function save(pres, file) { const out = require("path").join(__dirname, "..", file); await pres.writeFile({ fileName: out }); await applyTheme(out, THEME); }
+module.exports = { K, FONT, newDeck, T, box, chip, arrow, flow, lightSlide, darkSlide, caseSlide, ref, save, codeBox, rowsTable, goodBad };
